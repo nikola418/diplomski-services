@@ -1,0 +1,7 @@
+services:
+  users:
+
+  posts:
+
+  postgres:
+    image: postgres:16

@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  Admin
+  User
+}
+
+enum ActivityTag {
+  Camping
+  Fishing
+  Hiking
+  Biking
+}
+
+enum NearbyTag {
+  Pharmacy
+  Groceries
+  Bakery
+  Hospital
+}
+
+model User {
+  id          String  @id @default(cuid())
+  firstName   String
+  lastName    String
+  username    String  @unique
+  phoneNumber String?
+  email       String  @unique
+  password    String
+  roles       Role[]  @default([User])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Post {
+  id            String        @id @default(cuid())
+  title         String        @unique
+  description   String
+  averageRating Float
+  activityTags  ActivityTag[]
+  nearbyTags    NearbyTag[]
+  imageUrl      String?
+  locationLat   Float
+  locationLong  Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("posts")
+}
+
+model Review {
+  postId String
+  userId String
+  rating Int
+  text   String
+
+  @@id([postId, userId])
+  @@map("reviews")
+}

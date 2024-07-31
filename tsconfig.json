@@ -16,6 +16,20 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@app/data-access-users": [
+        "libs/data-access-users/src"
+      ],
+      "@app/data-access-users/*": [
+        "libs/data-access-users/src/*"
+      ],
+      "@app/data-access-posts": [
+        "libs/data-access-posts/src"
+      ],
+      "@app/data-access-posts/*": [
+        "libs/data-access-posts/src/*"
+      ]
+    }
   }
 }
