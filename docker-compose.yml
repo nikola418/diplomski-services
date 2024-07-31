@@ -1,30 +1,31 @@
-version: '3.8'
-
 services:
   users:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nest-api
+    container_name: users
     restart: always
     ports:
       - '3000:3000'
     depends_on:
-      - nest-postgres
+      - postgres
     env_file:
       - .env
 
+  rabbitmq:
+    image: rabbitmq
+
   postgres:
     image: postgres:14
-    container_name: nest-postgres
+    container_name: postgres
     restart: always
     ports:
       - '5432:5432'
     env_file:
       - .env
     volumes:
-      - nest-postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
 
 volumes:
-  nest-postgres:
-    name: nest-postgres-db
+  postgres:
+    name: postgres-db

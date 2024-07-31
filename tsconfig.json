@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -18,18 +18,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/data-access-users": [
-        "libs/data-access-users/src"
-      ],
-      "@app/data-access-users/*": [
-        "libs/data-access-users/src/*"
-      ],
-      "@app/data-access-posts": [
-        "libs/data-access-posts/src"
-      ],
-      "@app/data-access-posts/*": [
-        "libs/data-access-posts/src/*"
-      ]
+      "@app/data-access-users": ["libs/data-access-users/src"],
+      "@app/data-access-users/*": ["libs/data-access-users/src/*"],
+      "@app/data-access-posts": ["libs/data-access-posts/src"],
+      "@app/data-access-posts/*": ["libs/data-access-posts/src/*"]
     }
   }
 }

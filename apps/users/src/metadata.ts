@@ -1,0 +1,7 @@
+/* eslint-disable */
+export default async () => {
+    const t = {
+        ["./entities/user.entity"]: await import("./entities/user.entity")
+    };
+    return { "@nestjs/swagger": { "models": [[import("./dto/create-user.dto"), { "CreateUserDto": { firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, username: { required: true, type: () => String }, phoneNumber: { required: true, type: () => String }, email: { required: true, type: () => String }, password: { required: true, type: () => String } } }], [import("./entities/user.entity"), { "UserEntity": { id: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, username: { required: true, type: () => String }, phoneNumber: { required: true, type: () => String }, email: { required: true, type: () => String }, password: { required: true, type: () => String }, roles: { required: true, type: () => [Object] }, createdAt: { required: true, type: () => Date }, updatedAt: { required: true, type: () => Date } } }], [import("./dto/update-user.dto"), { "UpdateUserDto": {} }]], "controllers": [[import("./users.controller"), { "UsersController": { "create": { type: t["./entities/user.entity"].UserEntity }, "findAll": { type: [t["./entities/user.entity"].UserEntity] }, "findOne": { type: t["./entities/user.entity"].UserEntity }, "update": { type: t["./entities/user.entity"].UserEntity }, "remove": { type: t["./entities/user.entity"].UserEntity } } }]] } };
+};
