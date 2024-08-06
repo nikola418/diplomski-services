@@ -1,31 +1,134 @@
 services:
-  users:
+  auth:
     build:
+      args:
+        APP_NAME: auth
       context: .
       dockerfile: Dockerfile
-    container_name: users
-    restart: always
+      target: build
+    command: sh -c "pnpm run prisma:generate && pnpm run start:dev auth"
+    container_name: auth
+    # restart: always
+    volumes:
+      - .:/app
+      - /app/node_modules
     ports:
       - '3000:3000'
     depends_on:
       - postgres
     env_file:
-      - .env
+      - .local.env
+
+  users:
+    build:
+      args:
+        APP_NAME: users
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    command: sh -c "pnpm run prisma:generate && pnpm run start:dev users"
+    container_name: users
+    # restart: always
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3001:3000'
+    depends_on:
+      - postgres
+    env_file:
+      - .local.env
+
+  posts:
+    build:
+      args:
+        APP_NAME: posts
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    command: sh -c "pnpm run prisma:generate && pnpm run start:dev posts"
+    container_name: posts
+    # restart: always
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3002:3000'
+    depends_on:
+      - postgres
+    env_file:
+      - .local.env
+
+  files:
+    build:
+      args:
+        APP_NAME: files
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    command: sh -c "pnpm run prisma:generate && pnpm run start:dev files"
+    container_name: files
+    # restart: always
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3003:3000'
+    depends_on:
+      - postgres
+    env_file:
+      - .local.env
 
   rabbitmq:
     image: rabbitmq
+    ports:
+      - '5672:5672'
 
   postgres:
     image: postgres:14
-    container_name: postgres
     restart: always
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: diplomski
     ports:
       - '5432:5432'
-    env_file:
-      - .env
     volumes:
       - postgres:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo
+    # environment:
+    # MONGO_INITDB_ROOT_USERNAME: diplomski
+    # MONGO_INITDB_ROOT_PASSWORD: example
+    # MONGO_INITDB_DATABASE: diplomski
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo:/data/db
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - '28081:8081'
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      # ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+      # ME_CONFIG_MONGODB_AUTH_USERNAME: diplomski
+      # ME_CONFIG_MONGODB_AUTH_PASSWORD: example
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: changeme
+      ME_CONFIG_OPTIONS_EDITORTHEME: shadowfox
+    depends_on:
+      - mongo
 
 volumes:
   postgres:
     name: postgres-db
+  mongo:
+    name: mongo-db
+
+networks: {}

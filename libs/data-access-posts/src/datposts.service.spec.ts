@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DataAccessPostsService } from './data-access-posts.service';
+import { DataAccessPostsService } from './posts.service';
 
 describe('DataAccessPostsService', () => {
   let service: DataAccessPostsService;

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { DataAccessPostsService } from './data-access-posts.service';
+import { PostsService } from './posts.service';
 
 @Module({
-  providers: [DataAccessPostsService],
-  exports: [DataAccessPostsService],
+  providers: [PostsService],
+  exports: [PostsService],
 })
 export class DataAccessPostsModule {}

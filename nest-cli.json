@@ -2,11 +2,17 @@
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
   "sourceRoot": "apps/users/src",
+  "defaultLibraryPrefix": "@libs",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
     "tsConfigPath": "apps/users/tsconfig.app.json",
-    "plugins": [{ "name": "@nestjs/swagger", "options": {} }]
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": { "introspectComments": true, "classValidatorShim": true }
+      }
+    ]
   },
   "monorepo": true,
   "root": "apps/users",
@@ -54,6 +60,24 @@
       "sourceRoot": "libs/data-access-posts/src",
       "compilerOptions": {
         "tsConfigPath": "libs/data-access-posts/tsconfig.lib.json"
+      }
+    },
+    "files": {
+      "type": "application",
+      "root": "apps/files",
+      "entryFile": "main",
+      "sourceRoot": "apps/files/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/files/tsconfig.app.json"
+      }
+    },
+    "data-access-files": {
+      "type": "library",
+      "root": "libs/data-access-files",
+      "entryFile": "index",
+      "sourceRoot": "libs/data-access-files/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/data-access-files/tsconfig.lib.json"
       }
     }
   }
