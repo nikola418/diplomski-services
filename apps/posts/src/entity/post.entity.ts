@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { $Enums, Post } from '@prisma/client';
 
 export class PostEntity implements Post {
@@ -10,9 +11,11 @@ export class PostEntity implements Post {
   description: string;
   averageRating: number;
   ratingsCount: number;
+  @ApiProperty({ enum: $Enums.ActivityTag })
   activityTags: $Enums.ActivityTag[];
+  @ApiProperty({ enum: $Enums.NearbyTag })
   nearbyTags: $Enums.NearbyTag[];
-  imageUrls: string[];
+  imageKeys: string[];
   locationLat: number;
   locationLong: number;
   createdAt: Date;

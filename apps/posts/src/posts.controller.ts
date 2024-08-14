@@ -29,7 +29,7 @@ export class PostsController {
     @Body() data: CreatePostDto,
     @UploadedFiles() images?: Express.Multer.File[],
   ): Promise<PostEntity> {
-    data.imageUrls = images?.map((image) => image.id);
+    data.imageKeys = images?.map((image) => image.id);
 
     return this.postsService.create(data);
   }

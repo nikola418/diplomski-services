@@ -10,10 +10,13 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './dto';
-import { UserEntity } from './entities';
-import { ApiConsumes } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes } from '@nestjs/swagger';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+} from '../../../libs/data-access-users/src/dto';
+import { UserEntity } from '../../../libs/data-access-users/src/entities';
 
 @Controller('users')
 export class UsersController {
@@ -21,14 +24,14 @@ export class UsersController {
 
   @ApiConsumes('multipart/form-data')
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('profileImage'))
   public create(
     @Body() data: CreateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    data.profileImageUrl = image?.id;
+    data.profileImageKey = image?.id;
 
-    return this.usersService.create(data);
+    return this.usersService.create({ ...data });
   }
 
   @Get()
@@ -43,13 +46,13 @@ export class UsersController {
 
   @ApiConsumes('multipart/form-data')
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('profileImage'))
   public update(
     @Param('id') id: string,
     @Body() data: UpdateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    data.profileImageUrl = image?.id;
+    data.profileImageKey = image?.id;
 
     return this.usersService.update({ id }, data);
   }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { $Enums, Prisma, User } from '@prisma/client';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { PrismaService } from 'nestjs-prisma';
 
@@ -7,9 +7,13 @@ import { PrismaService } from 'nestjs-prisma';
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  public create(data: Prisma.UserCreateInput): Promise<User> {
+  public create(data: Omit<Prisma.UserCreateInput, 'roles'>): Promise<User> {
     return this.prismaService.user.create({
-      data: { ...data, password: hashSync(data.password, genSaltSync()) },
+      data: {
+        ...data,
+        roles: { set: [$Enums.Role.User] },
+        password: hashSync(data.password, genSaltSync()),
+      },
     });
   }
 

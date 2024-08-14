@@ -10,7 +10,10 @@
     "plugins": [
       {
         "name": "@nestjs/swagger",
-        "options": { "introspectComments": true, "classValidatorShim": true }
+        "options": {
+          "introspectComments": true,
+          "classValidatorShim": true
+        }
       }
     ]
   },
@@ -78,6 +81,15 @@
       "sourceRoot": "libs/data-access-files/src",
       "compilerOptions": {
         "tsConfigPath": "libs/data-access-files/tsconfig.lib.json"
+      }
+    },
+    "common": {
+      "type": "library",
+      "root": "libs/common",
+      "entryFile": "index",
+      "sourceRoot": "libs/common/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
     }
   }

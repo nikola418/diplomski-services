@@ -23,7 +23,9 @@
       "@libs/data-access-posts": ["libs/data-access-posts/src"],
       "@libs/data-access-posts/*": ["libs/data-access-posts/src/*"],
       "@libs/data-access-files": ["libs/data-access-files/src"],
-      "@libs/data-access-files/*": ["libs/data-access-files/src/*"]
+      "@libs/data-access-files/*": ["libs/data-access-files/src/*"],
+      "@libs/common": ["libs/common/src"],
+      "@libs/common/*": ["libs/common/src/*"]
     }
   }
 }

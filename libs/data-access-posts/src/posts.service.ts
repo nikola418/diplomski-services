@@ -5,13 +5,19 @@ import { PrismaService } from 'nestjs-prisma';
 @Injectable()
 export class PostsService {
   constructor(private readonly prismaService: PrismaService) {}
+  private static readonly orderBy: Prisma.PostOrderByWithRelationInput = {
+    createdAt: 'desc',
+  };
 
   public create(data: Prisma.PostCreateInput): Promise<Post> {
     return this.prismaService.post.create({ data });
   }
 
   public findAll(where?: Prisma.PostWhereInput): Promise<Post[]> {
-    return this.prismaService.post.findMany({ where });
+    return this.prismaService.post.findMany({
+      where,
+      orderBy: PostsService.orderBy,
+    });
   }
 
   public findOne(where: Prisma.PostWhereUniqueInput): Promise<Post> {

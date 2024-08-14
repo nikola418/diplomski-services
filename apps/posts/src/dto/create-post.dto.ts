@@ -36,5 +36,5 @@ export class CreatePostDto {
       format: 'binary',
     },
   })
-  imageUrls?: string[];
+  imageKeys?: string[];
 }

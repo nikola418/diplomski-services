@@ -2,7 +2,7 @@
 export default async () => {
   const t = {
     ['../../users/src/entities/user.entity']: await import(
-      '../../users/src/entities/user.entity'
+      '../../../libs/data-access-users/src/entities/user.entity'
     ),
     ['../../posts/src/entity/post.entity']: await import(
       '../../posts/src/entity/post.entity'
@@ -12,7 +12,7 @@ export default async () => {
     '@nestjs/swagger': {
       models: [
         [
-          import('../../users/src/entities/user.entity'),
+          import('../../../libs/data-access-users/src/entities/user.entity'),
           {
             UserEntity: {
               id: { required: true, type: () => String },
@@ -48,7 +48,7 @@ export default async () => {
           },
         ],
         [
-          import('../../users/src/dto/create-user.dto'),
+          import('../../../libs/data-access-users/src/dto/create-user.dto'),
           {
             CreateUserDto: {
               firstName: { required: true, type: () => String },
@@ -60,7 +60,10 @@ export default async () => {
             },
           },
         ],
-        [import('../../users/src/dto/update-user.dto'), { UpdateUserDto: {} }],
+        [
+          import('../../../libs/data-access-users/src/dto/update-user.dto'),
+          { UpdateUserDto: {} },
+        ],
         [
           import('../../posts/src/dto/create-post.dto'),
           {
