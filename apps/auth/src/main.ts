@@ -9,7 +9,14 @@ import { AuthModule } from './auth.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule, {
-    cors: { credentials: true, origin: 'http://localhost:8100' },
+    cors: {
+      credentials: true,
+      origin: [
+        'http://localhost:8100',
+        'http://192.168.1.108:8100',
+        'http://172.18.0.1:8100',
+      ],
+    },
   });
   const configService = app.get(ConfigService);
   const httpAdapter = app.getHttpAdapter();
