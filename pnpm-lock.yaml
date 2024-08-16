@@ -62,6 +62,9 @@ importers:
       cookie-parser:
         specifier: ^1.4.6
         version: 1.4.6
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       mongo-gridfs:
         specifier: link:@github:khoampd/mongo-gridfs
         version: link:@github:khoampd/mongo-gridfs
@@ -126,6 +129,9 @@ importers:
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.12
+      '@types/lodash':
+        specifier: ^4.17.7
+        version: 4.17.7
       '@types/multer':
         specifier: ^1.4.11
         version: 1.4.11
@@ -1250,6 +1256,9 @@ packages:
 
   '@types/keyv@3.1.4':
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
+
+  '@types/lodash@4.17.7':
+    resolution: {integrity: sha512-8wTvZawATi/lsmNu10/j2hk1KEP0IvjubqPE3cu1Xz7xfXXt5oCq3SNUz4fMIP4XGF9Ky+Ue2tBA3hcS7LSBlA==}
 
   '@types/methods@1.1.4':
     resolution: {integrity: sha512-ymXWVrDiCxTBE3+RIrrP533E70eA+9qu7zdWoHuOmGujkYtzf4HQF96b8nwHLqhuf4ykX61IGRIB38CC6/sImQ==}
@@ -5928,6 +5937,8 @@ snapshots:
   '@types/keyv@3.1.4':
     dependencies:
       '@types/node': 20.14.14
+
+  '@types/lodash@4.17.7': {}
 
   '@types/methods@1.1.4': {}
 

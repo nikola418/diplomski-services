@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateFavoritePostDto } from './dto';
-import { FavoritePostsService } from '@libs/data-access-posts';
-import { FavoritePostEntity } from './entities';
+import {
+  FavoritePostEntity,
+  FavoritePostsService,
+} from '@libs/data-access-posts';
 
 @ApiTags('favorite posts')
 @Controller('favorite-posts')

@@ -1,6 +1,7 @@
 import { PostsService } from '@libs/data-access-posts';
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -15,6 +16,9 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { CreatePostDto, UpdatePostDto } from './dto';
 import { PostEntity } from './entity';
+import { AuthUser } from '@libs/common';
+import { User } from '@prisma/client';
+import { plainToClass, plainToInstance } from 'class-transformer';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -35,13 +39,35 @@ export class PostsController {
   }
 
   @Get()
-  public findAll(): Promise<PostEntity[]> {
-    return this.postsService.findAll();
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async findAll(@AuthUser() user: User): Promise<PostEntity[]> {
+    return plainToInstance(
+      PostEntity,
+      await this.postsService.findAll(
+        {},
+        {
+          ...PostsService.include,
+          favoritePosts: { where: { userId: user.id } },
+        },
+      ),
+    );
   }
 
   @Get(':id')
-  public findOne(@Param('id') id: string): Promise<PostEntity> {
-    return this.postsService.findOne({ id });
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async findOne(
+    @Param('id') id: string,
+    @AuthUser() user: User,
+  ): Promise<PostEntity> {
+    return new PostEntity(
+      await this.postsService.findOne(
+        { id },
+        {
+          ...PostsService.include,
+          favoritePosts: { where: { userId: user.id } },
+        },
+      ),
+    );
   }
 
   @Patch('id')

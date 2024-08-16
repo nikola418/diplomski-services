@@ -115,6 +115,8 @@ services:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: example
       POSTGRES_DB: diplomski
+    ports:
+      - '5432:5432'
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
