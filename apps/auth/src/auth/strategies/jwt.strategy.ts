@@ -1,3 +1,4 @@
+import { JWTPayload } from '@libs/common';
 import { UsersService } from '@libs/data-access-users';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -27,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  public validate({ id }: User): Promise<User> {
+  public validate({ id }: JWTPayload): Promise<User> {
     return this.usersService.findOne({ id });
   }
 }

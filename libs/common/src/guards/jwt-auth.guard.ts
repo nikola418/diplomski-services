@@ -49,7 +49,7 @@ export class JwtAuthGuard implements CanActivate {
         }),
         map(() => true),
         catchError((err) => {
-          this.logger.debug(err);
+          this.logger.error(err);
 
           return throwError(() => new UnauthorizedException());
         }),

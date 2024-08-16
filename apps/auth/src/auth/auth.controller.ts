@@ -1,4 +1,9 @@
-import { AuthUser, HttpExceptionsRpcFilter, IsPublic } from '@libs/common';
+import {
+  AuthUser,
+  HttpExceptionsRpcFilter,
+  IsPublic,
+  JWTPayload,
+} from '@libs/common';
 import {
   Controller,
   Delete,
@@ -19,6 +24,7 @@ import { User } from '@prisma/client';
 import { Response } from 'express';
 import { SignInDto } from './dto';
 import { JwtAuthGuard, LocalAuthGuard } from './guards';
+import { UserEntity } from '@libs/data-access-users';
 
 @ApiTags('auth')
 @UseGuards(JwtAuthGuard)
@@ -38,8 +44,12 @@ export class AuthController {
   public signIn(
     @Res({ passthrough: true }) res: Response,
     @AuthUser() user: User,
-  ): User {
-    res.cookie('Authentication', this.jwtService.sign({ ...user }), {
+  ): UserEntity {
+    const jwtPayload = this.jwtService.sign({
+      id: user.id,
+    } satisfies JWTPayload);
+
+    res.cookie('Authentication', jwtPayload, {
       maxAge: this.configService.getOrThrow<number>('JWT_EXPIRES_IN') * 1000,
       domain: '192.168.1.108',
       path: '/',

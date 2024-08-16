@@ -2,22 +2,30 @@ import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
-import { UsersModule } from './users.module';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(UsersModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      credentials: true,
+      origin: [
+        'http://localhost:8100',
+        'http://192.168.1.108:8100',
+        'http://172.18.0.1:8100',
+      ],
+    },
+  });
   const configService = app.get(ConfigService);
   const httpAdapter = app.getHttpAdapter();
 
-  app.enableCors({});
+  app.enableVersioning();
+  app.enableShutdownHooks();
+
+  app.use(cookieParser());
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(
     new PrismaClientExceptionFilter(httpAdapter, {
       P2000: HttpStatus.BAD_REQUEST,
@@ -25,18 +33,16 @@ async function bootstrap() {
       P2025: HttpStatus.NOT_FOUND,
     }),
   );
-  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
-    .setTitle('Users example')
-    .setDescription('The users API description')
+    .setTitle('Files example')
+    .setDescription('The files API description')
     .setVersion('1.0')
-    .addTag('users')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  const httpPort = configService.getOrThrow('HTTP_PORT');
+  const httpPort = configService.getOrThrow<string>('HTTP_PORT');
 
   await app.listen(httpPort, '0.0.0.0', () => {
     const logger = new Logger();

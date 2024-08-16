@@ -15,8 +15,8 @@ import { ApiConsumes } from '@nestjs/swagger';
 import {
   CreateUserDto,
   UpdateUserDto,
-} from '../../../libs/data-access-users/src/dto';
-import { UserEntity } from '../../../libs/data-access-users/src/entities';
+} from '../../../../libs/data-access-users/src/dto';
+import { UserEntity } from '../../../../libs/data-access-users/src/entities';
 
 @Controller('users')
 export class UsersController {

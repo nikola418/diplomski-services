@@ -8,7 +8,7 @@ import { SignInDto } from './dto';
 export class AuthService {
   constructor(private readonly usersService: UsersService) {}
 
-  public async validateLogin(signInDto: SignInDto): Promise<User> {
+  public async validateLogin(signInDto: SignInDto): Promise<User | null> {
     const user = await this.usersService.findOne({
       username: signInDto.username,
     });

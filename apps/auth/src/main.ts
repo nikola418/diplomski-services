@@ -5,10 +5,10 @@ import { RmqOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
-import { AuthModule } from './auth.module';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AuthModule, {
+  const app = await NestFactory.create(AppModule, {
     cors: {
       credentials: true,
       origin: [
@@ -30,10 +30,11 @@ async function bootstrap() {
     },
   });
 
-  app.use(cookieParser());
-  app.setGlobalPrefix('api');
   app.enableVersioning();
   app.enableShutdownHooks();
+
+  app.use(cookieParser());
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(
     new PrismaClientExceptionFilter(httpAdapter, {
@@ -42,18 +43,16 @@ async function bootstrap() {
       P2025: HttpStatus.NOT_FOUND,
     }),
   );
-  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('Auth example')
     .setDescription('The Auth API description')
     .setVersion('1.0')
-    .addTag('Auth')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  const httpPort = configService.getOrThrow('HTTP_PORT');
+  const httpPort = configService.getOrThrow<string>('HTTP_PORT');
 
   await app.startAllMicroservices();
   await app.listen(httpPort, '0.0.0.0', () => {

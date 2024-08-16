@@ -1,20 +1,18 @@
-import { DataAccessFilesModule } from '@libs/data-access-files';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { FilesModule } from './files/files.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { FilesController } from './files.controller';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ cache: true, isGlobal: true }),
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         uri: configService.getOrThrow('MONGO_URL'),
       }),
       inject: [ConfigService],
     }),
-    { imports: [MongooseModule], module: DataAccessFilesModule },
+    FilesModule,
   ],
-  controllers: [FilesController],
 })
-export class FilesModule {}
+export class AppModule {}
