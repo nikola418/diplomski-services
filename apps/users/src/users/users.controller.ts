@@ -1,4 +1,10 @@
-import { UsersService } from '@libs/data-access-users';
+import { IsPublic, JwtAuthGuard } from '@libs/common';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UserEntity,
+  UsersService,
+} from '@libs/data-access-users';
 import {
   Body,
   Controller,
@@ -8,20 +14,19 @@ import {
   Patch,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes } from '@nestjs/swagger';
-import {
-  CreateUserDto,
-  UpdateUserDto,
-} from '../../../../libs/data-access-users/src/dto';
-import { UserEntity } from '../../../../libs/data-access-users/src/entities';
+import { AccessGuard, Actions, UseAbility } from 'nest-casl';
+import { UserHook } from './user.hook';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @IsPublic()
   @ApiConsumes('multipart/form-data')
   @Post()
   @UseInterceptors(FileInterceptor('profileImage'))
@@ -39,16 +44,18 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  public findOne(@Param('id') id: string): Promise<UserEntity> {
+  @Get(':userId')
+  public findOne(@Param('userId') id: string): Promise<UserEntity> {
     return this.usersService.findOne({ id });
   }
 
+  @UseGuards(AccessGuard)
+  @UseAbility(Actions.update, UserEntity, UserHook)
   @ApiConsumes('multipart/form-data')
-  @Patch(':id')
+  @Patch(':userId')
   @UseInterceptors(FileInterceptor('profileImage'))
   public update(
-    @Param('id') id: string,
+    @Param('userId') id: string,
     @Body() data: UpdateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
@@ -57,8 +64,10 @@ export class UsersController {
     return this.usersService.update({ id }, data);
   }
 
-  @Delete(':id')
-  public remove(@Param('id') id: string): Promise<UserEntity> {
+  @UseGuards(AccessGuard)
+  @UseAbility(Actions.delete, UserEntity, UserHook)
+  @Delete(':userId')
+  public remove(@Param('userId') id: string): Promise<UserEntity> {
     return this.usersService.remove({ id });
   }
 }

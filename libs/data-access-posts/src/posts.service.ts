@@ -5,6 +5,7 @@ import { PrismaService } from 'nestjs-prisma';
 @Injectable()
 export class PostsService {
   constructor(private readonly prismaService: PrismaService) {}
+  private static readonly include: Prisma.PostInclude = {};
   private static readonly orderBy: Prisma.PostOrderByWithRelationInput = {
     createdAt: 'desc',
   };

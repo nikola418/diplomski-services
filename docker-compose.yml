@@ -1,4 +1,14 @@
 services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - '8080:80'
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - nginx
+
   auth:
     build:
       args:
@@ -8,16 +18,21 @@ services:
       target: build
     command: sh -c "pnpm run prisma:generate && pnpm run start:dev auth"
     container_name: auth
-    # restart: always
-    volumes:
-      - .:/app
-      - /app/node_modules
+    restart: always
     ports:
       - '3000:3000'
     depends_on:
       - postgres
+      - rabbitmq
     env_file:
       - .local.env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - postgres
+      - rabbitmq
+      - nginx
 
   users:
     build:
@@ -28,16 +43,19 @@ services:
       target: build
     command: sh -c "pnpm run prisma:generate && pnpm run start:dev users"
     container_name: users
-    # restart: always
+    restart: always
+    depends_on:
+      - postgres
+      - rabbitmq
+    env_file:
+      - .local.env
     volumes:
       - .:/app
       - /app/node_modules
-    ports:
-      - '3001:3000'
-    depends_on:
+    networks:
       - postgres
-    env_file:
-      - .local.env
+      - rabbitmq
+      - nginx
 
   posts:
     build:
@@ -48,16 +66,21 @@ services:
       target: build
     command: sh -c "pnpm run prisma:generate && pnpm run start:dev posts"
     container_name: posts
-    # restart: always
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+      - rabbitmq
+    env_file:
+      - .local.env
     volumes:
       - .:/app
       - /app/node_modules
-    ports:
-      - '3002:3000'
-    depends_on:
+    networks:
+      - mongo
       - postgres
-    env_file:
-      - .local.env
+      - rabbitmq
+      - nginx
 
   files:
     build:
@@ -68,21 +91,22 @@ services:
       target: build
     command: sh -c "pnpm run prisma:generate && pnpm run start:dev files"
     container_name: files
-    # restart: always
+    restart: always
+    depends_on:
+      - mongo
+    env_file:
+      - .local.env
     volumes:
       - .:/app
       - /app/node_modules
-    ports:
-      - '3003:3000'
-    depends_on:
-      - postgres
-    env_file:
-      - .local.env
+    networks:
+      - mongo
+      - nginx
 
   rabbitmq:
     image: rabbitmq
-    ports:
-      - '5672:5672'
+    networks:
+      - rabbitmq
 
   postgres:
     image: postgres:14
@@ -91,10 +115,10 @@ services:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: example
       POSTGRES_DB: diplomski
-    ports:
-      - '5432:5432'
     volumes:
       - postgres:/var/lib/postgresql/data
+    networks:
+      - postgres
 
   mongo:
     image: mongo
@@ -102,10 +126,10 @@ services:
     # MONGO_INITDB_ROOT_USERNAME: diplomski
     # MONGO_INITDB_ROOT_PASSWORD: example
     # MONGO_INITDB_DATABASE: diplomski
-    ports:
-      - '27017:27017'
     volumes:
       - mongo:/data/db
+    networks:
+      - mongo
 
   mongo-express:
     image: mongo-express
@@ -124,6 +148,8 @@ services:
       ME_CONFIG_OPTIONS_EDITORTHEME: shadowfox
     depends_on:
       - mongo
+    networks:
+      - mongo
 
 volumes:
   postgres:
@@ -131,4 +157,8 @@ volumes:
   mongo:
     name: mongo-db
 
-networks: {}
+networks:
+  rabbitmq:
+  postgres:
+  mongo:
+  nginx:

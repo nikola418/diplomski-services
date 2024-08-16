@@ -1,5 +1,4 @@
 import { FavoritePost } from '@prisma/client';
-import { PostEntity } from '../../entity';
 
 export class FavoritePostEntity implements FavoritePost {
   constructor(partial: Partial<FavoritePostEntity>) {
@@ -10,6 +9,4 @@ export class FavoritePostEntity implements FavoritePost {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
-
-  post?: PostEntity;
 }

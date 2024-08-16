@@ -4,6 +4,7 @@ import {
   IsPublic,
   JWTPayload,
 } from '@libs/common';
+import { UserEntity } from '@libs/data-access-users';
 import {
   Controller,
   Delete,
@@ -24,7 +25,6 @@ import { User } from '@prisma/client';
 import { Response } from 'express';
 import { SignInDto } from './dto';
 import { JwtAuthGuard, LocalAuthGuard } from './guards';
-import { UserEntity } from '@libs/data-access-users';
 
 @ApiTags('auth')
 @UseGuards(JwtAuthGuard)
@@ -61,7 +61,7 @@ export class AuthController {
   }
 
   @Get('profile')
-  public me(@AuthUser() user: User): User {
+  public me(@AuthUser() user: User): UserEntity {
     return user;
   }
 
