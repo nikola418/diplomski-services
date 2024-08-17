@@ -1,3 +1,4 @@
+import { AuthUser } from '@libs/common';
 import { PostsService } from '@libs/data-access-posts';
 import {
   Body,
@@ -10,24 +11,28 @@ import {
   Patch,
   Post,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { User } from '@prisma/client';
+import { plainToInstance } from 'class-transformer';
+import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { CreatePostDto, UpdatePostDto } from './dto';
 import { PostEntity } from './entity';
-import { AuthUser } from '@libs/common';
-import { User } from '@prisma/client';
-import { plainToClass, plainToInstance } from 'class-transformer';
 
 @ApiTags('posts')
+@UseGuards(AccessGuard)
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
+
   private logger = new Logger(PostsController.name);
 
   @ApiConsumes('multipart/form-data')
   @Post()
+  @UseAbility(Actions.create, PostEntity)
   @UseInterceptors(FilesInterceptor('images'))
   public async create(
     @Body() data: CreatePostDto,
@@ -39,6 +44,7 @@ export class PostsController {
   }
 
   @Get()
+  @UseAbility(Actions.read, PostEntity)
   @UseInterceptors(ClassSerializerInterceptor)
   public async findAll(@AuthUser() user: User): Promise<PostEntity[]> {
     return plainToInstance(
@@ -54,6 +60,7 @@ export class PostsController {
   }
 
   @Get(':id')
+  @UseAbility(Actions.read, PostEntity)
   @UseInterceptors(ClassSerializerInterceptor)
   public async findOne(
     @Param('id') id: string,
@@ -70,7 +77,10 @@ export class PostsController {
     );
   }
 
-  @Patch('id')
+  @ApiConsumes('multipart/form-data')
+  @Patch(':id')
+  @UseAbility(Actions.update, PostEntity)
+  @UseInterceptors(FilesInterceptor('images'))
   public update(
     @Param('id') id: string,
     @Body() data: UpdatePostDto,
@@ -79,6 +89,7 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @UseAbility(Actions.delete, PostEntity)
   public remove(@Param('id') id: string): Promise<PostEntity> {
     return this.postsService.remove({ id });
   }
