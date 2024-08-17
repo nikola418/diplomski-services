@@ -1,4 +1,4 @@
-import { IsPublic, JwtAuthGuard } from '@libs/common';
+import { IsPublic } from '@libs/common';
 import {
   CreateUserDto,
   UpdateUserDto,
@@ -18,17 +18,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { UserHook } from './user.hook';
 
+@ApiTags('users')
 @Controller('users')
+@UseGuards(AccessGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @IsPublic()
   @ApiConsumes('multipart/form-data')
   @Post()
+  @UseAbility(Actions.create, UserEntity)
   @UseInterceptors(FileInterceptor('profileImage'))
   public create(
     @Body() data: CreateUserDto,
@@ -40,16 +43,17 @@ export class UsersController {
   }
 
   @Get()
+  @UseAbility(Actions.read, UserEntity)
   public findAll(): Promise<UserEntity[]> {
     return this.usersService.findAll();
   }
 
   @Get(':userId')
+  @UseAbility(Actions.read, UserEntity)
   public findOne(@Param('userId') id: string): Promise<UserEntity> {
     return this.usersService.findOne({ id });
   }
 
-  @UseGuards(AccessGuard)
   @UseAbility(Actions.update, UserEntity, UserHook)
   @ApiConsumes('multipart/form-data')
   @Patch(':userId')
@@ -64,7 +68,6 @@ export class UsersController {
     return this.usersService.update({ id }, data);
   }
 
-  @UseGuards(AccessGuard)
   @UseAbility(Actions.delete, UserEntity, UserHook)
   @Delete(':userId')
   public remove(@Param('userId') id: string): Promise<UserEntity> {
