@@ -1,3 +1,4 @@
+import { AuthUser } from '@libs/common';
 import { PostsService } from '@libs/data-access-posts';
 import {
   Body,
@@ -14,11 +15,10 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { User } from '@prisma/client';
+import { plainToInstance } from 'class-transformer';
 import { CreatePostDto, UpdatePostDto } from './dto';
 import { PostEntity } from './entity';
-import { AuthUser } from '@libs/common';
-import { User } from '@prisma/client';
-import { plainToClass, plainToInstance } from 'class-transformer';
 
 @ApiTags('posts')
 @Controller('posts')
