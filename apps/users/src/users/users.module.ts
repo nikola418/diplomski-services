@@ -1,15 +1,15 @@
+import { AUTH_SERVICE } from '@libs/common';
 import { GridFsMulterConfigService } from '@libs/data-access-files';
 import { DataAccessUsersModule } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { RouterModule } from '@nestjs/core';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MulterModule } from '@nestjs/platform-express';
 import { CaslModule } from 'nest-casl';
 import { FavoritePostsModule } from './favorite-posts/favorite-posts.module';
 import { permissions } from './permissions';
 import { UsersController } from './users.controller';
-import { AUTH_SERVICE } from '@libs/common';
-import { ConfigService } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [

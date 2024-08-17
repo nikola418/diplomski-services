@@ -1,13 +1,13 @@
+import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
+import { UserEntity } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
 import { PrismaModule } from 'nestjs-prisma';
 import { UsersModule } from './users/users.module';
-import { UserEntity } from '@libs/data-access-users';
-import { APP_GUARD } from '@nestjs/core';
-import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [

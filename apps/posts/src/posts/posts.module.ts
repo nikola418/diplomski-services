@@ -7,6 +7,8 @@ import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { PostsController } from './posts.controller';
 import { CustomPrismaService, PrismaService } from 'nestjs-prisma';
+import { CaslModule } from 'nest-casl';
+import { permissions } from './permissions';
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { CustomPrismaService, PrismaService } from 'nestjs-prisma';
       module: DataAccessPostsModule,
     },
     MulterModule.registerAsync({ useClass: GridFsMulterConfigService }),
+    CaslModule.forFeature({ permissions }),
   ],
   controllers: [PostsController],
 })

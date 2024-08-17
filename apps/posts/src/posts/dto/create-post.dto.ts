@@ -26,6 +26,16 @@ export class CreatePostDto {
   @IsNumber()
   locationLong: number;
 
+  // @ApiProperty({ enum: $Enums.ActivityTag, isArray: true, required: false, for})
+  // @IsOptional()
+  // @IsEnum($Enums.ActivityTag, { each: true })
+  // activityTags: $Enums.ActivityTag[];
+
+  // @ApiProperty({ enum: $Enums.NearbyTag, isArray: true, required: false })
+  // @IsOptional()
+  // @IsEnum($Enums.NearbyTag, { each: true })
+  // nearbyTags: $Enums.NearbyTag[];
+
   // !FOR SWAGGER ONLY
   @ApiProperty({
     required: false,
