@@ -18,14 +18,30 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@libs/data-access-users": ["libs/data-access-users/src"],
-      "@libs/data-access-users/*": ["libs/data-access-users/src/*"],
-      "@libs/data-access-posts": ["libs/data-access-posts/src"],
-      "@libs/data-access-posts/*": ["libs/data-access-posts/src/*"],
-      "@libs/data-access-files": ["libs/data-access-files/src"],
-      "@libs/data-access-files/*": ["libs/data-access-files/src/*"],
-      "@libs/common": ["libs/common/src"],
-      "@libs/common/*": ["libs/common/src/*"]
+      "@libs/data-access-users": [
+        "libs/data-access-users/src"
+      ],
+      "@libs/data-access-users/*": [
+        "libs/data-access-users/src/*"
+      ],
+      "@libs/data-access-posts": [
+        "libs/data-access-posts/src"
+      ],
+      "@libs/data-access-posts/*": [
+        "libs/data-access-posts/src/*"
+      ],
+      "@libs/data-access-files": [
+        "libs/data-access-files/src"
+      ],
+      "@libs/data-access-files/*": [
+        "libs/data-access-files/src/*"
+      ],
+      "@libs/common": [
+        "libs/common/src"
+      ],
+      "@libs/common/*": [
+        "libs/common/src/*"
+      ]
     }
   }
 }

@@ -91,6 +91,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "groups": {
+      "type": "application",
+      "root": "apps/groups",
+      "entryFile": "main",
+      "sourceRoot": "apps/groups/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/groups/tsconfig.app.json"
+      }
     }
   }
 }
