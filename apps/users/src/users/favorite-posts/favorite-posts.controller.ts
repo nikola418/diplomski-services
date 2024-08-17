@@ -1,17 +1,28 @@
-import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateFavoritePostDto } from './dto';
 import {
   FavoritePostEntity,
   FavoritePostsService,
 } from '@libs/data-access-posts';
+import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 
 @ApiTags('favorite posts')
+@UseGuards(AccessGuard)
 @Controller('favorite-posts')
 export class FavoritePostsController {
   constructor(private readonly favoritePostsService: FavoritePostsService) {}
 
   @Put()
+  @UseAbility(Actions.create, FavoritePostEntity)
   public create(
     @Body() createFavoritePostDto: CreateFavoritePostDto,
     @Param('userId') userId: string,
@@ -23,6 +34,7 @@ export class FavoritePostsController {
   }
 
   @Get()
+  @UseAbility(Actions.read, FavoritePostEntity)
   public findAll(
     @Param('userId') userId: string,
   ): Promise<FavoritePostEntity[]> {
@@ -30,6 +42,7 @@ export class FavoritePostsController {
   }
 
   @Get(':postId')
+  @UseAbility(Actions.read, FavoritePostEntity)
   public findOne(
     @Param('userId') userId: string,
     @Param('postId') postId: string,
@@ -40,6 +53,7 @@ export class FavoritePostsController {
   }
 
   @Delete(':postId')
+  @UseAbility(Actions.delete, FavoritePostEntity)
   public remove(
     @Param('userId') userId: string,
     @Param('postId') postId: string,
