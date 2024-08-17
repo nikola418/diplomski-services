@@ -35,8 +35,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Users example')
-    .setDescription('The users API description')
+    .setTitle('Groups example')
+    .setDescription('The groups API description')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
