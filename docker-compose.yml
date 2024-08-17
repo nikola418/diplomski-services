@@ -1,3 +1,5 @@
+name: diplomski
+
 services:
   nginx:
     image: nginx:latest
@@ -19,8 +21,6 @@ services:
     command: sh -c "pnpm run prisma:generate && pnpm run start:dev auth"
     container_name: auth
     restart: always
-    ports:
-      - '3000:3000'
     depends_on:
       - postgres
       - rabbitmq
@@ -107,6 +107,10 @@ services:
     image: rabbitmq
     networks:
       - rabbitmq
+
+  redis:
+    image: redis:latest
+    restart: always
 
   postgres:
     image: postgres:14
