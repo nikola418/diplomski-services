@@ -13,6 +13,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -44,8 +45,9 @@ export class UsersController {
 
   @Get()
   @UseAbility(Actions.read, UserEntity)
-  public findAll(): Promise<UserEntity[]> {
-    return this.usersService.findAll();
+  public findAll(@Query('username') username: string): Promise<UserEntity[]> {
+    console.log(username);
+    return this.usersService.findAll({ username: { contains: username } });
   }
 
   @Get(':userId')

@@ -100,6 +100,24 @@
       "compilerOptions": {
         "tsConfigPath": "apps/groups/tsconfig.app.json"
       }
+    },
+    "chats": {
+      "type": "application",
+      "root": "apps/chats",
+      "entryFile": "main",
+      "sourceRoot": "apps/chats/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/chats/tsconfig.app.json"
+      }
+    },
+    "data-access-chats": {
+      "type": "library",
+      "root": "libs/data-access-chats",
+      "entryFile": "index",
+      "sourceRoot": "libs/data-access-chats/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/data-access-chats/tsconfig.lib.json"
+      }
     }
   }
 }
