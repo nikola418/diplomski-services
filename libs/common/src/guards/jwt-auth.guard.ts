@@ -1,5 +1,6 @@
 import {
   CanActivate,
+  ContextType,
   ExecutionContext,
   Inject,
   Injectable,
@@ -29,7 +30,13 @@ export class JwtAuthGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    const request = context.switchToHttp().getRequest();
+    const contextType: ContextType = context.getType();
+
+    const request =
+      contextType === 'http'
+        ? context.switchToHttp().getRequest()
+        : context.switchToWs().getClient().request;
+
     const jwt =
       request.headers['Authentication'] || request.cookies['Authentication'];
 

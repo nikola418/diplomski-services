@@ -1,7 +1,8 @@
 generator client {
-  provider      = "prisma-client-js"
-  engineType    = "binary"
-  binaryTargets = ["native"]
+  provider        = "prisma-client-js"
+  engineType      = "binary"
+  previewFeatures = ["fullTextSearch"]
+  binaryTargets   = ["native"]
 }
 
 datasource db {
@@ -41,9 +42,13 @@ model User {
   phoneNumber     String?
   profileImageKey String?
 
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  favoritePosts FavoritePost[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  favoritePosts     FavoritePost[]
+  chatGroupMessages ChatGroupMessage[]
+  chatGroupsMember  ChatGroupMember[]
+  chatGroupsOwner   ChatGroup[]
 
   @@map("users")
 }
@@ -65,6 +70,7 @@ model Post {
 
   reviews       Review[]
   favoritePosts FavoritePost[]
+  chatGroups    ChatGroup[]
 
   @@map("posts")
 }
@@ -95,4 +101,51 @@ model Review {
 
   @@id([postId, userId])
   @@map("reviews")
+}
+
+model ChatGroup {
+  id            String   @id @default(cuid())
+  name          String?
+  ownerUserId   String
+  postId        String
+  memberUserIds String[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chatGroupMessages ChatGroupMessage[]
+  chatGroupMembers  ChatGroupMember[]
+  chatGroupOwner    User               @relation(fields: [ownerUserId], references: [id])
+  post              Post?              @relation(fields: [postId], references: [id])
+
+  @@map("chat_groups")
+}
+
+model ChatGroupMember {
+  chatGroupId String
+  userId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chatGroup  ChatGroup @relation(fields: [chatGroupId], references: [id])
+  memberUser User      @relation(fields: [userId], references: [id])
+
+  @@id([chatGroupId, userId])
+  @@map("chat_group_members")
+}
+
+model ChatGroupMessage {
+  id           String @id @default(cuid())
+  chatGroupId  String
+  senderUserId String
+  text         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chatGroup  ChatGroup @relation(fields: [chatGroupId], references: [id])
+  senderUser User      @relation(fields: [senderUserId], references: [id])
+
+  @@map("chat_group_messages")
 }
