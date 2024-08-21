@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CaslModule } from 'nest-casl';
 import { permissions } from './permissions';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, RouterModule } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -27,6 +27,9 @@ import { APP_GUARD } from '@nestjs/core';
     ]),
     { module: DataAccessChatGroupsModule, global: true },
     CaslModule.forFeature({ permissions }),
+    RouterModule.register([
+      { path: 'chat-groups/:chatGroupId', module: ChatGroupMessagesModule },
+    ]),
     ChatGroupMessagesModule,
   ],
   controllers: [ChatsGroupsController],

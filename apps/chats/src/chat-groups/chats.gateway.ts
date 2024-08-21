@@ -22,6 +22,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { User } from '@prisma/client';
 import { Cache } from 'cache-manager';
@@ -51,7 +52,9 @@ export class ChatsGateway
   private async getUserFromClientSocket(client: Socket): Promise<User> {
     const jwt = (
       client.request as IncomingMessage & { cookies: Record<string, string> }
-    ).cookies.Authentication;
+    ).cookies?.Authentication;
+
+    if (!jwt) throw new WsException(new UnauthorizedException());
 
     const user = await firstValueFrom(
       this.authProxy
@@ -66,7 +69,9 @@ export class ChatsGateway
           catchError((err) => {
             this.logger.error(err);
 
-            return throwError(() => new UnauthorizedException());
+            return throwError(
+              () => new WsException(new UnauthorizedException()),
+            );
           }),
         ),
     );
@@ -77,22 +82,29 @@ export class ChatsGateway
   afterInit(server: Server) {
     server.engine.on('headers', (headers, req) => {
       if (!req.headers.cookie) return;
-
       const cookies = parse(req.headers.cookie);
       req.cookies = cookies;
     });
   }
 
   async handleConnection(client: Socket) {
-    const user = await this.getUserFromClientSocket(client);
+    try {
+      const user = await this.getUserFromClientSocket(client);
 
-    await this.cacheManager.set(user.id, client.id);
+      await this.cacheManager.set(user?.id, client.id);
+    } catch (error) {
+      client.disconnect(error);
+    }
   }
 
   async handleDisconnect(client: Socket) {
-    const user = await this.getUserFromClientSocket(client);
+    try {
+      const user = await this.getUserFromClientSocket(client);
 
-    await this.cacheManager.del(user.id);
+      await this.cacheManager.del(user?.id);
+    } catch (error) {
+      client.disconnect();
+    }
   }
 
   @SubscribeMessage('newMessage')
