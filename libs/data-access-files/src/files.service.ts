@@ -18,12 +18,16 @@ export class FilesService {
   public async findOne(
     id: string,
   ): Promise<[GridFSFile, GridFSBucketReadStream]> {
-    const object = await this.bucket
-      .find({ _id: new Types.ObjectId(id) })
-      .tryNext();
+    try {
+      const object = await this.bucket
+        .find({ _id: new Types.ObjectId(id) })
+        .tryNext();
 
-    const fileStream = this.bucket.openDownloadStream(object._id, {});
+      const fileStream = this.bucket.openDownloadStream(object._id, {});
 
-    return [object, fileStream];
+      return [object, fileStream];
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

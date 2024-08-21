@@ -69,7 +69,7 @@ export class ChatsGroupsController {
     return this.chatGroupsService.update({ id }, {});
   }
 
-  @Delete(':groupID')
+  @Delete(':groupId')
   @UseAbility(Actions.delete, ChatGroupEntity, ChatGroupHook)
   public remove(@Param('groupId') id: string): Promise<ChatGroupEntity> {
     return this.chatGroupsService.remove({ id });
