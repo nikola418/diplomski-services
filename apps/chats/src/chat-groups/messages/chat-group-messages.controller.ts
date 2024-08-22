@@ -8,7 +8,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ChatGroupMessage, User } from '@prisma/client';
 
 @ApiTags('messages')
-@Controller('messages')
+@Controller()
 export class ChatGroupMessagesController {
   constructor(
     private readonly chatGroupMessagesService: ChatGroupMessagesService,

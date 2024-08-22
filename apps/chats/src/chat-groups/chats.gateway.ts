@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ClientRMQ, RmqRecordBuilder } from '@nestjs/microservices';
 import {
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -109,8 +110,9 @@ export class ChatsGateway
 
   @SubscribeMessage('newMessage')
   public async handleNewMessage(
-    @MessageBody() data: CreateChatGroupMessageDto,
+    @ConnectedSocket() client: Socket,
     @AuthUser() user: User,
+    @MessageBody() data: { chatGroupId: string } & CreateChatGroupMessageDto,
   ) {
     const message = await this.chatGroupMessagesService.create({
       chatGroup: { connect: { id: data.chatGroupId } },

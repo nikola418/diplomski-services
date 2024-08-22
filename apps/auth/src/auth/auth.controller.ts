@@ -51,10 +51,11 @@ export class AuthController {
 
     res.cookie('Authentication', jwtPayload, {
       maxAge: this.configService.getOrThrow<number>('JWT_EXPIRES_IN') * 1000,
-      domain: '192.168.1.108',
       path: '/',
-      sameSite: 'lax',
-      httpOnly: true,
+      // domain: '192.168.1.108',
+      // sameSite: 'lax',
+      // httpOnly: true,
+      partitioned: true,
     });
 
     return user;

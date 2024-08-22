@@ -8,8 +8,8 @@ generator client {
 datasource db {
   provider     = "postgresql"
   relationMode = "foreignKeys"
-  directUrl    = env("POSTGRES_DIRECT_URL")
   url          = env("POSTGRES_URL")
+  directUrl    = env("POSTGRES_DIRECT_URL")
 }
 
 enum Role {
@@ -22,6 +22,12 @@ enum ActivityTag {
   Fishing
   Hiking
   Biking
+}
+
+enum TripStatus {
+  InPlanning
+  Scheduled
+  Finished
 }
 
 enum NearbyTag {
@@ -68,9 +74,10 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  reviews       Review[]
-  favoritePosts FavoritePost[]
-  chatGroups    ChatGroup[]
+  reviews        Review[]
+  favoritePosts  FavoritePost[]
+  chatGroups     ChatGroup[]
+  chatGroupTrips ChatGroupTrip[]
 
   @@map("posts")
 }
@@ -89,10 +96,11 @@ model FavoritePost {
 }
 
 model Review {
-  postId String
-  userId String
-  rating Int
-  text   String
+  postId    String
+  userId    String
+  rating    Int
+  text      String
+  imageKeys String[] @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -105,9 +113,9 @@ model Review {
 
 model ChatGroup {
   id            String   @id @default(cuid())
-  name          String?
-  ownerUserId   String
   postId        String
+  ownerUserId   String
+  name          String?
   memberUserIds String[] @default([])
 
   createdAt DateTime @default(now())
@@ -117,6 +125,7 @@ model ChatGroup {
   chatGroupMembers  ChatGroupMember[]
   chatGroupOwner    User               @relation(fields: [ownerUserId], references: [id])
   post              Post?              @relation(fields: [postId], references: [id])
+  chatGroupTrips    ChatGroupTrip[]
 
   @@map("chat_groups")
 }
@@ -148,4 +157,18 @@ model ChatGroupMessage {
   senderUser User      @relation(fields: [senderUserId], references: [id])
 
   @@map("chat_group_messages")
+}
+
+model ChatGroupTrip {
+  chatGroupId       String
+  postId            String
+  name              String
+  tripStatus        TripStatus @default(InPlanning)
+  scheduledDateTime DateTime?
+
+  chatGroup ChatGroup @relation(fields: [chatGroupId], references: [id])
+  post      Post      @relation(fields: [postId], references: [id])
+
+  @@id([chatGroupId, postId])
+  @@map("chat_group_trips")
 }

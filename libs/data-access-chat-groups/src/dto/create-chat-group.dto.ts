@@ -7,10 +7,11 @@ class CreateChatGroupMemberDto {
 }
 
 export class CreateChatGroupDto {
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateChatGroupMemberDto)
-  chatGroupMembers: CreateChatGroupMemberDto[];
+  chatGroupMembers?: CreateChatGroupMemberDto[];
 
   @IsString()
   postId: string;

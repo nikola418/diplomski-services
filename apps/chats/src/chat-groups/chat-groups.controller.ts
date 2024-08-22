@@ -36,10 +36,13 @@ export class ChatsGroupsController {
       post: { connect: { id: data.postId } },
       chatGroupOwner: { connect: { id: user.id } },
       chatGroupMembers: {
-        createMany: { skipDuplicates: true, data: data.chatGroupMembers },
+        createMany: data.chatGroupMembers && {
+          skipDuplicates: true,
+          data: data.chatGroupMembers,
+        },
       },
-      memberUserIds: {
-        set: [...data.chatGroupMembers.map((member) => member.userId), user.id],
+      memberUserIds: data.chatGroupMembers && {
+        set: data.chatGroupMembers?.map((member) => member.userId),
       },
     });
   }
@@ -48,7 +51,10 @@ export class ChatsGroupsController {
   @UseAbility(Actions.create, ChatGroupEntity)
   public findAll(@AuthUser() user: User): Promise<ChatGroup[]> {
     return this.chatGroupsService.findAll({
-      chatGroupMembers: { some: { userId: user.id } },
+      OR: [
+        { chatGroupMembers: { some: { userId: user.id } } },
+        { ownerUserId: user.id },
+      ],
     });
   }
 

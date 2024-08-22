@@ -9,7 +9,6 @@ export class FilesController {
 
   @Get(':id')
   public async findOne(@Param('id') id: string): Promise<StreamableFile> {
-    console.log(id);
     const [file, fileStream] = await this.filesService.findOne(id);
     return new StreamableFile(fileStream, { type: file.contentType });
   }

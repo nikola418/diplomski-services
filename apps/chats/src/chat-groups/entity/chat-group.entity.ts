@@ -1,5 +1,5 @@
 import { ChatGroup } from '@prisma/client';
-import { ChatGroupMessageEntity } from '../chat-group-messages/entity';
+import { ChatGroupMessageEntity } from '../messages/entity';
 
 export class ChatGroupEntity implements ChatGroup {
   constructor(partial: Partial<ChatGroupEntity>) {
