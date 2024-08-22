@@ -18,11 +18,15 @@ export class UsersService {
   }
 
   public findAll(where?: Prisma.UserWhereInput): Promise<User[]> {
-    return this.prismaService.user.findMany({ where });
+    return this.prismaService.user.findMany({
+      where: { ...where, NOT: { roles: { has: $Enums.Role.Admin } } },
+    });
   }
 
   public findOne(where: Prisma.UserWhereUniqueInput): Promise<User> {
-    return this.prismaService.user.findUniqueOrThrow({ where });
+    return this.prismaService.user.findUniqueOrThrow({
+      where: { ...where, NOT: { roles: { has: $Enums.Role.Admin } } },
+    });
   }
 
   public update(

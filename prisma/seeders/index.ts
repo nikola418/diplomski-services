@@ -100,8 +100,8 @@ async function seed() {
         },
         averageRating: faker.number.float({ max: 5, min: 0 }),
         ratingsCount: faker.number.int({ min: 1, max: 50 }),
-        locationLat: faker.location.latitude({ min: 19, max: 23 }),
-        locationLong: faker.location.longitude({ min: 42, max: 46 }),
+        locationLong: faker.location.longitude({ min: 19, max: 23 }),
+        locationLat: faker.location.latitude({ min: 42, max: 46 }),
       },
       {
         title: faker.lorem.words(),
