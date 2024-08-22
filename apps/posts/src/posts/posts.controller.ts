@@ -84,7 +84,10 @@ export class PostsController {
   public update(
     @Param('id') id: string,
     @Body() data: UpdatePostDto,
+    @UploadedFiles() images?: Express.Multer.File[],
   ): Promise<PostEntity> {
+    data.imageKeys = images?.map((image) => image.id);
+
     return this.postsService.update({ id }, data);
   }
 
