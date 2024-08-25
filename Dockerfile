@@ -10,21 +10,23 @@ ENV APP_NAME ${APP_NAME}
 
 WORKDIR /app
 
-FROM base AS build
 COPY pnpm-lock.yaml ./
 RUN pnpm fetch
+
+FROM base AS dev
 COPY . ./
 
 RUN pnpm install -r --offline
+
+FROM dev AS build
 RUN pnpm run prisma:generate
 RUN pnpm run build ${APP_NAME}
 
 FROM base AS prod
-ENV NODE_ENV prduction
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/dist/apps/${APP_NAME} ./src
+ENV NODE_ENV production
+COPY ./package*.json ./package*.json 
+RUN pnpm install -r --offline --prod
+COPY --from=build /app/dist/apps/${APP_NAME} ./src
 
 ENV MAIN_FILE "src/main"
-
 CMD node ${MAIN_FILE}

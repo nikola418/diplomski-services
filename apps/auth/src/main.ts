@@ -5,18 +5,12 @@ import { RmqOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { cors } from 'utils';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: {
-      credentials: true,
-      origin: [
-        'http://localhost:8100',
-        'http://192.168.1.108:8100',
-        'http://172.18.0.1:8100',
-      ],
-    },
+    cors,
   });
   const configService = app.get(ConfigService);
   const httpAdapter = app.getHttpAdapter();
@@ -55,9 +49,10 @@ async function bootstrap() {
   const httpPort = configService.getOrThrow<string>('HTTP_PORT');
 
   await app.startAllMicroservices();
-  await app.listen(httpPort, '0.0.0.0', () => {
+
+  await app.listen(httpPort, '0.0.0.0', async () => {
     const logger = new Logger();
-    logger.log(`Application started on port: ${httpPort}`);
+    logger.log(`Application started on: ${await app.getUrl()}`);
   });
 }
 

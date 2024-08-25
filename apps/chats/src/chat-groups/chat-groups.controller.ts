@@ -33,6 +33,7 @@ export class ChatsGroupsController {
     @AuthUser() user: User,
   ): Promise<ChatGroup> {
     return this.chatGroupsService.create({
+      name: data.name,
       post: { connect: { id: data.postId } },
       chatGroupOwner: { connect: { id: user.id } },
       chatGroupMembers: {
@@ -48,7 +49,7 @@ export class ChatsGroupsController {
   }
 
   @Get()
-  @UseAbility(Actions.create, ChatGroupEntity)
+  @UseAbility(Actions.read, ChatGroupEntity)
   public findAll(@AuthUser() user: User): Promise<ChatGroup[]> {
     return this.chatGroupsService.findAll({
       OR: [
@@ -59,7 +60,7 @@ export class ChatsGroupsController {
   }
 
   @Get(':groupId')
-  @UseAbility(Actions.create, ChatGroupEntity, ChatGroupHook)
+  @UseAbility(Actions.read, ChatGroupEntity, ChatGroupHook)
   public findOne(@Param('groupId') id: string): Promise<ChatGroup> {
     return this.chatGroupsService.findOne({
       id,
@@ -67,7 +68,7 @@ export class ChatsGroupsController {
   }
 
   @Patch(':groupId')
-  @UseAbility(Actions.delete, ChatGroupEntity, ChatGroupHook)
+  @UseAbility(Actions.update, ChatGroupEntity, ChatGroupHook)
   public update(
     @Param('groupId') id: string,
     @Body() data: UpdateChatGroupDto,

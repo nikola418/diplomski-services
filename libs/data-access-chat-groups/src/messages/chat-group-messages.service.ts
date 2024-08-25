@@ -9,7 +9,7 @@ export class ChatGroupMessagesService {
     senderUser: true,
   };
   private static readonly orderBy: Prisma.ChatGroupMessageOrderByWithRelationInput =
-    { updatedAt: 'desc' };
+    { createdAt: 'asc' };
 
   public create(
     data: Prisma.ChatGroupMessageCreateInput,

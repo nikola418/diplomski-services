@@ -6,12 +6,13 @@ import { PrismaService } from 'nestjs-prisma';
 export class ChatGroupsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  private static readonly orderBy: Prisma.ChatGroupOrderByWithRelationInput = {
-    updatedAt: 'desc',
+  private static readonly include: Prisma.ChatGroupInclude = {
+    chatGroupMembers: { include: { memberUser: true } },
+    chatGroupMessages: { take: 1, orderBy: { updatedAt: 'desc' } },
   };
 
-  private static readonly include: Prisma.ChatGroupInclude = {
-    chatGroupMessages: { take: 1, orderBy: { updatedAt: 'desc' } },
+  private static readonly orderBy: Prisma.ChatGroupOrderByWithRelationInput = {
+    updatedAt: 'desc',
   };
 
   public create(data: Prisma.ChatGroupCreateInput): Promise<ChatGroup> {
@@ -29,7 +30,10 @@ export class ChatGroupsService {
   }
 
   public findOne(where: Prisma.ChatGroupWhereUniqueInput): Promise<ChatGroup> {
-    return this.prismaService.chatGroup.findUniqueOrThrow({ where });
+    return this.prismaService.chatGroup.findUniqueOrThrow({
+      where,
+      include: ChatGroupsService.include,
+    });
   }
 
   public update(

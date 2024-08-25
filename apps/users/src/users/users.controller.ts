@@ -45,7 +45,7 @@ export class UsersController {
 
   @Get()
   @UseAbility(Actions.read, UserEntity)
-  public findAll(@Query('username') username: string): Promise<UserEntity[]> {
+  public findAll(@Query('username') username?: string): Promise<UserEntity[]> {
     console.log(username);
     return this.usersService.findAll({ username: { contains: username } });
   }

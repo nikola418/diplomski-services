@@ -52,9 +52,9 @@ export class AuthController {
     res.cookie('Authentication', jwtPayload, {
       maxAge: this.configService.getOrThrow<number>('JWT_EXPIRES_IN') * 1000,
       path: '/',
-      // domain: '192.168.1.108',
-      // sameSite: 'lax',
-      // httpOnly: true,
+      domain: '192.168.1.108',
+      sameSite: 'lax',
+      httpOnly: true,
       partitioned: true,
     });
 
@@ -66,6 +66,7 @@ export class AuthController {
     return user;
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('sign-out')
   public signOut(@Res({ passthrough: true }) res: Response): void {
     res.clearCookie('Authentication');

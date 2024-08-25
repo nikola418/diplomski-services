@@ -12,7 +12,9 @@ export const permissions: Permissions<
   UserEntity
 > = {
   everyone({ can, user }) {
-    can(Actions.read, ChatGroupEntity, { memberUserIds: user.id });
+    can(Actions.read, ChatGroupEntity, {
+      chatGroupMembers: { $elemMatch: { userId: user.id } },
+    });
     can(Actions.manage, ChatGroupEntity, { ownerUserId: user.id });
   },
 };
