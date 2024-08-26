@@ -35,6 +35,7 @@ export class RedisIoAdapter extends IoAdapter {
   createIOServer(port: number, options?: ServerOptions): any {
     const server: Server = super.createIOServer(port, {
       ...options,
+      path: '/chats',
       cors: {
         credentials: true,
         origin: [
