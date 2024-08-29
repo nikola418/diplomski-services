@@ -5,6 +5,6 @@ export const cors = {
   origin: [
     'http://localhost:8100',
     'http://192.168.1.108:8100',
-    'http://172.18.0.1:8100',
+    'http://192.168.1.2:8100',
   ],
 } satisfies CorsOptions;

@@ -55,7 +55,7 @@ export class AuthController {
       // domain: '192.168.1.108',
       sameSite: 'none',
       httpOnly: true,
-      secure: true,
+      // secure: true,
     });
 
     return user;
