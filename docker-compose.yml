@@ -8,8 +8,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./.nginx:/etc/nginx:row
-    networks:
-      - nginx
 
   auth:
     build:
@@ -27,10 +25,6 @@ services:
       - rabbitmq
     env_file:
       - .local.env
-    networks:
-      - rabbitmq
-      - postgres
-      - nginx
 
   users:
     build:
@@ -48,10 +42,6 @@ services:
       - '3000'
     env_file:
       - .local.env
-    networks:
-      - rabbitmq
-      - postgres
-      - nginx
 
   posts:
     build:
@@ -70,11 +60,6 @@ services:
       - '3000'
     env_file:
       - .local.env
-    networks:
-      - mongo
-      - rabbitmq
-      - postgres
-      - nginx
 
   files:
     build:
@@ -91,10 +76,6 @@ services:
       - '3000'
     env_file:
       - .local.env
-    networks:
-      - mongo
-      - rabbitmq
-      - nginx
 
   chats:
     build:
@@ -114,28 +95,18 @@ services:
       - '3000'
     env_file:
       - .local.env
-    networks:
-      - mongo
-      - redis
-      - postgres
-      - rabbitmq
-      - nginx
 
   rabbitmq:
     image: rabbitmq
     restart: unless-stopped
     ports:
       - '5672'
-    networks:
-      - rabbitmq
 
   redis:
     image: redis:latest
     restart: unless-stopped
     ports:
       - '6379'
-    networks:
-      - redis
 
   postgres:
     image: postgres:14
@@ -146,8 +117,6 @@ services:
       POSTGRES_DB: diplomski
     ports:
       - '5432:5432'
-    networks:
-      - postgres
     volumes:
       - postgres:/var/lib/postgresql/data
 
@@ -160,8 +129,6 @@ services:
     # MONGO_INITDB_DATABASE: diplomski
     ports:
       - '27017'
-    networks:
-      - mongo
     volumes:
       - mongo:/data/db
 
@@ -182,18 +149,9 @@ services:
       ME_CONFIG_OPTIONS_EDITORTHEME: shadowfox
     depends_on:
       - mongo
-    networks:
-      - mongo
 
 volumes:
   postgres:
     name: postgres-db
   mongo:
     name: mongo-db
-
-networks:
-  rabbitmq:
-  postgres:
-  mongo:
-  nginx:
-  redis:
