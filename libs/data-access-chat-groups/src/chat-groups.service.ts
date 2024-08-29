@@ -8,7 +8,12 @@ export class ChatGroupsService {
 
   private static readonly include: Prisma.ChatGroupInclude = {
     chatGroupMembers: { include: { memberUser: true } },
-    chatGroupMessages: { take: 1, orderBy: { updatedAt: 'desc' } },
+    post: true,
+    chatGroupMessages: {
+      include: { senderUser: true },
+      take: 1,
+      orderBy: { updatedAt: 'desc' },
+    },
   };
 
   private static readonly orderBy: Prisma.ChatGroupOrderByWithRelationInput = {

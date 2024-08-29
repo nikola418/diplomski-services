@@ -19,7 +19,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { $Enums } from '@prisma/client';
+import { genSaltSync, hashSync } from 'bcrypt';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { UserHook } from './user.hook';
 
@@ -40,13 +42,17 @@ export class UsersController {
   ): Promise<UserEntity> {
     data.profileImageKey = image?.id;
 
-    return this.usersService.create({ ...data });
+    return this.usersService.create({
+      ...data,
+      password: hashSync(data.password, genSaltSync()),
+      roles: { set: [$Enums.Role.User] },
+    });
   }
 
+  @ApiQuery({ name: 'username', type: String, required: false })
   @Get()
   @UseAbility(Actions.read, UserEntity)
   public findAll(@Query('username') username?: string): Promise<UserEntity[]> {
-    console.log(username);
     return this.usersService.findAll({ username: { contains: username } });
   }
 

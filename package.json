@@ -55,7 +55,6 @@
     "cookie": "^0.6.0",
     "cookie-parser": "^1.4.6",
     "lodash": "^4.17.21",
-    "mongo-gridfs": "link:@github:khoampd/mongo-gridfs",
     "mongodb": "^6.8.0",
     "mongoose": "^8.5.2",
     "multer-gridfs-storage": "^5.0.2",

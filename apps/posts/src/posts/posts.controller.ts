@@ -1,4 +1,4 @@
-import { AuthUser } from '@libs/common';
+import { AuthUser, PaginatedResult } from '@libs/common';
 import { PostsService } from '@libs/data-access-posts';
 import {
   Body,
@@ -10,16 +10,18 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
-import { CreatePostDto, UpdatePostDto } from './dto';
+import { CreatePostDto, QueryPostsDto, UpdatePostDto } from './dto';
 import { PostEntity } from './entity';
 
 @ApiTags('posts')
@@ -46,17 +48,37 @@ export class PostsController {
   @Get()
   @UseAbility(Actions.read, PostEntity)
   @UseInterceptors(ClassSerializerInterceptor)
-  public async findAll(@AuthUser() user: User): Promise<PostEntity[]> {
-    return plainToInstance(
-      PostEntity,
-      await this.postsService.findAll(
-        {},
-        {
+  public async findAll(
+    @AuthUser() user: User,
+    @Query(ValidationPipe)
+    filters: QueryPostsDto,
+  ): Promise<PaginatedResult<PostEntity>> {
+    console.log(filters.pagination);
+    const res = await this.postsService.paginate(
+      {
+        where: {
+          activityTags: { hasEvery: filters.activityTags },
+          nearbyTags: { hasEvery: filters.nearbyTags },
+          title: { contains: filters.title, mode: 'insensitive' },
+          locationLat: {
+            gte: filters.range?.lat.lower,
+            lte: filters.range?.lat.upper,
+          },
+          locationLong: {
+            gte: filters.range?.lng.lower,
+            lte: filters.range?.lng.upper,
+          },
+        },
+        include: {
           ...PostsService.include,
           favoritePosts: { where: { userId: user.id } },
         },
-      ),
+      },
+      { page: filters.pagination.page },
     );
+
+    res.data = plainToInstance(PostEntity, res.data);
+    return res;
   }
 
   @Get(':id')

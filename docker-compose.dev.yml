@@ -1,0 +1,42 @@
+name: diplomski
+
+services:
+  auth:
+    build:
+      target: dev
+    command: sh -c "pnpm run prisma:generate && pnpm run start:dev auth"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  users:
+    build:
+      target: dev
+    command: sh -c "pnpm run prisma:generate && pnpm run start:dev users"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  posts:
+    build:
+      target: dev
+    command: sh -c "pnpm run prisma:generate && pnpm run start:dev posts"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  files:
+    build:
+      target: dev
+    command: sh -c "pnpm run prisma:generate && pnpm run start:dev files"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  chats:
+    build:
+      target: dev
+    command: sh -c "pnpm run prisma:generate && pnpm run start:dev chats"
+    volumes:
+      - .:/app
+      - /app/node_modules

@@ -1,8 +1,59 @@
-import { $Enums, PrismaClient } from '@prisma/client';
+import { $Enums, Prisma, PrismaClient } from '@prisma/client';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { faker } from '@faker-js/faker';
 
 const prismaClient = new PrismaClient();
+
+const createUsersInput = (len: number): Prisma.UserCreateManyInput[] => {
+  const firstNames = faker.helpers.uniqueArray(faker.person.firstName, len);
+  const lastNames = faker.helpers.uniqueArray(faker.person.firstName, len);
+
+  return [...new Array(len)].map((_, index) => {
+    return {
+      firstName: firstNames[index],
+      lastName: lastNames[index],
+      username: faker.internet.userName({
+        firstName: firstNames[index],
+        lastName: lastNames[index],
+      }),
+      email: faker.internet.email({
+        firstName: firstNames[index],
+        lastName: lastNames[index],
+      }),
+      password: hashSync('Password123.', genSaltSync()),
+      phoneNumber: faker.phone.number(),
+      roles: { set: [$Enums.Role.User] },
+    };
+  });
+};
+
+const createPostsInput = (len: number): Prisma.PostCreateManyInput[] => {
+  const titles = faker.helpers.uniqueArray(faker.lorem.words, len);
+
+  return [...new Array(len)].map((_, index) => {
+    return {
+      title: titles[index],
+      description: faker.lorem.text(),
+      ratingsCount: faker.number.int({ min: 1, max: 100 }),
+      averageRating: faker.number.float({ min: 1, max: 5 }),
+      activityTags: faker.helpers.arrayElements([
+        'Biking',
+        'Camping',
+        'Fishing',
+        'Hiking',
+      ]),
+      nearbyTags: faker.helpers.arrayElements([
+        'Bakery',
+        'Groceries',
+        'Pharmacy',
+        'Hospital',
+      ]),
+      locationLat: faker.location.latitude({ min: 42, max: 46 }),
+      locationLong: faker.location.longitude({ min: 19, max: 23 }),
+    };
+  });
+};
+
 async function seed() {
   await prismaClient.user.upsert({
     where: {
@@ -11,8 +62,8 @@ async function seed() {
     },
     create: {
       email: 'superuser@diplomski.com',
-      password: hashSync('Password123.', genSaltSync()),
       username: 'admin',
+      password: hashSync('Password123.', genSaltSync()),
       firstName: 'Admin',
       lastName: 'Admin',
       roles: { set: [$Enums.Role.Admin] },
@@ -27,167 +78,12 @@ async function seed() {
 
   await prismaClient.user.createMany({
     skipDuplicates: true,
-    data: [
-      {
-        email: faker.internet.email(),
-        password: hashSync('Password123.', genSaltSync()),
-        username: faker.internet.userName(),
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        phoneNumber: faker.phone.number(),
-        roles: { set: [$Enums.Role.User] },
-      },
-      {
-        email: faker.internet.email(),
-        password: hashSync('Password123.', genSaltSync()),
-        username: faker.internet.userName(),
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        phoneNumber: faker.phone.number(),
-        roles: { set: [$Enums.Role.User] },
-      },
-      {
-        email: faker.internet.email(),
-        password: hashSync('Password123.', genSaltSync()),
-        username: faker.internet.userName(),
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        phoneNumber: faker.phone.number(),
-        roles: { set: [$Enums.Role.User] },
-      },
-      {
-        email: faker.internet.email(),
-        password: hashSync('Password123.', genSaltSync()),
-        username: faker.internet.userName(),
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        phoneNumber: faker.phone.number(),
-        roles: { set: [$Enums.Role.User] },
-      },
-      {
-        email: faker.internet.email(),
-        password: hashSync('Password123.', genSaltSync()),
-        username: faker.internet.userName(),
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        phoneNumber: faker.phone.number(),
-        roles: { set: [$Enums.Role.User] },
-      },
-    ],
+    data: createUsersInput(10),
   });
 
   await prismaClient.post.createMany({
     skipDuplicates: true,
-    data: [
-      {
-        title: faker.lorem.words(),
-        description: faker.lorem.paragraph(),
-        activityTags: {
-          set: [
-            $Enums.ActivityTag.Biking,
-            $Enums.ActivityTag.Camping,
-            $Enums.ActivityTag.Fishing,
-            $Enums.ActivityTag.Hiking,
-          ],
-        },
-        nearbyTags: {
-          set: [
-            $Enums.NearbyTag.Bakery,
-            $Enums.NearbyTag.Groceries,
-            $Enums.NearbyTag.Hospital,
-            $Enums.NearbyTag.Pharmacy,
-          ],
-        },
-        averageRating: faker.number.float({ max: 5, min: 0 }),
-        ratingsCount: faker.number.int({ min: 1, max: 50 }),
-        locationLong: faker.location.longitude({ min: 19, max: 23 }),
-        locationLat: faker.location.latitude({ min: 42, max: 46 }),
-      },
-      {
-        title: faker.lorem.words(),
-        description: faker.lorem.paragraph(),
-        activityTags: {
-          set: [
-            $Enums.ActivityTag.Biking,
-            $Enums.ActivityTag.Camping,
-            $Enums.ActivityTag.Fishing,
-          ],
-        },
-        nearbyTags: {
-          set: [
-            $Enums.NearbyTag.Bakery,
-            $Enums.NearbyTag.Groceries,
-            $Enums.NearbyTag.Pharmacy,
-          ],
-        },
-        averageRating: faker.number.float({ max: 5, min: 0 }),
-        ratingsCount: faker.number.int({ min: 1, max: 50 }),
-        locationLat: faker.location.latitude({ min: 19, max: 23 }),
-        locationLong: faker.location.longitude({ min: 42, max: 46 }),
-      },
-      {
-        title: faker.lorem.words(),
-        description: faker.lorem.paragraph(),
-        activityTags: {
-          set: [
-            $Enums.ActivityTag.Biking,
-            $Enums.ActivityTag.Fishing,
-            $Enums.ActivityTag.Hiking,
-          ],
-        },
-        nearbyTags: {
-          set: [
-            $Enums.NearbyTag.Groceries,
-            $Enums.NearbyTag.Hospital,
-            $Enums.NearbyTag.Pharmacy,
-          ],
-        },
-        averageRating: faker.number.float({ max: 5, min: 0 }),
-        ratingsCount: faker.number.int({ min: 1, max: 50 }),
-        locationLat: faker.location.latitude({ min: 19, max: 23 }),
-        locationLong: faker.location.longitude({ min: 42, max: 46 }),
-      },
-      {
-        title: faker.lorem.words(),
-        description: faker.lorem.paragraph(),
-        activityTags: {
-          set: [
-            $Enums.ActivityTag.Biking,
-            $Enums.ActivityTag.Camping,
-            $Enums.ActivityTag.Hiking,
-          ],
-        },
-        nearbyTags: {
-          set: [$Enums.NearbyTag.Bakery, $Enums.NearbyTag.Groceries],
-        },
-        averageRating: faker.number.float({ max: 5, min: 0 }),
-        ratingsCount: faker.number.int({ min: 1, max: 50 }),
-        locationLat: faker.location.latitude({ min: 19, max: 23 }),
-        locationLong: faker.location.longitude({ min: 42, max: 46 }),
-      },
-      {
-        title: faker.lorem.words(),
-        description: faker.lorem.paragraph(),
-        activityTags: {
-          set: [
-            $Enums.ActivityTag.Biking,
-            $Enums.ActivityTag.Camping,
-            $Enums.ActivityTag.Hiking,
-          ],
-        },
-        nearbyTags: {
-          set: [
-            $Enums.NearbyTag.Bakery,
-            $Enums.NearbyTag.Hospital,
-            $Enums.NearbyTag.Pharmacy,
-          ],
-        },
-        averageRating: faker.number.float({ max: 5, min: 0 }),
-        ratingsCount: faker.number.int({ min: 1, max: 50 }),
-        locationLat: faker.location.latitude({ min: 19, max: 23 }),
-        locationLong: faker.location.longitude({ min: 42, max: 46 }),
-      },
-    ],
+    data: createPostsInput(50),
   });
 }
 

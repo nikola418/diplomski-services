@@ -86,9 +86,6 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
-      mongo-gridfs:
-        specifier: link:@github:khoampd/mongo-gridfs
-        version: link:@github:khoampd/mongo-gridfs
       mongodb:
         specifier: ^6.8.0
         version: 6.8.0(@aws-sdk/credential-providers@3.624.0(@aws-sdk/client-sso-oidc@3.624.0(@aws-sdk/client-sts@3.624.0)))(socks@2.8.3)
