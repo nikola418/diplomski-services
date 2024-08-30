@@ -11,7 +11,7 @@ import { PrismaService } from 'nestjs-prisma';
 @Injectable()
 export class PostsService {
   constructor(private readonly prismaService: PrismaService) {}
-  private static readonly orderBy: Prisma.PostOrderByWithRelationInput = {
+  public static readonly orderBy: Prisma.PostOrderByWithRelationInput = {
     createdAt: 'desc',
   };
   public static readonly include: Prisma.PostInclude = { reviews: true };
@@ -24,16 +24,12 @@ export class PostsService {
   }
 
   public paginate(
-    {
-      where,
-      include = PostsService.include,
-      orderBy = PostsService.orderBy,
-    }: Prisma.PostFindManyArgs,
+    args: Prisma.PostFindManyArgs,
     pagination?: PaginateOptions,
   ): Promise<PaginatedResult<Post>> {
     return this.paginator<Post, Prisma.PostFindManyArgs>(
       this.prismaService.post,
-      { include, where, orderBy },
+      args,
       pagination,
     );
   }

@@ -72,7 +72,7 @@ export class UsersController {
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
     data.profileImageKey = image?.id;
-
+    console.log(data);
     return this.usersService.update({ id }, data);
   }
 

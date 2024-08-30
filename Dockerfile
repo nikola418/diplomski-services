@@ -11,6 +11,7 @@ RUN pnpm fetch
 FROM fetch AS dev
 COPY . ./
 RUN pnpm install -r --offline
+CMD pnpm run prisma:generate && pnpm run start:dev $APP_NAME
 
 
 FROM dev AS prod-build

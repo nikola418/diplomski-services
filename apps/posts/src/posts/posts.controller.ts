@@ -53,7 +53,6 @@ export class PostsController {
     @Query(ValidationPipe)
     filters: QueryPostsDto,
   ): Promise<PaginatedResult<PostEntity>> {
-    console.log(filters.pagination);
     const res = await this.postsService.paginate(
       {
         where: {
@@ -74,7 +73,7 @@ export class PostsController {
           favoritePosts: { where: { userId: user.id } },
         },
       },
-      { page: filters.pagination.page },
+      filters.pagination,
     );
 
     res.data = plainToInstance(PostEntity, res.data);

@@ -1,6 +1,5 @@
 import {
   CanActivate,
-  ContextType,
   ExecutionContext,
   Inject,
   Injectable,
@@ -10,6 +9,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { User } from '@prisma/client';
+import { Request } from 'express';
 import { Observable, catchError, map, tap, throwError } from 'rxjs';
 import { AUTH_SERVICE } from '../constants';
 import { IS_PUBLIC } from '../decorators';
@@ -30,29 +30,21 @@ export class JwtAuthGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    const contextType: ContextType = context.getType();
+    const request = context.switchToHttp().getRequest() satisfies Request;
+    const bearer = request.headers.authorization;
+    const cookie = request.cookies['Authorization'];
 
-    const request =
-      contextType === 'http'
-        ? context.switchToHttp().getRequest()
-        : context.switchToWs().getClient().request;
-
-    const jwt =
-      request.headers['Authentication'] || request.cookies['Authentication'];
-
-    if (!jwt) throw new UnauthorizedException();
+    if (!bearer && !cookie) throw new UnauthorizedException();
 
     return this.authClientProxy
       .send<User>(
-        'authenticate',
-        new RmqRecordBuilder()
-          .setOptions({ headers: { Authentication: jwt } })
-          .setData({ Authentication: jwt })
-          .build(),
+        { cmd: 'authorize' },
+        new RmqRecordBuilder().setData({ bearer, cookie }).build(),
       )
       .pipe(
         tap((user: User) => {
-          return (context.switchToHttp().getRequest().user = user);
+          request.user = user;
+          request.authInfo = bearer || cookie;
         }),
         map(() => true),
         catchError((err) => {

@@ -1,47 +1,18 @@
-name: diplomski
+x-base-microservice-dev: &base-microservice-dev
+  build:
+    target: dev
+  volumes:
+    - .:/app
+    - /app/node_modules
 
 services:
   auth:
-    image: auth-dev
-    build:
-      target: dev
-    command: sh -c "pnpm run prisma:generate && pnpm run start:dev auth"
-    volumes:
-      - .:/app
-      - /app/node_modules
-
+    <<: *base-microservice-dev
   users:
-    image: users-dev
-    build:
-      target: dev
-    command: sh -c "pnpm run prisma:generate && pnpm run start:dev users"
-    volumes:
-      - .:/app
-      - /app/node_modules
-
+    <<: *base-microservice-dev
   posts:
-    image: posts-dev
-    build:
-      target: dev
-    command: sh -c "pnpm run prisma:generate && pnpm run start:dev posts"
-    volumes:
-      - .:/app
-      - /app/node_modules
-
+    <<: *base-microservice-dev
   files:
-    image: files-dev
-    build:
-      target: dev
-    command: sh -c "pnpm run prisma:generate && pnpm run start:dev files"
-    volumes:
-      - .:/app
-      - /app/node_modules
-
+    <<: *base-microservice-dev
   chats:
-    image: chats-dev
-    build:
-      target: dev
-    command: sh -c "pnpm run prisma:generate && pnpm run start:dev chats"
-    volumes:
-      - .:/app
-      - /app/node_modules
+    <<: *base-microservice-dev

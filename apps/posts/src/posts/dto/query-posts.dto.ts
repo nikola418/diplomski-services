@@ -55,12 +55,12 @@ export class QueryPostsDto {
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => PaginationDto)
-  pagination: PaginationDto = new PaginationDto();
+  @Type(() => CoordinatesDto)
+  range?: CoordinatesDto;
 
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => CoordinatesDto)
-  range?: CoordinatesDto;
+  @Type(() => PaginationDto)
+  pagination?: PaginationDto = new PaginationDto();
 }

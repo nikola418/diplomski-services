@@ -1,5 +1,19 @@
 name: diplomski
 
+x-base-microservice: &base-microservice
+  build:
+    context: .
+    dockerfile: Dockerfile
+    target: prod
+  ports:
+    - '3000'
+  restart: unless-stopped
+  depends_on:
+    - postgres
+    - rabbitmq
+  env_file:
+    - .local.env
+
 services:
   nginx:
     image: nginx:latest
@@ -10,91 +24,35 @@ services:
       - ./.nginx:/etc/nginx:row
 
   auth:
+    <<: *base-microservice
     build:
       args:
         APP_NAME: auth
-      context: .
-      dockerfile: Dockerfile
-      target: prod
-    ports:
-      - '3000'
-    container_name: auth
-    restart: unless-stopped
-    depends_on:
-      - postgres
-      - rabbitmq
-    env_file:
-      - .local.env
-
   users:
+    <<: *base-microservice
     build:
       args:
         APP_NAME: users
-      context: .
-      dockerfile: Dockerfile
-      target: prod
-    container_name: users
-    restart: unless-stopped
-    depends_on:
-      - postgres
-      - rabbitmq
-    ports:
-      - '3000'
-    env_file:
-      - .local.env
 
   posts:
+    <<: *base-microservice
     build:
       args:
         APP_NAME: posts
-      context: .
-      dockerfile: Dockerfile
-      target: prod
-    container_name: posts
-    restart: unless-stopped
     depends_on:
-      - postgres
       - mongo
-      - rabbitmq
-    ports:
-      - '3000'
-    env_file:
-      - .local.env
 
   files:
+    <<: *base-microservice
     build:
       args:
         APP_NAME: files
-      context: .
-      dockerfile: Dockerfile
-      target: prod
-    container_name: files
-    restart: unless-stopped
-    depends_on:
-      - mongo
-    ports:
-      - '3000'
-    env_file:
-      - .local.env
 
   chats:
+    <<: *base-microservice
     build:
       args:
         APP_NAME: chats
-      context: .
-      dockerfile: Dockerfile
-      target: prod
-    container_name: chats
-    restart: unless-stopped
-    depends_on:
-      - postgres
-      - mongo
-      - redis
-      - rabbitmq
-    ports:
-      - '3000'
-    env_file:
-      - .local.env
 
   rabbitmq:
     image: rabbitmq
@@ -134,7 +92,6 @@ services:
 
   mongo-express:
     image: mongo-express
-    container_name: mongo-express
     restart: unless-stopped
     ports:
       - '28081:8081'

@@ -28,10 +28,10 @@ import {
 import { User } from '@prisma/client';
 import { Cache } from 'cache-manager';
 import { parse } from 'cookie';
-import { IncomingMessage } from 'http';
 import { catchError, firstValueFrom, throwError } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 import { AllExceptionsFilter } from './socket-exception.filter';
+import { IncomingMessage } from 'http';
 
 @UseGuards(JwtAuthGuard)
 @UsePipes(ValidationPipe)
@@ -51,20 +51,16 @@ export class ChatsGateway
   server: Server;
 
   private async getUserFromClientSocket(client: Socket): Promise<User> {
-    const jwt = (
-      client.request as IncomingMessage & { cookies: Record<string, string> }
-    ).cookies?.Authentication;
+    const bearer = client.request.headers.authorization;
+    const cookie = (client.request as any).cookies?.Authorization;
 
-    if (!jwt) throw new WsException(new UnauthorizedException());
+    if (!bearer && !cookie) throw new WsException(new UnauthorizedException());
 
     const user = await firstValueFrom(
       this.authProxy
         .send<User>(
-          'authenticate',
-          new RmqRecordBuilder()
-            .setOptions({ headers: { Authentication: jwt } })
-            .setData({ Authentication: jwt })
-            .build(),
+          { cmd: 'authorize' },
+          new RmqRecordBuilder().setData({ bearer, cookie }).build(),
         )
         .pipe(
           catchError((err) => {
@@ -82,9 +78,9 @@ export class ChatsGateway
 
   afterInit(server: Server) {
     server.engine.on('headers', (headers, req) => {
-      if (!req.headers.cookie) return;
-      const cookies = parse(req.headers.cookie);
-      req.cookies = cookies;
+      if (!req.headers.cookie && !req.headers.authorization) return;
+
+      if (req.headers.cookie) req.cookies = parse(req.headers.cookie);
     });
   }
 
@@ -94,6 +90,7 @@ export class ChatsGateway
 
       await this.cacheManager.set(user?.id, client.id);
     } catch (error) {
+      this.logger.error(error);
       client.disconnect(error);
     }
   }
