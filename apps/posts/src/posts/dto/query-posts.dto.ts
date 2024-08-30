@@ -62,5 +62,5 @@ export class QueryPostsDto {
   @IsObject()
   @ValidateNested()
   @Type(() => PaginationDto)
-  pagination?: PaginationDto = new PaginationDto();
+  pagination?: PaginationDto;
 }

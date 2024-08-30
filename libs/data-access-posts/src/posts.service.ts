@@ -1,11 +1,7 @@
-import {
-  PaginatedResult,
-  PaginateFunction,
-  PaginateOptions,
-  paginator,
-} from '@libs/common';
+import { PaginatedResult, PaginateFunction, paginator } from '@libs/common';
 import { Injectable } from '@nestjs/common';
-import { Post, Prisma } from '@prisma/client';
+import { Post, Prisma, User } from '@prisma/client';
+import { QueryPostsDto } from 'apps/posts/src/posts/dto';
 import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
@@ -24,13 +20,31 @@ export class PostsService {
   }
 
   public paginate(
-    args: Prisma.PostFindManyArgs,
-    pagination?: PaginateOptions,
+    filters: QueryPostsDto,
+    user: User,
   ): Promise<PaginatedResult<Post>> {
     return this.paginator<Post, Prisma.PostFindManyArgs>(
       this.prismaService.post,
-      args,
-      pagination,
+      {
+        where: {
+          activityTags: { hasEvery: filters.activityTags },
+          nearbyTags: { hasEvery: filters.nearbyTags },
+          title: { contains: filters.title, mode: 'insensitive' },
+          locationLat: {
+            gte: filters.range?.lat.lower,
+            lte: filters.range?.lat.upper,
+          },
+          locationLong: {
+            gte: filters.range?.lng.lower,
+            lte: filters.range?.lng.upper,
+          },
+        },
+        include: {
+          ...PostsService.include,
+          favoritePosts: { where: { userId: user.id } },
+        },
+      },
+      filters.pagination,
     );
   }
 

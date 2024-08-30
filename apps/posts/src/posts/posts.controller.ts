@@ -53,28 +53,7 @@ export class PostsController {
     @Query(ValidationPipe)
     filters: QueryPostsDto,
   ): Promise<PaginatedResult<PostEntity>> {
-    const res = await this.postsService.paginate(
-      {
-        where: {
-          activityTags: { hasEvery: filters.activityTags },
-          nearbyTags: { hasEvery: filters.nearbyTags },
-          title: { contains: filters.title, mode: 'insensitive' },
-          locationLat: {
-            gte: filters.range?.lat.lower,
-            lte: filters.range?.lat.upper,
-          },
-          locationLong: {
-            gte: filters.range?.lng.lower,
-            lte: filters.range?.lng.upper,
-          },
-        },
-        include: {
-          ...PostsService.include,
-          favoritePosts: { where: { userId: user.id } },
-        },
-      },
-      filters.pagination,
-    );
+    const res = await this.postsService.paginate(filters, user);
 
     res.data = plainToInstance(PostEntity, res.data);
     return res;

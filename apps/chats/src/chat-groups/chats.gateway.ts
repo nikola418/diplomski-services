@@ -31,7 +31,6 @@ import { parse } from 'cookie';
 import { catchError, firstValueFrom, throwError } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 import { AllExceptionsFilter } from './socket-exception.filter';
-import { IncomingMessage } from 'http';
 
 @UseGuards(JwtAuthGuard)
 @UsePipes(ValidationPipe)
