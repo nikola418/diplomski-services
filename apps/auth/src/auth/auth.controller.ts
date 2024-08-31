@@ -45,7 +45,7 @@ export class AuthController {
   public signIn(
     @Res({ passthrough: true }) res: Response,
     @AuthUser() user: User,
-  ): UserEntity {
+  ): { token: string } {
     const jwtPayload = this.jwtService.sign({
       id: user.id,
     } satisfies JWTPayload);
@@ -59,7 +59,7 @@ export class AuthController {
       // secure: true,
     });
 
-    return user;
+    return { token: jwtPayload };
   }
 
   @Get('profile')
@@ -81,7 +81,7 @@ export class AuthController {
     @Payload() data: { bearer: string; cookie: string },
   ): Promise<User> {
     const { id } = this.jwtService.verify<UserEntity>(
-      data.bearer.substring(7) || data.cookie,
+      data.bearer?.substring(7) || data.cookie,
     );
 
     return this.authService.getUser(id);

@@ -13,6 +13,7 @@ import { Request } from 'express';
 import { Observable, catchError, map, tap, throwError } from 'rxjs';
 import { AUTH_SERVICE } from '../constants';
 import { IS_PUBLIC } from '../decorators';
+import { IncomingMessage } from 'http';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -30,9 +31,21 @@ export class JwtAuthGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    const request = context.switchToHttp().getRequest() satisfies Request;
-    const bearer = request.headers.authorization;
-    const cookie = request.cookies['Authorization'];
+    const contextType = context.getType();
+
+    let bearer: string, cookie: string;
+    let request: any;
+
+    if (contextType === 'http') {
+      request = context.switchToHttp().getRequest() satisfies Request;
+      bearer = request.headers.authorization;
+      cookie = request.cookies['Authorization'];
+    } else if (contextType === 'ws') {
+      request = context.switchToWs().getClient()
+        .request satisfies IncomingMessage;
+      bearer = request.headers.authorization;
+      cookie = request.cookies?.Authorization;
+    }
 
     if (!bearer && !cookie) throw new UnauthorizedException();
 

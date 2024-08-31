@@ -1,10 +1,18 @@
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+
+class ConnectChatGroupDto {
+  @IsString()
+  chatGroupId: string;
+}
 
 export class CreateTripDto {
-  @IsString()
-  name: string;
-
   @IsOptional()
-  @IsDateString()
-  scheduledDateTime?: string;
+  @IsString()
+  name?: string;
+
+  @IsArray()
+  @ValidateNested()
+  @Type(() => ConnectChatGroupDto)
+  chatGroups: ConnectChatGroupDto[];
 }

@@ -1,8 +1,8 @@
 import { PaginatedResult, PaginateFunction, paginator } from '@libs/common';
 import { Injectable } from '@nestjs/common';
 import { Post, Prisma, User } from '@prisma/client';
-import { QueryPostsDto } from 'apps/posts/src/posts/dto';
 import { PrismaService } from 'nestjs-prisma';
+import { QueryPostsDto } from './dto';
 
 @Injectable()
 export class PostsService {

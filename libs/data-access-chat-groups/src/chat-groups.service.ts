@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { ChatGroup, Prisma } from '@prisma/client';
+import { ChatGroup, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { QueryChatGroupsDto } from './dto';
+import { PaginatedResult, PaginateFunction, paginator } from '@libs/common';
 
 @Injectable()
 export class ChatGroupsService {
   constructor(private readonly prismaService: PrismaService) {}
+  private readonly paginator: PaginateFunction = paginator({
+    perPage: 12,
+  });
 
   private static readonly include: Prisma.ChatGroupInclude = {
     chatGroupMembers: { include: { memberUser: true } },
-    post: true,
+    chatGroupTrips: { include: { post: true } },
     chatGroupMessages: {
       include: { senderUser: true },
       take: 1,
@@ -24,6 +29,27 @@ export class ChatGroupsService {
     return this.prismaService.chatGroup.create({
       data,
     });
+  }
+
+  public paginate(
+    filters: QueryChatGroupsDto,
+    user: User,
+  ): Promise<PaginatedResult<ChatGroup>> {
+    return this.paginator<ChatGroup, Prisma.ChatGroupFindManyArgs>(
+      this.prismaService.chatGroup,
+      {
+        where: {
+          name: { contains: filters.name, mode: 'insensitive' },
+          OR: [
+            { chatGroupMembers: { some: { userId: user.id } } },
+            { ownerUserId: user.id },
+          ],
+        },
+        include: ChatGroupsService.include,
+        orderBy: ChatGroupsService.orderBy,
+      },
+      filters.pagination,
+    );
   }
 
   public findAll(where?: Prisma.ChatGroupWhereInput): Promise<ChatGroup[]> {

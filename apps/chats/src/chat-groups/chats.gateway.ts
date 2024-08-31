@@ -118,7 +118,6 @@ export class ChatsGateway
 
     const receiverGroup = await this.cacheManager.get<string>(data.chatGroupId);
     this.server.to(receiverGroup).emit('newMessage', message);
-
     return message;
   }
 }

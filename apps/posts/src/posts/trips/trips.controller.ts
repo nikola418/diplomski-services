@@ -15,37 +15,44 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('trips')
-@Controller(':postId')
+@Controller()
 export class TripsController {
   constructor(private readonly tripsService: TripsService) {}
 
   @Put()
-  create(
-    @Param('chatGroupId') chatGroupId: string,
-    @Param('postId') postId: string,
-    @Body() data: CreateTripDto,
-  ) {
-    return this.tripsService.create({
-      ...data,
-      chatGroup: { connect: { id: chatGroupId } },
-      post: { connect: { id: postId } },
-    });
+  create(@Param('postId') postId: string, @Body() data: CreateTripDto) {
+    return this.tripsService.createMany(
+      data.chatGroups.map((chatGroup) => ({
+        chatGroupId: chatGroup.chatGroupId,
+        postId,
+      })),
+    );
   }
 
   @Get()
   findAll(
-    @Param('chatGroupId') chatGroupId: string,
     @Param('postId') postId: string,
+    @Param('chatGroupId') chatGroupId: string,
   ) {
     return this.tripsService.findOne({
       chatGroupId_postId: { chatGroupId, postId },
     });
   }
 
-  @Patch()
-  update(
-    @Param('chatGroupId') chatGroupId: string,
+  @Get(':chatGroupId')
+  findOne(
     @Param('postId') postId: string,
+    @Param('chatGroupId') chatGroupId: string,
+  ) {
+    return this.tripsService.findOne({
+      chatGroupId_postId: { chatGroupId, postId },
+    });
+  }
+
+  @Patch(':chatGroupId')
+  update(
+    @Param('postId') postId: string,
+    @Param('chatGroupId') chatGroupId: string,
     @Body() data: UpdateTripDto,
   ) {
     return this.tripsService.update(
@@ -54,10 +61,10 @@ export class TripsController {
     );
   }
 
-  @Delete()
+  @Delete(':chatGroupId')
   remove(
-    @Param('chatGroupId') chatGroupId: string,
     @Param('postId') postId: string,
+    @Param('chatGroupId') chatGroupId: string,
   ) {
     return this.tripsService.remove({
       chatGroupId_postId: { chatGroupId, postId },

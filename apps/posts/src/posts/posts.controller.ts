@@ -1,5 +1,5 @@
 import { AuthUser, PaginatedResult } from '@libs/common';
-import { PostsService } from '@libs/data-access-posts';
+import { PostsService, QueryPostsDto } from '@libs/data-access-posts';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -21,7 +21,7 @@ import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
-import { CreatePostDto, QueryPostsDto, UpdatePostDto } from './dto';
+import { CreatePostDto, UpdatePostDto } from './dto';
 import { PostEntity } from './entity';
 
 @ApiTags('posts')

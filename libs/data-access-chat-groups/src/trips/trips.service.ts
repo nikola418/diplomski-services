@@ -14,6 +14,17 @@ export class TripsService {
     return this.prismaService.chatGroupTrip.create({ data });
   }
 
+  public createMany(
+    data:
+      | Prisma.ChatGroupTripCreateManyInput
+      | Prisma.ChatGroupTripCreateManyInput[],
+  ): Promise<ChatGroupTrip[]> {
+    return this.prismaService.chatGroupTrip.createManyAndReturn({
+      data,
+      skipDuplicates: true,
+    });
+  }
+
   public findAll(
     where?: Prisma.ChatGroupTripWhereInput,
   ): Promise<ChatGroupTrip[]> {

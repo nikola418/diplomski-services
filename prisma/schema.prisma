@@ -76,7 +76,6 @@ model Post {
 
   reviews        Review[]
   favoritePosts  FavoritePost[]
-  chatGroups     ChatGroup[]
   chatGroupTrips ChatGroupTrip[]
 
   @@map("posts")
@@ -113,7 +112,6 @@ model Review {
 
 model ChatGroup {
   id            String   @id @default(cuid())
-  postId        String
   ownerUserId   String
   name          String?
   memberUserIds String[] @default([])
@@ -124,7 +122,6 @@ model ChatGroup {
   chatGroupMessages ChatGroupMessage[]
   chatGroupMembers  ChatGroupMember[]
   chatGroupOwner    User               @relation(fields: [ownerUserId], references: [id])
-  post              Post?              @relation(fields: [postId], references: [id])
   chatGroupTrips    ChatGroupTrip[]
 
   @@map("chat_groups")
@@ -162,7 +159,7 @@ model ChatGroupMessage {
 model ChatGroupTrip {
   chatGroupId       String
   postId            String
-  name              String
+  name              String?
   tripStatus        TripStatus @default(InPlanning)
   scheduledDateTime DateTime?
 

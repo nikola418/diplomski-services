@@ -31,7 +31,6 @@ export class ChatGroupMessagesController {
   public findAll(
     @Param('chatGroupId') chatGroupId: string,
   ): Promise<ChatGroupMessage[]> {
-    console.log(chatGroupId);
     return this.chatGroupMessagesService.findAll({ chatGroupId });
   }
 

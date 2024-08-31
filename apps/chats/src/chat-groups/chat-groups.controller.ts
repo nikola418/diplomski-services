@@ -1,7 +1,8 @@
-import { AuthUser } from '@libs/common';
+import { AuthUser, PaginatedResult } from '@libs/common';
 import {
   ChatGroupsService,
   CreateChatGroupDto,
+  QueryChatGroupsDto,
   UpdateChatGroupDto,
 } from '@libs/data-access-chat-groups';
 import {
@@ -12,7 +13,9 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChatGroup, User } from '@prisma/client';
@@ -34,7 +37,7 @@ export class ChatsGroupsController {
   ): Promise<ChatGroup> {
     return this.chatGroupsService.create({
       name: data.name,
-      post: { connect: { id: data.postId } },
+      chatGroupTrips: { create: { postId: data.postId } },
       chatGroupOwner: { connect: { id: user.id } },
       chatGroupMembers: {
         createMany: data.chatGroupMembers && {
@@ -50,13 +53,11 @@ export class ChatsGroupsController {
 
   @Get()
   @UseAbility(Actions.read, ChatGroupEntity)
-  public findAll(@AuthUser() user: User): Promise<ChatGroup[]> {
-    return this.chatGroupsService.findAll({
-      OR: [
-        { chatGroupMembers: { some: { userId: user.id } } },
-        { ownerUserId: user.id },
-      ],
-    });
+  public findAll(
+    @Query(ValidationPipe) queries: QueryChatGroupsDto,
+    @AuthUser() user: User,
+  ): Promise<PaginatedResult<ChatGroup>> {
+    return this.chatGroupsService.paginate(queries, user);
   }
 
   @Get(':groupId')
