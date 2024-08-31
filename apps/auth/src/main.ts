@@ -29,7 +29,12 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
   app.useGlobalFilters(
     new PrismaClientExceptionFilter(httpAdapter, {
       P2000: HttpStatus.BAD_REQUEST,

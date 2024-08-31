@@ -1,4 +1,9 @@
-import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -19,7 +24,19 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      exceptionFactory: (errors) => {
+        const res = errors.map((err) => ({
+          property: err.property,
+          constraints: Object.values(err.constraints),
+        }));
+        return new BadRequestException(res);
+      },
+    }),
+  );
   app.useGlobalFilters(
     new PrismaClientExceptionFilter(httpAdapter, {
       P2000: HttpStatus.BAD_REQUEST,
