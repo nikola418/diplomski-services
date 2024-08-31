@@ -13,9 +13,9 @@ export class PostEntity implements Post {
   description: string;
   averageRating: number;
   ratingsCount: number;
-  @ApiProperty({ enum: $Enums.ActivityTag })
+  @ApiProperty({ enum: $Enums.ActivityTag, isArray: true })
   activityTags: $Enums.ActivityTag[];
-  @ApiProperty({ enum: $Enums.NearbyTag })
+  @ApiProperty({ enum: $Enums.NearbyTag, isArray: true })
   nearbyTags: $Enums.NearbyTag[];
   imageKeys: string[];
   locationLat: number;

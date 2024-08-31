@@ -9,6 +9,8 @@ import { PostsController } from './posts.controller';
 import { CustomPrismaService, PrismaService } from 'nestjs-prisma';
 import { CaslModule } from 'nest-casl';
 import { permissions } from './permissions';
+import { TripsModule } from './trips/trips.module';
+import { RouterModule } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -26,6 +28,10 @@ import { permissions } from './permissions';
     },
     MulterModule.registerAsync({ useClass: GridFsMulterConfigService }),
     CaslModule.forFeature({ permissions }),
+    RouterModule.register([
+      { path: 'posts/:postId/trips', module: TripsModule },
+    ]),
+    TripsModule,
   ],
   controllers: [PostsController],
 })

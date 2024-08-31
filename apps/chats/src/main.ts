@@ -4,31 +4,21 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { cors } from 'utils';
 import { AppModule } from './app.module';
 import { RedisIoAdapter } from './chat-groups/redis-io.adapter';
 
-export const appOptions = {
-  cors: {
-    credentials: true,
-    origin: [
-      'http://localhost:8100',
-      'http://192.168.1.108:8100',
-      'http://172.18.0.1:8100',
-    ],
-  },
-};
-
-const middlewares = [cookieParser()];
-
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, appOptions);
+  const app = await NestFactory.create(AppModule, {
+    cors,
+  });
   const configService = app.get(ConfigService);
   const httpAdapter = app.getHttpAdapter();
 
   app.enableVersioning();
   app.enableShutdownHooks();
 
-  app.use(middlewares);
+  app.use(cookieParser());
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(
@@ -40,8 +30,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Chat Groups example')
-    .setDescription('The chat groups API description')
+    .setTitle('Chats example')
+    .setDescription('The Chats API description')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);

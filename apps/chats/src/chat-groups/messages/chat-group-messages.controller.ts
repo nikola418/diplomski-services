@@ -8,7 +8,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ChatGroupMessage, User } from '@prisma/client';
 
 @ApiTags('messages')
-@Controller('messages')
+@Controller()
 export class ChatGroupMessagesController {
   constructor(
     private readonly chatGroupMessagesService: ChatGroupMessagesService,
@@ -31,7 +31,6 @@ export class ChatGroupMessagesController {
   public findAll(
     @Param('chatGroupId') chatGroupId: string,
   ): Promise<ChatGroupMessage[]> {
-    console.log(chatGroupId);
     return this.chatGroupMessagesService.findAll({ chatGroupId });
   }
 

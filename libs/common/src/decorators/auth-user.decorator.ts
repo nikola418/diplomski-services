@@ -3,7 +3,14 @@ import { User } from '@prisma/client';
 
 export const AuthUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): User => {
-    const { user } = ctx.switchToHttp().getRequest();
+    const contextType = ctx.getType();
+
+    let user: User;
+
+    if (contextType === 'http') user = ctx.switchToHttp().getRequest().user;
+    else if (contextType === 'ws')
+      user = ctx.switchToWs().getClient().request.user;
+
     return user;
   },
 );

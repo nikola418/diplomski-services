@@ -1,5 +1,5 @@
-import { AuthUser } from '@libs/common';
-import { PostsService } from '@libs/data-access-posts';
+import { AuthUser, PaginatedResult } from '@libs/common';
+import { PostsService, QueryPostsDto } from '@libs/data-access-posts';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -10,9 +10,11 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -46,17 +48,15 @@ export class PostsController {
   @Get()
   @UseAbility(Actions.read, PostEntity)
   @UseInterceptors(ClassSerializerInterceptor)
-  public async findAll(@AuthUser() user: User): Promise<PostEntity[]> {
-    return plainToInstance(
-      PostEntity,
-      await this.postsService.findAll(
-        {},
-        {
-          ...PostsService.include,
-          favoritePosts: { where: { userId: user.id } },
-        },
-      ),
-    );
+  public async findAll(
+    @AuthUser() user: User,
+    @Query(ValidationPipe)
+    filters: QueryPostsDto,
+  ): Promise<PaginatedResult<PostEntity>> {
+    const res = await this.postsService.paginate(filters, user);
+
+    res.data = plainToInstance(PostEntity, res.data);
+    return res;
   }
 
   @Get(':id')
@@ -84,7 +84,10 @@ export class PostsController {
   public update(
     @Param('id') id: string,
     @Body() data: UpdatePostDto,
+    @UploadedFiles() images?: Express.Multer.File[],
   ): Promise<PostEntity> {
+    data.imageKeys = images?.map((image) => image.id);
+
     return this.postsService.update({ id }, data);
   }
 

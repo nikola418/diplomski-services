@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Db, GridFSBucket, GridFSBucketReadStream, GridFSFile } from 'mongodb';
 import { Connection, Types } from 'mongoose';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class FilesService {
   private bucket: GridFSBucket;
   constructor(

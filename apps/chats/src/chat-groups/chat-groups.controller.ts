@@ -1,7 +1,8 @@
-import { AuthUser } from '@libs/common';
+import { AuthUser, PaginatedResult } from '@libs/common';
 import {
   ChatGroupsService,
   CreateChatGroupDto,
+  QueryChatGroupsDto,
   UpdateChatGroupDto,
 } from '@libs/data-access-chat-groups';
 import {
@@ -12,7 +13,9 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChatGroup, User } from '@prisma/client';
@@ -33,27 +36,32 @@ export class ChatsGroupsController {
     @AuthUser() user: User,
   ): Promise<ChatGroup> {
     return this.chatGroupsService.create({
-      post: { connect: { id: data.postId } },
+      name: data.name,
+      chatGroupTrips: { create: { postId: data.postId } },
       chatGroupOwner: { connect: { id: user.id } },
       chatGroupMembers: {
-        createMany: { skipDuplicates: true, data: data.chatGroupMembers },
+        createMany: data.chatGroupMembers && {
+          skipDuplicates: true,
+          data: data.chatGroupMembers,
+        },
       },
-      memberUserIds: {
-        set: [...data.chatGroupMembers.map((member) => member.userId), user.id],
+      memberUserIds: data.chatGroupMembers && {
+        set: data.chatGroupMembers?.map((member) => member.userId),
       },
     });
   }
 
   @Get()
-  @UseAbility(Actions.create, ChatGroupEntity)
-  public findAll(@AuthUser() user: User): Promise<ChatGroup[]> {
-    return this.chatGroupsService.findAll({
-      chatGroupMembers: { some: { userId: user.id } },
-    });
+  @UseAbility(Actions.read, ChatGroupEntity)
+  public findAll(
+    @Query(ValidationPipe) queries: QueryChatGroupsDto,
+    @AuthUser() user: User,
+  ): Promise<PaginatedResult<ChatGroup>> {
+    return this.chatGroupsService.paginate(queries, user);
   }
 
   @Get(':groupId')
-  @UseAbility(Actions.create, ChatGroupEntity, ChatGroupHook)
+  @UseAbility(Actions.read, ChatGroupEntity, ChatGroupHook)
   public findOne(@Param('groupId') id: string): Promise<ChatGroup> {
     return this.chatGroupsService.findOne({
       id,
@@ -61,7 +69,7 @@ export class ChatsGroupsController {
   }
 
   @Patch(':groupId')
-  @UseAbility(Actions.delete, ChatGroupEntity, ChatGroupHook)
+  @UseAbility(Actions.update, ChatGroupEntity, ChatGroupHook)
   public update(
     @Param('groupId') id: string,
     @Body() data: UpdateChatGroupDto,

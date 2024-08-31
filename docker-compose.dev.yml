@@ -1,0 +1,18 @@
+x-base-microservice-dev: &base-microservice-dev
+  build:
+    target: dev
+  volumes:
+    - .:/app
+    - /app/node_modules
+
+services:
+  auth:
+    <<: *base-microservice-dev
+  users:
+    <<: *base-microservice-dev
+  posts:
+    <<: *base-microservice-dev
+  files:
+    <<: *base-microservice-dev
+  chats:
+    <<: *base-microservice-dev

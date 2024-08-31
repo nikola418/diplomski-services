@@ -1,6 +1,7 @@
-import { IsPublic } from '@libs/common';
+import { AuthUser, IsPublic, PaginatedResult } from '@libs/common';
 import {
   CreateUserDto,
+  QueryUsersDto,
   UpdateUserDto,
   UserEntity,
   UsersService,
@@ -17,9 +18,12 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { $Enums, User } from '@prisma/client';
+import { genSaltSync, hashSync } from 'bcrypt';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { UserHook } from './user.hook';
 
@@ -40,14 +44,21 @@ export class UsersController {
   ): Promise<UserEntity> {
     data.profileImageKey = image?.id;
 
-    return this.usersService.create({ ...data });
+    return this.usersService.create({
+      ...data,
+      password: hashSync(data.password, genSaltSync()),
+      roles: { set: [$Enums.Role.User] },
+    });
   }
 
+  @ApiQuery({ name: 'username', type: String, required: false })
   @Get()
   @UseAbility(Actions.read, UserEntity)
-  public findAll(@Query('username') username: string): Promise<UserEntity[]> {
-    console.log(username);
-    return this.usersService.findAll({ username: { contains: username } });
+  public findAll(
+    @AuthUser() user: User,
+    @Query(ValidationPipe) queries?: QueryUsersDto,
+  ): Promise<PaginatedResult<User>> {
+    return this.usersService.paginate(queries, user);
   }
 
   @Get(':userId')
@@ -66,7 +77,6 @@ export class UsersController {
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
     data.profileImageKey = image?.id;
-
     return this.usersService.update({ id }, data);
   }
 

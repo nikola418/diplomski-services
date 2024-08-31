@@ -1,11 +1,11 @@
 import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
-import { prismaExtension } from '@libs/data-access-posts';
+import { extendPrismaClient } from '@libs/data-access-posts';
 import { UserEntity } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { $Enums } from '@prisma/client';
+import { $Enums, PrismaClient } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
 import { CustomPrismaModule } from 'nestjs-prisma';
 import { PostsModule } from './posts/posts.module';
@@ -16,7 +16,7 @@ import { PostsModule } from './posts/posts.module';
     CustomPrismaModule.forRoot({
       isGlobal: true,
       name: 'CustomPrisma',
-      client: prismaExtension,
+      client: extendPrismaClient(new PrismaClient()),
     }),
     CaslModule.forRoot({
       superuserRole: $Enums.Role.Admin,

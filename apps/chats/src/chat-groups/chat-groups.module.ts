@@ -1,14 +1,14 @@
-import { Module } from '@nestjs/common';
-import { DataAccessChatGroupsModule } from 'libs/data-access-chat-groups/src';
-import { ChatGroupMessagesModule } from './chat-group-messages/chat-group-messages.module';
-import { ChatsGateway } from './chats.gateway';
-import { ChatsGroupsController } from './chat-groups.controller';
 import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
+import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { CaslModule } from 'nest-casl';
-import { permissions } from './permissions';
 import { APP_GUARD, RouterModule } from '@nestjs/core';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { DataAccessChatGroupsModule } from 'libs/data-access-chat-groups/src';
+import { CaslModule } from 'nest-casl';
+import { ChatsGroupsController } from './chat-groups.controller';
+import { ChatsGateway } from './chats.gateway';
+import { ChatGroupMessagesModule } from './messages/chat-group-messages.module';
+import { permissions } from './permissions';
 
 @Module({
   imports: [
@@ -28,7 +28,15 @@ import { APP_GUARD, RouterModule } from '@nestjs/core';
     { module: DataAccessChatGroupsModule, global: true },
     CaslModule.forFeature({ permissions }),
     RouterModule.register([
-      { path: 'chat-groups/:chatGroupId', module: ChatGroupMessagesModule },
+      {
+        path: 'chat-groups/:chatGroupId',
+        children: [
+          {
+            path: 'messages',
+            module: ChatGroupMessagesModule,
+          },
+        ],
+      },
     ]),
     ChatGroupMessagesModule,
   ],
