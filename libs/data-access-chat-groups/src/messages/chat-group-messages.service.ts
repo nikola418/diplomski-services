@@ -6,7 +6,7 @@ import { PrismaService } from 'nestjs-prisma';
 export class ChatGroupMessagesService {
   constructor(private readonly prismaService: PrismaService) {}
   private static readonly include: Prisma.ChatGroupMessageInclude = {
-    senderUser: true,
+    sender: true,
   };
   private static readonly orderBy: Prisma.ChatGroupMessageOrderByWithRelationInput =
     { createdAt: 'asc' };

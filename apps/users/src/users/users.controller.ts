@@ -37,12 +37,12 @@ export class UsersController {
   @ApiConsumes('multipart/form-data')
   @Post()
   @UseAbility(Actions.create, UserEntity)
-  @UseInterceptors(FileInterceptor('profileImage'))
+  @UseInterceptors(FileInterceptor('avatarImage'))
   public create(
     @Body() data: CreateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    data.profileImageKey = image?.id;
+    data.avatarImageKey = image?.id;
 
     return this.usersService.create({
       ...data,
@@ -70,13 +70,14 @@ export class UsersController {
   @UseAbility(Actions.update, UserEntity, UserHook)
   @ApiConsumes('multipart/form-data')
   @Patch(':userId')
-  @UseInterceptors(FileInterceptor('profileImage'))
+  @UseInterceptors(FileInterceptor('avatarImage'))
   public update(
     @Param('userId') id: string,
     @Body() data: UpdateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    data.profileImageKey = image?.id;
+    data.avatarImageKey = image?.id;
+
     return this.usersService.update({ id }, data);
   }
 

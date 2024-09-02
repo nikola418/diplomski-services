@@ -9,8 +9,8 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
-import { cors } from 'utils';
 import { AppModule } from './app.module';
+import { cors } from '@libs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

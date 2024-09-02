@@ -13,9 +13,9 @@ export class ChatGroupsService {
 
   private static readonly include: Prisma.ChatGroupInclude = {
     chatGroupMembers: { include: { memberUser: true } },
-    chatGroupTrips: { include: { post: true } },
+    trips: { include: { location: true } },
     chatGroupMessages: {
-      include: { senderUser: true },
+      include: { sender: true },
       take: 1,
       orderBy: { updatedAt: 'desc' },
     },

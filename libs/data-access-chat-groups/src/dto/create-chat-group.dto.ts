@@ -1,5 +1,12 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsMongoId,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 class CreateChatGroupMemberDto {
   @IsString()
@@ -11,12 +18,18 @@ export class CreateChatGroupDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateChatGroupMemberDto)
-  chatGroupMembers?: CreateChatGroupMemberDto[];
+  createChatGroupMembers: CreateChatGroupMemberDto[] = [];
 
   @IsString()
-  postId: string;
+  name: string;
 
   @IsOptional()
-  @IsString()
-  name?: string;
+  @IsMongoId()
+  @ApiProperty({
+    required: false,
+    name: 'avatarImage',
+    type: 'string',
+    format: 'binary',
+  })
+  avatarImageKey?: string;
 }

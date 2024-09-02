@@ -37,9 +37,9 @@ export class CreateUserDto {
   @IsMongoId()
   @ApiProperty({
     required: false,
-    name: 'profileImage',
+    name: 'avatarImage',
     type: 'string',
     format: 'binary',
   })
-  profileImageKey?: string;
+  avatarImageKey?: string;
 }

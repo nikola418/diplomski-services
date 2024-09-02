@@ -9,6 +9,8 @@ import { ChatsGroupsController } from './chat-groups.controller';
 import { ChatsGateway } from './chats.gateway';
 import { ChatGroupMessagesModule } from './messages/chat-group-messages.module';
 import { permissions } from './permissions';
+import { MulterModule } from '@nestjs/platform-express';
+import { GridFsMulterConfigService } from '@libs/data-access-files';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { permissions } from './permissions';
     ]),
     { module: DataAccessChatGroupsModule, global: true },
     CaslModule.forFeature({ permissions }),
+    MulterModule.registerAsync({ useClass: GridFsMulterConfigService }),
     RouterModule.register([
       {
         path: 'chat-groups/:chatGroupId',

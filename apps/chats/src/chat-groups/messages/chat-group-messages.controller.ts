@@ -2,7 +2,7 @@ import { AuthUser } from '@libs/common';
 import {
   ChatGroupMessagesService,
   CreateChatGroupMessageDto,
-} from '@libs/data-access-chat-groups';
+} from 'libs/data-access-chat-groups/src';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChatGroupMessage, User } from '@prisma/client';
@@ -23,7 +23,7 @@ export class ChatGroupMessagesController {
     return this.chatGroupMessagesService.create({
       ...data,
       chatGroup: { connect: { id: chatGroupId } },
-      senderUser: { connect: { id: user.id } },
+      sender: { connect: { id: user.id } },
     });
   }
 

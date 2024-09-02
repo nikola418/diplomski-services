@@ -22,12 +22,14 @@
       "@libs/common/*": ["libs/common/src/*"],
       "@libs/data-access-users": ["libs/data-access-users/src"],
       "@libs/data-access-users/*": ["libs/data-access-users/src/*"],
-      "@libs/data-access-posts": ["libs/data-access-posts/src"],
-      "@libs/data-access-posts/*": ["libs/data-access-posts/src/*"],
+      "@libs/data-access-locations": ["libs/data-access-locations/src"],
+      "@libs/data-access-locations/*": ["libs/data-access-locations/src/*"],
       "@libs/data-access-files": ["libs/data-access-files/src"],
       "@libs/data-access-files/*": ["libs/data-access-files/src/*"],
       "@libs/data-access-chat-groups": ["libs/data-access-chat-groups/src"],
-      "@libs/data-access-chat-groups/*": ["libs/data-access-chat-groups/src/*"]
+      "@libs/data-access-chat-groups/*": ["libs/data-access-chat-groups/src/*"],
+      "@libs/data-access-trips": ["libs/data-access-trips/src"],
+      "@libs/data-access-trips/*": ["libs/data-access-trips/src/*"]
     }
   }
 }

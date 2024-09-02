@@ -1,4 +1,4 @@
-import { ChatGroupsService } from '@libs/data-access-chat-groups';
+import { ChatGroupsService } from 'libs/data-access-chat-groups/src';
 import { Injectable } from '@nestjs/common';
 import { Request, SubjectBeforeFilterHook } from 'nest-casl';
 import { ChatGroupEntity } from './entity';

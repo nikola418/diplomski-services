@@ -10,7 +10,9 @@ services:
     <<: *base-microservice-dev
   users:
     <<: *base-microservice-dev
-  posts:
+  locations:
+    <<: *base-microservice-dev
+  trips:
     <<: *base-microservice-dev
   files:
     <<: *base-microservice-dev

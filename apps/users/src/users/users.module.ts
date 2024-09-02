@@ -7,7 +7,7 @@ import { RouterModule } from '@nestjs/core';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MulterModule } from '@nestjs/platform-express';
 import { CaslModule } from 'nest-casl';
-import { FavoritePostsModule } from './favorite-posts/favorite-posts.module';
+import { FavoriteLocationsModule } from './favorite-locations/favorite-location.module';
 import { permissions } from './permissions';
 import { UsersController } from './users.controller';
 
@@ -29,9 +29,9 @@ import { UsersController } from './users.controller';
     DataAccessUsersModule,
     MulterModule.registerAsync({ useClass: GridFsMulterConfigService }),
     CaslModule.forFeature({ permissions }),
-    FavoritePostsModule,
+    FavoriteLocationsModule,
     RouterModule.register([
-      { path: '/users/:userId', module: FavoritePostsModule },
+      { path: '/users/:userId', module: FavoriteLocationsModule },
     ]),
   ],
   controllers: [UsersController],

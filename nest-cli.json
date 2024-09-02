@@ -38,13 +38,13 @@
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
     },
-    "posts": {
+    "locations": {
       "type": "application",
-      "root": "apps/posts",
+      "root": "apps/locations",
       "entryFile": "main",
-      "sourceRoot": "apps/posts/src",
+      "sourceRoot": "apps/locations/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/posts/tsconfig.app.json"
+        "tsConfigPath": "apps/locations/tsconfig.app.json"
       }
     },
     "data-access-users": {
@@ -56,13 +56,13 @@
         "tsConfigPath": "libs/data-access-users/tsconfig.lib.json"
       }
     },
-    "data-access-posts": {
+    "data-access-locations": {
       "type": "library",
-      "root": "libs/data-access-posts",
+      "root": "libs/data-access-locations",
       "entryFile": "index",
-      "sourceRoot": "libs/data-access-posts/src",
+      "sourceRoot": "libs/data-access-locations/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/data-access-posts/tsconfig.lib.json"
+        "tsConfigPath": "libs/data-access-locations/tsconfig.lib.json"
       }
     },
     "files": {
@@ -117,6 +117,24 @@
       "sourceRoot": "libs/data-access-chats/src",
       "compilerOptions": {
         "tsConfigPath": "libs/data-access-chats/tsconfig.lib.json"
+      }
+    },
+    "trips": {
+      "type": "application",
+      "root": "apps/trips",
+      "entryFile": "main",
+      "sourceRoot": "apps/trips/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/trips/tsconfig.app.json"
+      }
+    },
+    "data-access-trips": {
+      "type": "library",
+      "root": "libs/data-access-trips",
+      "entryFile": "index",
+      "sourceRoot": "libs/data-access-trips/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/data-access-trips/tsconfig.lib.json"
       }
     }
   }

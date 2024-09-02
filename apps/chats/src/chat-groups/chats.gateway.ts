@@ -2,7 +2,7 @@ import { AUTH_SERVICE, AuthUser, JwtAuthGuard } from '@libs/common';
 import {
   ChatGroupMessagesService,
   CreateChatGroupMessageDto,
-} from '@libs/data-access-chat-groups';
+} from 'libs/data-access-chat-groups/src';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   Inject,
@@ -112,7 +112,7 @@ export class ChatsGateway
   ) {
     const message = await this.chatGroupMessagesService.create({
       chatGroup: { connect: { id: data.chatGroupId } },
-      senderUser: { connect: { id: user.id } },
+      sender: { connect: { id: user.id } },
       text: data.text,
     });
 

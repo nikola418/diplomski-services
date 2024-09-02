@@ -27,7 +27,9 @@ const createUsersInput = (len: number): Prisma.UserCreateManyInput[] => {
   });
 };
 
-const createPostsInput = (len: number): Prisma.PostCreateManyInput[] => {
+const createLocationsInput = (
+  len: number,
+): Prisma.LocationCreateManyInput[] => {
   const titles = faker.helpers.uniqueArray(faker.lorem.words, len);
 
   return [...new Array(len)].map((_, index) => {
@@ -81,9 +83,9 @@ async function seed() {
     data: createUsersInput(10),
   });
 
-  await prismaClient.post.createMany({
+  await prismaClient.location.createMany({
     skipDuplicates: true,
-    data: createPostsInput(50),
+    data: createLocationsInput(50),
   });
 }
 
