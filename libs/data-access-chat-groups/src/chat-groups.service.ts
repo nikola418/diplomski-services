@@ -25,9 +25,13 @@ export class ChatGroupsService {
     updatedAt: 'desc',
   };
 
-  public create(data: Prisma.ChatGroupCreateInput): Promise<ChatGroup> {
+  public create(
+    data: Prisma.ChatGroupCreateInput,
+    include = ChatGroupsService.include,
+  ): Promise<ChatGroup> {
     return this.prismaService.chatGroup.create({
       data,
+      include,
     });
   }
 

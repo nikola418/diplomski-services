@@ -29,13 +29,11 @@ export class CreateLocationDto {
   @IsNumber()
   locationLong: number;
 
-  @ApiProperty({ enum: $Enums.ActivityTag, isArray: true, required: false })
   @IsOptional()
   @IsArray()
   @IsEnum($Enums.ActivityTag, { each: true })
   activityTags?: $Enums.ActivityTag[];
 
-  @ApiProperty({ enum: $Enums.NearbyTag, isArray: true, required: false })
   @IsOptional()
   @IsArray()
   @IsEnum($Enums.NearbyTag, { each: true })

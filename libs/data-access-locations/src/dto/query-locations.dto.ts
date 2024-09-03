@@ -14,15 +14,17 @@ import {
 } from 'class-validator';
 
 class RangeDto {
+  @IsOptional()
   @Max(90)
   @Min(-90)
   @IsNumber()
-  upper: number;
+  upper?: number;
 
+  @IsOptional()
   @Max(90)
   @Min(-90)
   @IsNumber()
-  lower: number;
+  lower?: number;
 }
 
 class CoordinatesDto {

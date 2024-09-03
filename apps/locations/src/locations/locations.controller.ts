@@ -1,5 +1,10 @@
 import { AuthUser, PaginatedResult } from '@libs/common';
 import {
+  LocationEntity,
+  LocationsService,
+  QueryLocationsDto,
+} from '@libs/data-access-locations';
+import {
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -19,19 +24,18 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
-import {
-  LocationsService,
-  QueryLocationsDto,
-} from 'libs/data-access-locations/src';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { CreateLocationDto, UpdateLocationDto } from './dto';
-import { LocationEntity } from '../../../../libs/data-access-locations/src/entity';
+import { FilesService } from '@libs/data-access-files';
 
 @ApiTags('locations')
 @UseGuards(AccessGuard)
 @Controller('locations')
 export class LocationsController {
-  constructor(private readonly locationsService: LocationsService) {}
+  constructor(
+    private readonly locationsService: LocationsService,
+    private readonly filesService: FilesService,
+  ) {}
 
   private logger = new Logger(LocationsController.name);
 
@@ -43,7 +47,9 @@ export class LocationsController {
     @Body() data: CreateLocationDto,
     @UploadedFiles() images?: Express.Multer.File[],
   ): Promise<LocationEntity> {
-    data.imageKeys = images?.map((image) => image.id);
+    const ids = await this.filesService.uploadMany(images);
+
+    data.imageKeys = ids.map((id) => id.toString());
 
     return this.locationsService.create(data);
   }

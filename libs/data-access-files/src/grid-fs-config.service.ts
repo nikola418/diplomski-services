@@ -13,6 +13,9 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
   createMulterOptions(): MulterModuleOptions {
     return {
       storage: new GridFsStorage({
+        file: (req, file) => {
+          console.log(file);
+        },
         url: this.configService.getOrThrow('MONGO_URL'),
       }),
     };

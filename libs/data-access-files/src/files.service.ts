@@ -1,7 +1,14 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
-import { Db, GridFSBucket, GridFSBucketReadStream, GridFSFile } from 'mongodb';
-import { Connection, Types } from 'mongoose';
+import {
+  Db,
+  GridFSBucket,
+  GridFSBucketReadStream,
+  GridFSFile,
+  ObjectId,
+} from 'mongodb';
+import { Connection } from 'mongoose';
+import { Readable } from 'stream';
 
 @Injectable({ scope: Scope.REQUEST })
 export class FilesService {
@@ -15,12 +22,33 @@ export class FilesService {
     });
   }
 
+  public async uploadOne(file: Express.Multer.File): Promise<ObjectId> {
+    return Readable.from(file.buffer).pipe(
+      this.bucket.openUploadStream(file.filename),
+    ).id;
+  }
+
+  public async uploadMany(files: Express.Multer.File[]): Promise<ObjectId[]> {
+    const res = [];
+    for await (const file of files) {
+      console.log(file);
+      res.push(
+        Readable.from(file.buffer).pipe(
+          this.bucket.openUploadStream(file.filename, {
+            metadata: { type: file.mimetype },
+          }),
+        ).id,
+      );
+    }
+    return res;
+  }
+
   public async findOne(
     id: string,
   ): Promise<[GridFSFile, GridFSBucketReadStream]> {
     try {
       const object = await this.bucket
-        .find({ _id: new Types.ObjectId(id) })
+        .find({ _id: new ObjectId(id) })
         .tryNext();
 
       const fileStream = this.bucket.openDownloadStream(object._id, {});

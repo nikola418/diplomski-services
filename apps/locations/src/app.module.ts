@@ -9,6 +9,7 @@ import { $Enums, PrismaClient } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
 import { CustomPrismaModule } from 'nestjs-prisma';
 import { LocationsModule } from './locations/locations.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -35,6 +36,12 @@ import { LocationsModule } from './locations/locations.module';
         inject: [ConfigService],
       },
     ]),
+    MongooseModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.getOrThrow<string>('MONGO_URL'),
+      }),
+      inject: [ConfigService],
+    }),
     LocationsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],

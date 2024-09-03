@@ -1,4 +1,7 @@
-import { GridFsMulterConfigService } from '@libs/data-access-files';
+import {
+  DataAccessFilesModule,
+  GridFsMulterConfigService,
+} from '@libs/data-access-files';
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import {
@@ -9,6 +12,7 @@ import { CaslModule } from 'nest-casl';
 import { CustomPrismaService, PrismaService } from 'nestjs-prisma';
 import { LocationsController } from './locations.controller';
 import { permissions } from './permissions';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -24,7 +28,9 @@ import { permissions } from './permissions';
       ],
       module: DataAccessLocationsModule,
     },
-    MulterModule.registerAsync({ useClass: GridFsMulterConfigService }),
+    MongooseModule.forFeature(),
+    DataAccessFilesModule,
+    MulterModule.register(),
     CaslModule.forFeature({ permissions }),
   ],
   controllers: [LocationsController],
