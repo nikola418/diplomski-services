@@ -1,4 +1,4 @@
-import { FavoriteLocationEntity } from 'libs/data-access-locations/src';
+import { FavoriteLocationEntity } from '@libs/data-access-locations';
 import { ApiProperty } from '@nestjs/swagger';
 import { $Enums, Location } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';

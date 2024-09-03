@@ -25,7 +25,7 @@ import {
 } from 'libs/data-access-locations/src';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { CreateLocationDto, UpdateLocationDto } from './dto';
-import { LocationEntity } from './entity';
+import { LocationEntity } from '../../../../libs/data-access-locations/src/entity';
 
 @ApiTags('locations')
 @UseGuards(AccessGuard)

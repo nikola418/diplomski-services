@@ -1,7 +1,7 @@
 import { UserEntity } from '@libs/data-access-users';
 import { Actions, InferSubjects, Permissions } from 'nest-casl';
-import { ChatGroupMessageEntity } from './entity';
 import { $Enums } from '@prisma/client';
+import { ChatGroupMessageEntity } from '@libs/data-access-chat-groups';
 
 type Subjects = InferSubjects<ChatGroupMessageEntity>;
 

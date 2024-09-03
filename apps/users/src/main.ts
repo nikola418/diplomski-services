@@ -1,16 +1,10 @@
-import {
-  BadRequestException,
-  HttpStatus,
-  Logger,
-  ValidationPipe,
-} from '@nestjs/common';
+import { cors, PrismaExceptionFilter } from '@libs/common';
+import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
-import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { AppModule } from './app.module';
-import { cors } from '@libs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -29,21 +23,15 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       exceptionFactory: (errors) => {
-        const res = errors.map((err) => ({
-          property: err.property,
-          constraints: Object.values(err.constraints),
-        }));
+        const res = {};
+        errors.forEach((err) => {
+          res[err.property] = Object.values(err.constraints);
+        });
         return new BadRequestException(res);
       },
     }),
   );
-  app.useGlobalFilters(
-    new PrismaClientExceptionFilter(httpAdapter, {
-      P2000: HttpStatus.BAD_REQUEST,
-      P2002: HttpStatus.CONFLICT,
-      P2025: HttpStatus.NOT_FOUND,
-    }),
-  );
+  app.useGlobalFilters(new PrismaExceptionFilter(httpAdapter));
 
   const config = new DocumentBuilder()
     .setTitle('Users example')

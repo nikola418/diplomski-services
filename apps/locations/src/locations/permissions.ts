@@ -1,7 +1,7 @@
 import { UserEntity } from '@libs/data-access-users';
 import { $Enums } from '@prisma/client';
 import { Actions, InferSubjects, Permissions } from 'nest-casl';
-import { LocationEntity } from './entity';
+import { LocationEntity } from '../../../../libs/data-access-locations/src/entity';
 
 type Subjects = InferSubjects<Location>;
 

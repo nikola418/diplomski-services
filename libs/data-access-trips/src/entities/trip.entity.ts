@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { $Enums, Trip } from '@prisma/client';
-import { LocationEntity } from '../../../../locations/src/locations/entity';
-import { ChatGroupEntity } from 'apps/chats/src/chat-groups/entity';
+import { ChatGroupEntity } from '@libs/data-access-chat-groups';
+import { LocationEntity } from '@libs/data-access-locations';
 
 export class TripEntity implements Trip {
   constructor(partial: Partial<TripEntity>) {
@@ -10,6 +10,7 @@ export class TripEntity implements Trip {
   id: string;
   chatGroupId: string;
   locationId: string;
+  creatorUserId: string;
   @ApiProperty({ enum: $Enums.TripStatus })
   tripStatus: $Enums.TripStatus;
   name: string;

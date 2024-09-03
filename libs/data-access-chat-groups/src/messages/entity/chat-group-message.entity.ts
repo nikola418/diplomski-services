@@ -8,6 +8,8 @@ export class ChatGroupMessageEntity implements ChatGroupMessage {
   id: string;
   chatGroupId: string;
   senderUserId: string;
+  repliedToMessageId: string;
+  tripId: string;
   text: string;
   createdAt: Date;
   updatedAt: Date;

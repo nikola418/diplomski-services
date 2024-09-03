@@ -1,6 +1,7 @@
+import { TripEntity } from '@libs/data-access-trips';
 import { ChatGroup } from '@prisma/client';
-import { ChatGroupMessageEntity } from '../messages/entity';
-import { TripEntity } from '../../../../trips/src/trips/entities';
+import { ChatGroupMessageEntity } from '../messages';
+import { ChatGroupMemberEntity } from './chat-group-member.entity';
 
 export class ChatGroupEntity implements ChatGroup {
   constructor(partial: Partial<ChatGroupEntity>) {
@@ -15,5 +16,6 @@ export class ChatGroupEntity implements ChatGroup {
   updatedAt: Date;
 
   chatGroupMessages?: ChatGroupMessageEntity[];
+  chatGroupMembers?: ChatGroupMemberEntity[];
   trips?: TripEntity[];
 }

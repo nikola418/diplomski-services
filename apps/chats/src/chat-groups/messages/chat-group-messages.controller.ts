@@ -2,7 +2,7 @@ import { AuthUser } from '@libs/common';
 import {
   ChatGroupMessagesService,
   CreateChatGroupMessageDto,
-} from 'libs/data-access-chat-groups/src';
+} from '@libs/data-access-chat-groups';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChatGroupMessage, User } from '@prisma/client';

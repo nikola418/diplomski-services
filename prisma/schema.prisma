@@ -56,6 +56,7 @@ model User {
   chatGroupsMember  ChatGroupMember[]
   chatGroupsOwner   ChatGroup[]
   reviews           Review[]
+  createdTrips      Trip[]
 
   @@map("users")
 }
@@ -143,16 +144,21 @@ model ChatGroupMember {
 }
 
 model ChatGroupMessage {
-  id           String @id @default(cuid())
-  chatGroupId  String
-  senderUserId String
-  text         String
+  id                 String  @id @default(cuid())
+  chatGroupId        String
+  senderUserId       String
+  text               String
+  repliedToMessageId String?
+  tripId             String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chatGroup ChatGroup @relation(fields: [chatGroupId], references: [id])
-  sender    User      @relation(fields: [senderUserId], references: [id])
+  chatGroup        ChatGroup          @relation(fields: [chatGroupId], references: [id])
+  sender           User               @relation(fields: [senderUserId], references: [id])
+  trip             Trip?              @relation(fields: [tripId], references: [id])
+  repliedToMessage ChatGroupMessage?  @relation(name: "replies", fields: [repliedToMessageId], references: [id])
+  repliesToMessage ChatGroupMessage[] @relation(name: "replies")
 
   @@map("chat_group_messages")
 }
@@ -161,13 +167,16 @@ model Trip {
   id                String     @id @default(cuid())
   chatGroupId       String
   locationId        String
+  creatorUserId     String
   tripStatus        TripStatus @default(InPlanning)
   name              String
   scheduledDateTime DateTime?
 
-  chatGroup ChatGroup @relation(fields: [chatGroupId], references: [id])
-  location  Location  @relation(fields: [locationId], references: [id])
-  reviews   Review[]
+  chatGroup         ChatGroup          @relation(fields: [chatGroupId], references: [id])
+  location          Location           @relation(fields: [locationId], references: [id])
+  creator           User               @relation(fields: [creatorUserId], references: [id])
+  reviews           Review[]
+  chatGroupMessages ChatGroupMessage[]
 
   @@map("chat_group_trips")
 }

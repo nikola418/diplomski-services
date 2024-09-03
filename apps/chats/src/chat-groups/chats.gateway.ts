@@ -2,7 +2,7 @@ import { AUTH_SERVICE, AuthUser, JwtAuthGuard } from '@libs/common';
 import {
   ChatGroupMessagesService,
   CreateChatGroupMessageDto,
-} from 'libs/data-access-chat-groups/src';
+} from '@libs/data-access-chat-groups';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   Inject,

@@ -1,7 +1,7 @@
+import { TripEntity } from '@libs/data-access-trips';
 import { UserEntity } from '@libs/data-access-users';
 import { $Enums, Trip } from '@prisma/client';
 import { Actions, InferSubjects, Permissions } from 'nest-casl';
-import { TripEntity } from './entities';
 
 type Subjects = InferSubjects<Trip>;
 
@@ -13,10 +13,15 @@ export const permissions: Permissions<
 > = {
   everyone({ can, user }) {
     can(Actions.manage, TripEntity, {
+      creatorUserId: user.id,
+    });
+    can(Actions.read, TripEntity, {
       chatGroup: {
-        ownerUserId: user.id,
+        $in: [
+          { ownerUserId: user.id },
+          { chatGroupMembers: { $in: [{ userId: user.id }] } },
+        ],
       },
     });
-    can(Actions.read, TripEntity);
   },
 };

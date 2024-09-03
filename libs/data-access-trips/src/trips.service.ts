@@ -6,7 +6,9 @@ import { PrismaService } from 'nestjs-prisma';
 export class TripsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  private static readonly include: Prisma.TripInclude = {};
+  private static readonly include: Prisma.TripInclude = {
+    location: true,
+  };
   private static readonly orderBy: Prisma.TripOrderByWithRelationInput = {};
 
   public create(data: Prisma.TripCreateInput): Promise<Trip> {
@@ -22,12 +24,18 @@ export class TripsService {
     });
   }
 
-  public findAll(where?: Prisma.TripWhereInput): Promise<Trip[]> {
-    return this.prismaService.trip.findMany({ where });
+  public findAll(
+    where?: Prisma.TripWhereInput,
+    include = TripsService.include,
+  ): Promise<Trip[]> {
+    return this.prismaService.trip.findMany({ where, include });
   }
 
-  public findOne(where: Prisma.TripWhereUniqueInput): Promise<Trip> {
-    return this.prismaService.trip.findUniqueOrThrow({ where });
+  public findOne(
+    where: Prisma.TripWhereUniqueInput,
+    include = TripsService.include,
+  ): Promise<Trip> {
+    return this.prismaService.trip.findUniqueOrThrow({ where, include });
   }
 
   public update(

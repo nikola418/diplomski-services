@@ -14,9 +14,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ChatGroup, User } from '@prisma/client';
 import {
+  ChatGroupEntity,
   ChatGroupsService,
   CreateChatGroupDto,
   QueryChatGroupsDto,
@@ -24,7 +25,6 @@ import {
 } from 'libs/data-access-chat-groups/src';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { ChatGroupHook } from './chat-group.hook';
-import { ChatGroupEntity } from './entity';
 
 @UseGuards(AccessGuard)
 @ApiTags('chat-groups')
@@ -32,6 +32,7 @@ import { ChatGroupEntity } from './entity';
 export class ChatsGroupsController {
   constructor(private readonly chatGroupsService: ChatGroupsService) {}
 
+  @ApiConsumes('multipart/form-data')
   @Post()
   @UseInterceptors(FileInterceptor('avatarImage'))
   @UseAbility(Actions.create, ChatGroupEntity)
@@ -72,6 +73,7 @@ export class ChatsGroupsController {
     });
   }
 
+  @ApiConsumes('multipart/form-data')
   @Patch(':groupId')
   @UseInterceptors(FileInterceptor('avatarImage'))
   @UseAbility(Actions.update, ChatGroupEntity, ChatGroupHook)
