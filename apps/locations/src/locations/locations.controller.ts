@@ -47,9 +47,11 @@ export class LocationsController {
     @Body() data: CreateLocationDto,
     @UploadedFiles() images?: Express.Multer.File[],
   ): Promise<LocationEntity> {
-    const ids = await this.filesService.uploadMany(images);
-
-    data.imageKeys = ids.map((id) => id.toString());
+    if (images) {
+      data.imageKeys = (await this.filesService.uploadMany(images)).map((id) =>
+        id.toString(),
+      );
+    }
 
     return this.locationsService.create(data);
   }

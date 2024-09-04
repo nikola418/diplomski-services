@@ -46,7 +46,11 @@ export class UsersController {
     @Body() data: CreateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    data.avatarImageKey = (await this.filesService.uploadOne(image)).toString();
+    if (image) {
+      data.avatarImageKey = (
+        await this.filesService.uploadOne(image)
+      ).toString();
+    }
 
     return this.usersService.create({
       ...data,

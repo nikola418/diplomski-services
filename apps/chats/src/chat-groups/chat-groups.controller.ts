@@ -45,7 +45,11 @@ export class ChatsGroupsController {
     @AuthUser() user: User,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<ChatGroup> {
-    data.avatarImageKey = (await this.filesService.uploadOne(image)).toString();
+    if (image) {
+      data.avatarImageKey = (
+        await this.filesService.uploadOne(image)
+      ).toString();
+    }
 
     return this.chatGroupsService.create({
       name: data.name,
