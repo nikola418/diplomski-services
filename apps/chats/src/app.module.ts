@@ -7,6 +7,7 @@ import { redisStore } from 'cache-manager-redis-yet';
 import { CaslModule } from 'nest-casl';
 import { PrismaModule } from 'nestjs-prisma';
 import { ChatGroupsModule } from './chat-groups/chat-groups.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -27,6 +28,12 @@ import { ChatGroupsModule } from './chat-groups/chat-groups.module';
     CaslModule.forRoot({
       superuserRole: $Enums.Role.Admin,
       getUserFromRequest: (req) => new UserEntity(req.user),
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.getOrThrow<string>('MONGO_URL'),
+      }),
+      inject: [ConfigService],
     }),
     ChatGroupsModule,
   ],

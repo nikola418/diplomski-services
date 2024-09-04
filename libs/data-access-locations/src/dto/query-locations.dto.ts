@@ -43,12 +43,12 @@ export class QueryLocationsDto {
   @IsOptional()
   @IsArray()
   @IsEnum($Enums.ActivityTag, { each: true })
-  activityTags?: $Enums.ActivityTag[] = [];
+  activityTags?: $Enums.ActivityTag[];
 
   @IsOptional()
   @IsArray()
   @IsEnum($Enums.NearbyTag, { each: true })
-  nearbyTags?: $Enums.NearbyTag[] = [];
+  nearbyTags?: $Enums.NearbyTag[];
 
   @IsOptional()
   @IsString()

@@ -1,5 +1,5 @@
 import { AUTH_SERVICE } from '@libs/common';
-import { GridFsMulterConfigService } from '@libs/data-access-files';
+import { DataAccessFilesModule } from '@libs/data-access-files';
 import { DataAccessUsersModule } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -27,7 +27,8 @@ import { UsersController } from './users.controller';
       },
     ]),
     DataAccessUsersModule,
-    MulterModule.registerAsync({ useClass: GridFsMulterConfigService }),
+    DataAccessFilesModule,
+    MulterModule.register(),
     CaslModule.forFeature({ permissions }),
     FavoriteLocationsModule,
     RouterModule.register([

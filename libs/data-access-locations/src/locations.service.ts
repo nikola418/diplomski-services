@@ -27,8 +27,10 @@ export class LocationsService {
       this.prismaService.location,
       {
         where: {
-          activityTags: { hasEvery: filters.activityTags },
-          nearbyTags: { hasEvery: filters.nearbyTags },
+          activityTags: filters.activityTags && {
+            hasEvery: filters.activityTags,
+          },
+          nearbyTags: filters.nearbyTags && { hasEvery: filters.nearbyTags },
           title: { contains: filters.title, mode: 'insensitive' },
           locationLat: {
             gte: filters.range?.lat.lower,

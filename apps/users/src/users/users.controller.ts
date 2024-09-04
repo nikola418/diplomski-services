@@ -26,23 +26,27 @@ import { $Enums, User } from '@prisma/client';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { UserHook } from './user.hook';
+import { FilesService } from '@libs/data-access-files';
 
 @ApiTags('users')
 @Controller('users')
 @UseGuards(AccessGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly filesService: FilesService,
+  ) {}
 
   @IsPublic()
   @ApiConsumes('multipart/form-data')
   @Post()
   @UseAbility(Actions.create, UserEntity)
   @UseInterceptors(FileInterceptor('avatarImage'))
-  public create(
+  public async create(
     @Body() data: CreateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    data.avatarImageKey = image?.id;
+    data.avatarImageKey = (await this.filesService.uploadOne(image)).toString();
 
     return this.usersService.create({
       ...data,

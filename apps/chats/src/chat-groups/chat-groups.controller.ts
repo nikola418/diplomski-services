@@ -25,23 +25,27 @@ import {
 } from 'libs/data-access-chat-groups/src';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { ChatGroupHook } from './chat-group.hook';
+import { FilesService } from '@libs/data-access-files';
 
 @UseGuards(AccessGuard)
 @ApiTags('chat-groups')
 @Controller('chat-groups')
 export class ChatsGroupsController {
-  constructor(private readonly chatGroupsService: ChatGroupsService) {}
+  constructor(
+    private readonly chatGroupsService: ChatGroupsService,
+    private readonly filesService: FilesService,
+  ) {}
 
   @ApiConsumes('multipart/form-data')
   @Post()
   @UseInterceptors(FileInterceptor('avatarImage'))
   @UseAbility(Actions.create, ChatGroupEntity)
-  public create(
+  public async create(
     @Body() data: CreateChatGroupDto,
     @AuthUser() user: User,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<ChatGroup> {
-    data.avatarImageKey = image?.id;
+    data.avatarImageKey = (await this.filesService.uploadOne(image)).toString();
 
     return this.chatGroupsService.create({
       name: data.name,

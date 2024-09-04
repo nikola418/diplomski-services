@@ -24,21 +24,16 @@ export class FilesService {
 
   public async uploadOne(file: Express.Multer.File): Promise<ObjectId> {
     return Readable.from(file.buffer).pipe(
-      this.bucket.openUploadStream(file.filename),
+      this.bucket.openUploadStream(file.filename, {
+        metadata: { type: file.mimetype },
+      }),
     ).id;
   }
 
   public async uploadMany(files: Express.Multer.File[]): Promise<ObjectId[]> {
     const res = [];
-    for await (const file of files) {
-      console.log(file);
-      res.push(
-        Readable.from(file.buffer).pipe(
-          this.bucket.openUploadStream(file.filename, {
-            metadata: { type: file.mimetype },
-          }),
-        ).id,
-      );
+    for (const file of files) {
+      res.push(this.uploadOne(file));
     }
     return res;
   }
