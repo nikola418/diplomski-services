@@ -92,13 +92,16 @@ export class LocationsController {
   @Patch(':id')
   @UseAbility(Actions.update, LocationEntity)
   @UseInterceptors(FilesInterceptor('images'))
-  public update(
+  public async update(
     @Param('id') id: string,
     @Body() data: UpdateLocationDto,
     @UploadedFiles() images?: Express.Multer.File[],
   ): Promise<LocationEntity> {
-    data.imageKeys = images?.map((image) => image.id);
-
+    if (images) {
+      data.imageKeys = (await this.filesService.uploadMany(images)).map((id) =>
+        id.toString(),
+      );
+    }
     return this.locationsService.update({ id }, data);
   }
 

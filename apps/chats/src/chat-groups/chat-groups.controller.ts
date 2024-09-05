@@ -85,12 +85,16 @@ export class ChatsGroupsController {
   @Patch(':groupId')
   @UseInterceptors(FileInterceptor('avatarImage'))
   @UseAbility(Actions.update, ChatGroupEntity, ChatGroupHook)
-  public update(
+  public async update(
     @Param('groupId') id: string,
     @Body() data: UpdateChatGroupDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<ChatGroupEntity> {
-    data.avatarImageKey = image?.id;
+    if (image) {
+      data.avatarImageKey = (
+        await this.filesService.uploadOne(image)
+      ).toString();
+    }
 
     return this.chatGroupsService.update(
       { id },

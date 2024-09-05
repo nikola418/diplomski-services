@@ -79,12 +79,18 @@ export class UsersController {
   @ApiConsumes('multipart/form-data')
   @Patch(':userId')
   @UseInterceptors(FileInterceptor('avatarImage'))
-  public update(
+  public async update(
     @Param('userId') id: string,
     @Body() data: UpdateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    data.avatarImageKey = image?.id;
+    console.log(data);
+    console.log(image);
+    if (image) {
+      data.avatarImageKey = (
+        await this.filesService.uploadOne(image)
+      ).toString();
+    }
 
     return this.usersService.update({ id }, data);
   }
