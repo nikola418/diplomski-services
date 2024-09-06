@@ -84,8 +84,6 @@ export class UsersController {
     @Body() data: UpdateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    console.log(data);
-    console.log(image);
     if (image) {
       data.avatarImageKey = (
         await this.filesService.uploadOne(image)

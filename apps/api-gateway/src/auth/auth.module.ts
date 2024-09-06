@@ -4,9 +4,21 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AUTH_SERVICE } from '@libs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy, LocalStrategy } from './strategies';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    JwtModule.registerAsync({
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.getOrThrow<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: parseInt(
+            configService.getOrThrow<string>('JWT_EXPIRES_IN'),
+          ),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     ClientsModule.registerAsync([
       {
         name: AUTH_SERVICE,

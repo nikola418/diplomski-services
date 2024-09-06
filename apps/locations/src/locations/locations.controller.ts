@@ -65,7 +65,6 @@ export class LocationsController {
     filters: QueryLocationsDto,
   ): Promise<PaginatedResult<LocationEntity>> {
     const res = await this.locationsService.paginate(filters, user);
-
     res.data = plainToInstance(LocationEntity, res.data);
     return res;
   }

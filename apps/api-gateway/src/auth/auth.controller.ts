@@ -1,11 +1,13 @@
-import { AuthUser, IsPublic, JWTPayload } from '@libs/common';
+import { AUTH_SERVICE, AuthUser, IsPublic, JwtAuthGuard } from '@libs/common';
 import { UserEntity } from '@libs/data-access-users';
 import {
+  Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Logger,
   Post,
   Res,
@@ -13,11 +15,12 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ClientRMQ } from '@nestjs/microservices';
+import { ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { Response } from 'express';
+import { firstValueFrom } from 'rxjs';
 import { SignInDto } from './dto';
-import { JwtAuthGuard, LocalAuthGuard } from './guards';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -25,23 +28,22 @@ export class AuthController {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @Inject(AUTH_SERVICE) private readonly client: ClientRMQ,
   ) {}
   private readonly logger = new Logger(AuthController.name);
 
-  @ApiBody({ type: SignInDto })
   @IsPublic()
   @Post('sign-in')
-  @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
-  public signIn(
+  public async signIn(
+    @Body() data: SignInDto,
     @Res({ passthrough: true }) res: Response,
-    @AuthUser() user: User,
-  ): { token: string } {
-    const jwtPayload = this.jwtService.sign({
-      id: user.id,
-    } satisfies JWTPayload);
+  ): Promise<{ token: string }> {
+    const payload = await firstValueFrom(
+      this.client.send<{ token: string }>({ cmd: 'sign-in' }, data),
+    );
 
-    res.cookie('Authorization', jwtPayload, {
+    res.cookie('Authorization', payload.token, {
       maxAge: this.configService.getOrThrow<number>('JWT_EXPIRES_IN') * 1000,
       path: '/',
       // domain: '192.168.1.108',
@@ -50,7 +52,7 @@ export class AuthController {
       // secure: true,
     });
 
-    return { token: jwtPayload };
+    return payload;
   }
 
   @Get('profile')
@@ -61,7 +63,6 @@ export class AuthController {
 
   @Delete('sign-out')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
   public signOut(@Res({ passthrough: true }) res: Response): void {
     res.clearCookie('Authorization');
   }

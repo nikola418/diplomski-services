@@ -2,7 +2,6 @@ import { cors } from '@libs/common';
 import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { RmqOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
@@ -14,18 +13,6 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
   const httpAdapter = app.getHttpAdapter();
-
-  app.connectMicroservice<RmqOptions>(
-    {
-      transport: Transport.RMQ,
-      options: {
-        noAck: true,
-        urls: [configService.getOrThrow<string>('RMQ_URL')],
-        queue: 'auth',
-      },
-    },
-    { inheritAppConfig: true },
-  );
 
   app.enableVersioning();
   app.enableShutdownHooks();
@@ -56,8 +43,6 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   const httpPort = configService.getOrThrow<string>('HTTP_PORT');
-
-  await app.startAllMicroservices();
 
   await app.listen(httpPort, '0.0.0.0', async () => {
     const logger = new Logger();

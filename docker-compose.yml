@@ -23,6 +23,14 @@ services:
     volumes:
       - ./.nginx:/etc/nginx:row
 
+  api-gateway:
+    <<: *base-microservice
+    build:
+      args:
+        APP_NAME: api-gateway
+    ports:
+      - '3000:3000'
+
   auth:
     <<: *base-microservice
     build:

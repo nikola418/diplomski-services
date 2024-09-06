@@ -41,7 +41,6 @@ export class AuthController {
   @IsPublic()
   @Post('sign-in')
   @UseGuards(LocalAuthGuard)
-  @HttpCode(HttpStatus.OK)
   public signIn(
     @Res({ passthrough: true }) res: Response,
     @AuthUser() user: User,
@@ -85,5 +84,16 @@ export class AuthController {
     );
 
     return this.authService.getUser(id);
+  }
+
+  @MessagePattern({ cmd: 'sign-in' })
+  @IsPublic()
+  public async signInCmd(
+    @Payload() data: SignInDto,
+  ): Promise<{ token: string }> {
+    const user = await this.authService.validateSignIn(data);
+    const token = this.authService.createToken(user);
+
+    return { token };
   }
 }

@@ -6,6 +6,8 @@ x-base-microservice-dev: &base-microservice-dev
     - /app/node_modules
 
 services:
+  api-gateway:
+    <<: *base-microservice-dev
   auth:
     <<: *base-microservice-dev
   users:

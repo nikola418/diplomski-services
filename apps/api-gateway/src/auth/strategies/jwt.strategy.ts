@@ -1,4 +1,4 @@
-import { JWTPayload, USERS_SERVICE } from '@libs/common';
+import { AUTH_SERVICE, JWTPayload } from '@libs/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientRMQ } from '@nestjs/microservices';
@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
-    @Inject(USERS_SERVICE) private readonly client: ClientRMQ,
+    @Inject(AUTH_SERVICE) private readonly client: ClientRMQ,
   ) {
     super(<StrategyOptionsWithoutRequest>{
       jwtFromRequest: ExtractJwt.fromExtractors([
