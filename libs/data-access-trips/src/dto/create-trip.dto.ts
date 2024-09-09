@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer';
 import {
   IsArray,
-  IsDateString,
+  IsISO8601,
+  IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
@@ -14,6 +15,7 @@ class ConnectChatGroupDto {
 
 export class CreateTripDto {
   @IsArray()
+  @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => ConnectChatGroupDto)
   connectChatGroups: ConnectChatGroupDto[];
@@ -21,11 +23,10 @@ export class CreateTripDto {
   @IsString()
   locationId: string;
 
-  @IsOptional()
   @IsString()
   name: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsISO8601()
   scheduledDateTime?: string;
 }

@@ -110,11 +110,11 @@ export class ChatsGateway
     @AuthUser() user: User,
     @MessageBody() data: { chatGroupId: string } & CreateChatGroupMessageDto,
   ) {
-    const message = await this.chatGroupMessagesService.create({
-      chatGroup: { connect: { id: data.chatGroupId } },
-      sender: { connect: { id: user.id } },
-      text: data.text,
-    });
+    const message = await this.chatGroupMessagesService.create(
+      data.chatGroupId,
+      data,
+      user,
+    );
 
     const receiverGroup = await this.cacheManager.get<string>(data.chatGroupId);
     this.server.to(receiverGroup).emit('newMessage', message);

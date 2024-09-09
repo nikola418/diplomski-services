@@ -1,4 +1,4 @@
-name: diplomski
+name: diplomski-prod
 
 x-base-microservice: &base-microservice
   build:

@@ -1,10 +1,15 @@
+import { PaginatedResult, PaginateFunction, paginator } from '@libs/common';
 import { Injectable } from '@nestjs/common';
-import { Trip, Prisma } from '@prisma/client';
+import { Prisma, Trip, User } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { QueryTripsDto } from './dto';
 
 @Injectable()
 export class TripsService {
   constructor(private readonly prismaService: PrismaService) {}
+  private readonly paginator: PaginateFunction = paginator({
+    perPage: 12,
+  });
 
   private static readonly include: Prisma.TripInclude = {
     location: true,
@@ -22,6 +27,33 @@ export class TripsService {
       data,
       skipDuplicates: true,
     });
+  }
+
+  public paginate(
+    filters: QueryTripsDto,
+    user: User,
+  ): Promise<PaginatedResult<Trip>> {
+    return this.paginator<Trip, Prisma.TripFindManyArgs>(
+      this.prismaService.trip,
+      {
+        where: {
+          chatGroup: {
+            OR: [
+              {
+                chatGroupMembers: { some: { userId: user.id } },
+              },
+              {
+                ownerUserId: user.id,
+              },
+            ],
+          },
+          chatGroupId: filters.chatGroupId,
+          locationId: filters.locationId,
+        },
+        include: TripsService.include,
+      },
+      filters.pagination,
+    );
   }
 
   public findAll(

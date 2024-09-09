@@ -1,3 +1,5 @@
+name: diplomski-dev
+
 x-base-microservice-dev: &base-microservice-dev
   build:
     target: dev

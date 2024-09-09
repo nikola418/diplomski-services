@@ -33,7 +33,7 @@ export class FilesService {
   public async uploadMany(files: Express.Multer.File[]): Promise<ObjectId[]> {
     const res = [];
     for (const file of files) {
-      res.push(this.uploadOne(file));
+      res.push(await this.uploadOne(file));
     }
     return res;
   }

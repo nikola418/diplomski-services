@@ -23,25 +23,31 @@ export class UsersService {
       this.prismaService.user,
       {
         where: {
-          username: { not: user.username },
-          OR: [
+          AND: [
             {
-              username: {
-                contains: filters.username,
-                mode: 'insensitive',
-              },
+              username: { not: user.username },
             },
             {
-              firstName: {
-                contains: filters.firstName,
-                mode: 'insensitive',
-              },
-            },
-            {
-              lastName: {
-                contains: filters.lastName,
-                mode: 'insensitive',
-              },
+              OR: [
+                {
+                  username: {
+                    contains: filters.username,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  firstName: {
+                    contains: filters.firstName,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  lastName: {
+                    contains: filters.lastName,
+                    mode: 'insensitive',
+                  },
+                },
+              ],
             },
           ],
         },

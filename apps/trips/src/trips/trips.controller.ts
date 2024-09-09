@@ -1,6 +1,7 @@
-import { AuthUser } from '@libs/common';
+import { AuthUser, PaginatedResult } from '@libs/common';
 import {
   CreateTripDto,
+  QueryTripsDto,
   TripEntity,
   TripsService,
   UpdateTripDto,
@@ -13,6 +14,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -27,7 +29,7 @@ export class TripsController {
 
   @Post()
   @UseAbility(Actions.create, TripEntity)
-  create(@AuthUser() user: User, @Body() data: CreateTripDto) {
+  create(@AuthUser() user: User, @Body() data: CreateTripDto): Promise<Trip[]> {
     return this.tripsService.createMany(
       data.connectChatGroups.map((chatGroup) => ({
         chatGroupId: chatGroup.chatGroupId,
@@ -41,15 +43,11 @@ export class TripsController {
 
   @Get()
   @UseAbility<Trip>(Actions.read, TripEntity)
-  findAll(@AuthUser() user: User) {
-    return this.tripsService.findAll({
-      chatGroup: {
-        OR: [
-          { ownerUserId: user.id },
-          { chatGroupMembers: { some: { userId: user.id } } },
-        ],
-      },
-    });
+  findAll(
+    @Query() queries: QueryTripsDto,
+    @AuthUser() user: User,
+  ): Promise<PaginatedResult<Trip>> {
+    return this.tripsService.paginate(queries, user);
   }
 
   @Get(':id')
@@ -66,7 +64,7 @@ export class TripsController {
       );
     },
   ])
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<Trip> {
     return this.tripsService.findOne({ id });
   }
 
@@ -77,7 +75,7 @@ export class TripsController {
       return tripsService.findOne({ id: params.id });
     },
   ])
-  update(@Param('id') id: string, @Body() data: UpdateTripDto) {
+  update(@Param('id') id: string, @Body() data: UpdateTripDto): Promise<Trip> {
     return this.tripsService.update({ id }, data);
   }
 
@@ -88,7 +86,7 @@ export class TripsController {
       return tripsService.findOne({ id: params.id });
     },
   ])
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<Trip> {
     return this.tripsService.remove({ id });
   }
 }
