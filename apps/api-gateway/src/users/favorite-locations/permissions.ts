@@ -1,6 +1,5 @@
-import { UserEntity } from '@libs/data-access-users';
+import { FavoriteLocationEntity, UserEntity } from '@libs/data-access-users';
 import { $Enums, FavoriteLocation } from '@prisma/client';
-import { FavoriteLocationEntity } from 'libs/data-access-locations/src';
 import { Actions, InferSubjects, Permissions } from 'nest-casl';
 
 type Subjects = InferSubjects<FavoriteLocation>;

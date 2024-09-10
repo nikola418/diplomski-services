@@ -5,6 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { RmqOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -12,6 +13,18 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
   const httpAdapter = app.getHttpAdapter();
+
+  app.connectMicroservice<RmqOptions>(
+    {
+      transport: Transport.RMQ,
+      options: {
+        noAck: true,
+        urls: [configService.getOrThrow<string>('RMQ_URL')],
+        queue: 'users',
+      },
+    },
+    { inheritAppConfig: true },
+  );
 
   app.enableVersioning();
   app.enableShutdownHooks();
@@ -42,6 +55,8 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   const httpPort = configService.getOrThrow<string>('HTTP_PORT');
+
+  await app.startAllMicroservices();
 
   await app.listen(httpPort, '0.0.0.0', async () => {
     const logger = new Logger();

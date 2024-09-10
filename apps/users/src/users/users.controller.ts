@@ -1,4 +1,4 @@
-import { AuthUser, IsPublic, PaginatedResult } from '@libs/common';
+import { PaginatedResult } from '@libs/common';
 import {
   CreateUserDto,
   QueryUsersDto,
@@ -6,52 +6,17 @@ import {
   UserEntity,
   UsersService,
 } from '@libs/data-access-users';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-  ValidationPipe,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Controller } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { $Enums, User } from '@prisma/client';
 import { genSaltSync, hashSync } from 'bcrypt';
-import { AccessGuard, Actions, UseAbility } from 'nest-casl';
-import { UserHook } from './user.hook';
-import { FilesService } from '@libs/data-access-files';
 
-@ApiTags('users')
-@Controller('users')
-@UseGuards(AccessGuard)
+@Controller()
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly filesService: FilesService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  @IsPublic()
-  @ApiConsumes('multipart/form-data')
-  @Post()
-  @UseAbility(Actions.create, UserEntity)
-  @UseInterceptors(FileInterceptor('avatarImage'))
-  public async create(
-    @Body() data: CreateUserDto,
-    @UploadedFile() image?: Express.Multer.File,
-  ): Promise<UserEntity> {
-    if (image) {
-      data.avatarImageKey = (
-        await this.filesService.uploadOne(image)
-      ).toString();
-    }
-
+  @MessagePattern({ cmd: 'create' })
+  public async create(@Payload() data: CreateUserDto): Promise<UserEntity> {
     return this.usersService.create({
       ...data,
       password: hashSync(data.password, genSaltSync()),
@@ -59,43 +24,29 @@ export class UsersController {
     });
   }
 
-  @ApiQuery({ name: 'username', type: String, required: false })
-  @Get()
-  @UseAbility(Actions.read, UserEntity)
-  public findAll(
-    @AuthUser() user: User,
-    @Query(ValidationPipe) queries?: QueryUsersDto,
+  @MessagePattern({ cmd: 'paginate' })
+  public paginate(
+    @Payload('user') user: User,
+    @Payload('queries') queries?: QueryUsersDto,
   ): Promise<PaginatedResult<User>> {
-    return this.usersService.paginate(queries, user);
+    return this.usersService.paginate(user, queries);
   }
 
-  @Get(':userId')
-  @UseAbility(Actions.read, UserEntity)
-  public findOne(@Param('userId') id: string): Promise<UserEntity> {
+  @MessagePattern({ cmd: 'findOne' })
+  public findOne(@Payload('userId') id: string): Promise<UserEntity> {
     return this.usersService.findOne({ id });
   }
 
-  @UseAbility(Actions.update, UserEntity, UserHook)
-  @ApiConsumes('multipart/form-data')
-  @Patch(':userId')
-  @UseInterceptors(FileInterceptor('avatarImage'))
+  @MessagePattern({ cmd: 'update' })
   public async update(
-    @Param('userId') id: string,
-    @Body() data: UpdateUserDto,
-    @UploadedFile() image?: Express.Multer.File,
+    @Payload('userId') id: string,
+    @Payload('data') data: UpdateUserDto,
   ): Promise<UserEntity> {
-    if (image) {
-      data.avatarImageKey = (
-        await this.filesService.uploadOne(image)
-      ).toString();
-    }
-
     return this.usersService.update({ id }, data);
   }
 
-  @UseAbility(Actions.delete, UserEntity, UserHook)
-  @Delete(':userId')
-  public remove(@Param('userId') id: string): Promise<UserEntity> {
+  @MessagePattern({ cmd: 'remove' })
+  public remove(@Payload('userId') id: string): Promise<UserEntity> {
     return this.usersService.remove({ id });
   }
 }

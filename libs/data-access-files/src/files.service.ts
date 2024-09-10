@@ -1,23 +1,18 @@
-import { Injectable, Scope } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import {
-  Db,
   GridFSBucket,
   GridFSBucketReadStream,
   GridFSFile,
+  MongoClient,
   ObjectId,
 } from 'mongodb';
-import { Connection } from 'mongoose';
 import { Readable } from 'stream';
 
 @Injectable({ scope: Scope.REQUEST })
 export class FilesService {
   private bucket: GridFSBucket;
-  constructor(
-    @InjectConnection()
-    private readonly mongoConnection: Connection,
-  ) {
-    this.bucket = new GridFSBucket(this.mongoConnection.db as unknown as Db, {
+  constructor(@Inject('MONGO_CLIENT') private readonly client: MongoClient) {
+    this.bucket = new GridFSBucket(this.client.db(), {
       bucketName: 'fs',
     });
   }

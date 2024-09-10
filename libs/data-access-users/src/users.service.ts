@@ -16,8 +16,8 @@ export class UsersService {
   }
 
   public async paginate(
-    filters: QueryUsersDto,
     user: User,
+    filters?: QueryUsersDto,
   ): Promise<PaginatedResult<User>> {
     return this.paginator<User, Prisma.UserFindManyArgs>(
       this.prismaService.user,

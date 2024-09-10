@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
+import { CaslModule } from 'nest-casl';
 import { FavoriteLocationsController } from './favorite-location.controller';
-import { DataAccessFavoriteLocationsModule } from '@libs/data-access-users';
+import { permissions } from './permissions';
 
 @Module({
-  imports: [DataAccessFavoriteLocationsModule],
+  imports: [CaslModule.forFeature({ permissions })],
   controllers: [FavoriteLocationsController],
 })
 export class FavoriteLocationsModule {}

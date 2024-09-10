@@ -1,6 +1,5 @@
 import { DataAccessFilesModule } from '@libs/data-access-files';
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
 import {
   DataAccessLocationsModule,
@@ -25,7 +24,6 @@ import { permissions } from './permissions';
       ],
       module: DataAccessLocationsModule,
     },
-    MongooseModule.forFeature(),
     DataAccessFilesModule,
     MulterModule.register(),
     CaslModule.forFeature({ permissions }),

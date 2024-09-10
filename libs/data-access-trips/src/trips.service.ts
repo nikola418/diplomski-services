@@ -33,6 +33,7 @@ export class TripsService {
     filters: QueryTripsDto,
     user: User,
   ): Promise<PaginatedResult<Trip>> {
+    console.log(filters);
     return this.paginator<Trip, Prisma.TripFindManyArgs>(
       this.prismaService.trip,
       {
@@ -47,6 +48,7 @@ export class TripsService {
               },
             ],
           },
+          tripStatus: filters.tripStatus,
           chatGroupId: filters.chatGroupId,
           locationId: filters.locationId,
         },

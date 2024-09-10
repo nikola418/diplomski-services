@@ -34,7 +34,6 @@ export class AuthController {
 
   @IsPublic()
   @Post('sign-in')
-  @HttpCode(HttpStatus.OK)
   public async signIn(
     @Body() data: SignInDto,
     @Res({ passthrough: true }) res: Response,

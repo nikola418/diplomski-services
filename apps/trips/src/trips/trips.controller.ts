@@ -18,7 +18,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Trip, User } from '@prisma/client';
+import { $Enums, Trip, User } from '@prisma/client';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 
 @ApiTags('trips')
@@ -37,6 +37,9 @@ export class TripsController {
         name: data.name,
         creatorUserId: user.id,
         scheduledDateTime: data.scheduledDateTime,
+        tripStatus: data.scheduledDateTime
+          ? $Enums.TripStatus.Scheduled
+          : undefined,
       })),
     );
   }
