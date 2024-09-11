@@ -14,8 +14,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { ClientRMQ } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { Response } from 'express';
@@ -26,9 +25,8 @@ import { SignInDto } from './dto';
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    @Inject(AUTH_SERVICE) private readonly client: ClientRMQ,
+    @Inject(AUTH_SERVICE) private readonly client: ClientProxy,
   ) {}
   private readonly logger = new Logger(AuthController.name);
 
@@ -62,6 +60,7 @@ export class AuthController {
 
   @Delete('sign-out')
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   public signOut(@Res({ passthrough: true }) res: Response): void {
     res.clearCookie('Authorization');
   }

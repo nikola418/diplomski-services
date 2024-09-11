@@ -1,39 +1,34 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ConflictException,
-  HttpServer,
-  Logger,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, Logger } from '@nestjs/common';
+import { BaseRpcExceptionFilter, RpcException } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { Response } from 'express';
-import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { Observable } from 'rxjs';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
-export class PrismaExceptionFilter extends PrismaClientExceptionFilter {
-  constructor(applicationRef: HttpServer) {
-    super(applicationRef);
+export class PrismaExceptionFilter extends BaseRpcExceptionFilter {
+  constructor() {
+    super();
   }
 
   private readonly logger = new Logger(PrismaExceptionFilter.name);
 
   override catch(
-    exception: PrismaClientKnownRequestError,
+    exception: Prisma.PrismaClientKnownRequestError,
     host: ArgumentsHost,
-  ) {
-    const res: Response = host.switchToHttp().getResponse();
+  ): Observable<any> {
+    this.logger.debug(exception);
+    let err: any;
 
     if (exception.code === 'P2000') {
+      err = { message: exception.message, statusCode: 400 };
     } else if (exception.code === 'P2002') {
       const fieldName = exception.message.split('(`')[1].split('`)')[0];
-      exception.message = `Zauzeto: ${fieldName}`;
-
-      res.status(409);
-      res.json(new ConflictException(exception.message).getResponse());
-    } else if (exception.code === 'P2000') {
+      err = { message: `Zauzeto: ${fieldName}`, statusCode: 409 };
+    } else if (exception.code === 'P2025') {
+      err = { message: exception.meta || exception.message, statusCode: 404 };
     } else {
-      super.catch(exception, host);
+      err = { message: exception.message, statusCode: 400 };
     }
+
+    return super.catch(new RpcException(err), host);
   }
 }

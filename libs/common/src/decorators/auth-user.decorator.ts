@@ -10,7 +10,9 @@ export const AuthUser = createParamDecorator(
     if (contextType === 'http') user = ctx.switchToHttp().getRequest().user;
     else if (contextType === 'ws')
       user = ctx.switchToWs().getClient().request.user;
-
+    else {
+      user = ctx.switchToRpc().getContext().user;
+    }
     return user;
   },
 );

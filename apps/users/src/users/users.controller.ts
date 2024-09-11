@@ -33,20 +33,20 @@ export class UsersController {
   }
 
   @MessagePattern({ cmd: 'findOne' })
-  public findOne(@Payload('userId') id: string): Promise<UserEntity> {
-    return this.usersService.findOne({ id });
+  public findOne(@Payload('userId') userId: string): Promise<UserEntity> {
+    return this.usersService.findOne({ id: userId });
   }
 
   @MessagePattern({ cmd: 'update' })
   public async update(
-    @Payload('userId') id: string,
+    @Payload('userId') userId: string,
     @Payload('data') data: UpdateUserDto,
   ): Promise<UserEntity> {
-    return this.usersService.update({ id }, data);
+    return this.usersService.update({ id: userId }, data);
   }
 
   @MessagePattern({ cmd: 'remove' })
-  public remove(@Payload('userId') id: string): Promise<UserEntity> {
-    return this.usersService.remove({ id });
+  public remove(@Payload('userId') userId: string): Promise<UserEntity> {
+    return this.usersService.remove({ id: userId });
   }
 }

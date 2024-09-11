@@ -7,7 +7,6 @@ import { redisStore } from 'cache-manager-redis-yet';
 import { CaslModule } from 'nest-casl';
 import { PrismaModule } from 'nestjs-prisma';
 import { ChatGroupsModule } from './chat-groups/chat-groups.module';
-import { MongoClient } from 'mongodb';
 
 @Module({
   imports: [

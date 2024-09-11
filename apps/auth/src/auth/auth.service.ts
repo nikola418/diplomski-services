@@ -1,11 +1,11 @@
+import { JWTPayload } from '@libs/common';
 import { UsersService } from '@libs/data-access-users';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { compareSync } from 'bcrypt';
-import { SignInDto } from './dto';
-import { JWTPayload } from '@libs/common';
-import { JwtService } from '@nestjs/jwt';
 import { pick } from 'lodash';
+import { SignInDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +21,7 @@ export class AuthService {
 
     if (compareSync(signInDto.password, user.password)) return user;
 
-    return null;
+    throw new UnauthorizedException();
   }
 
   public getUser(id: string): Promise<User> {

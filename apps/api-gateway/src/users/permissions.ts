@@ -1,8 +1,11 @@
+import { InferSubjects } from '@casl/ability';
 import { UserEntity } from '@libs/data-access-users';
 import { $Enums, User } from '@prisma/client';
-import { Actions, InferSubjects, Permissions } from 'nest-casl';
+import { Actions, Permissions } from 'nest-casl';
 
-type Subjects = InferSubjects<User>;
+type Subjects = InferSubjects<{
+  User: User;
+}>;
 
 export const permissions: Permissions<
   $Enums.Role,
@@ -10,7 +13,7 @@ export const permissions: Permissions<
   Actions,
   UserEntity
 > = {
-  everyone({ can, user }) {
+  everyone({ user, can }) {
     can(Actions.manage, UserEntity, { id: user.id });
     can(Actions.read, UserEntity);
   },

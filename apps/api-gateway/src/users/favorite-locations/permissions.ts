@@ -1,8 +1,12 @@
 import { FavoriteLocationEntity, UserEntity } from '@libs/data-access-users';
-import { $Enums, FavoriteLocation } from '@prisma/client';
-import { Actions, InferSubjects, Permissions } from 'nest-casl';
+import { $Enums, FavoriteLocation, User } from '@prisma/client';
+import { Actions, Permissions } from 'nest-casl';
+import { InferSubjects } from '@casl/ability';
 
-type Subjects = InferSubjects<FavoriteLocation>;
+type Subjects = InferSubjects<{
+  FavoriteLocation: FavoriteLocation;
+  User: User;
+}>;
 
 export const permissions: Permissions<
   $Enums.Role,
@@ -13,5 +17,6 @@ export const permissions: Permissions<
   everyone({ can, user }) {
     can(Actions.manage, FavoriteLocationEntity, { userId: user.id });
     can(Actions.create, FavoriteLocationEntity, { id: user.id });
+    can(Actions.manage, UserEntity, { id: user.id });
   },
 };

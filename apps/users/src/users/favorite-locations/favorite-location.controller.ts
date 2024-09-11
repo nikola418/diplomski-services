@@ -40,7 +40,7 @@ export class FavoriteLocationsController {
     });
   }
 
-  @MessagePattern({ scope: 'favorite-locations', cmd: 'findAll' })
+  @MessagePattern({ scope: 'favorite-locations', cmd: 'remove' })
   public remove(
     @Payload('userId') userId: string,
     @Payload('locationId') locationId: string,

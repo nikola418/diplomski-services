@@ -17,6 +17,7 @@ import {
   Delete,
   Get,
   Inject,
+  Logger,
   Param,
   Patch,
   Post,
@@ -26,22 +27,23 @@ import {
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
-import { ClientRMQ } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { $Enums, User } from '@prisma/client';
-import { genSaltSync, hashSync } from 'bcrypt';
+import { User } from '@prisma/client';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
+import { AuthUserHook } from './favorite-locations/user.hook';
 
 @ApiTags('users')
 @Controller('users')
 @UseGuards(AccessGuard)
 export class UsersController {
   constructor(
-    @Inject(USERS_SERVICE) private readonly client: ClientRMQ,
+    @Inject(USERS_SERVICE) private readonly client: ClientProxy,
     private readonly filesService: FilesService,
   ) {}
+  private readonly logger = new Logger(UsersController.name);
 
   @IsPublic()
   @ApiConsumes('multipart/form-data')
@@ -51,23 +53,14 @@ export class UsersController {
   public async create(
     @Body() data: CreateUserDto,
     @UploadedFile() image?: Express.Multer.File,
-  ): Promise<UserEntity> {
+  ): Promise<Observable<UserEntity>> {
     if (image) {
       data.avatarImageKey = (
         await this.filesService.uploadOne(image)
       ).toString();
     }
 
-    return firstValueFrom(
-      this.client.send(
-        { cmd: 'create' },
-        {
-          ...data,
-          password: hashSync(data.password, genSaltSync()),
-          roles: { set: [$Enums.Role.User] },
-        },
-      ),
-    );
+    return this.client.send<UserEntity>({ cmd: 'create' }, data);
   }
 
   @ApiQuery({ name: 'username', type: String, required: false })
@@ -84,16 +77,16 @@ export class UsersController {
 
   @Get(':userId')
   @UseAbility(Actions.read, UserEntity)
-  public findOne(@Param('userId') id: string): Promise<UserEntity> {
-    return firstValueFrom(this.client.send({ cmd: 'findOne' }, { id }));
+  public findOne(@Param('userId') userId: string): Promise<UserEntity> {
+    return firstValueFrom(this.client.send({ cmd: 'findOne' }, { userId }));
   }
 
-  @UseAbility(Actions.update, UserEntity)
+  @UseAbility(Actions.update, UserEntity, AuthUserHook)
   @ApiConsumes('multipart/form-data')
   @Patch(':userId')
   @UseInterceptors(FileInterceptor('avatarImage'))
   public async update(
-    @Param('userId') id: string,
+    @Param('userId') userId: string,
     @Body() data: UpdateUserDto,
     @UploadedFile() image?: Express.Multer.File,
   ): Promise<UserEntity> {
@@ -104,13 +97,13 @@ export class UsersController {
     }
 
     return firstValueFrom(
-      this.client.send({ cmd: 'update' }, { as: { id }, data }),
+      this.client.send({ cmd: 'update' }, { userId, data }),
     );
   }
 
   @UseAbility(Actions.delete, UserEntity)
   @Delete(':userId')
-  public remove(@Param('userId') id: string): Promise<UserEntity> {
-    return firstValueFrom(this.client.send({ cmd: 'remove' }, { id }));
+  public remove(@Param('userId') userId: string): Promise<UserEntity> {
+    return firstValueFrom(this.client.send({ cmd: 'remove' }, { userId }));
   }
 }
