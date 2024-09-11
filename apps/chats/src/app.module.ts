@@ -30,6 +30,5 @@ import { ChatGroupsModule } from './chat-groups/chat-groups.module';
     }),
     ChatGroupsModule,
   ],
-  providers: [],
 })
 export class AppModule {}

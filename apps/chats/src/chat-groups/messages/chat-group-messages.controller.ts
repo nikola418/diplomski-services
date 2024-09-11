@@ -1,9 +1,10 @@
-import { AuthUser } from '@libs/common';
+import { AuthUser, PaginatedResult } from '@libs/common';
 import {
   ChatGroupMessagesService,
   CreateChatGroupMessageDto,
+  QueryChatMessagesDto,
 } from '@libs/data-access-chat-groups';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChatGroupMessage, User } from '@prisma/client';
 
@@ -20,18 +21,16 @@ export class ChatGroupMessagesController {
     @AuthUser() user: User,
     @Body() data: CreateChatGroupMessageDto,
   ) {
-    return this.chatGroupMessagesService.create({
-      ...data,
-      chatGroup: { connect: { id: chatGroupId } },
-      senderUser: { connect: { id: user.id } },
-    });
+    return this.chatGroupMessagesService.create(chatGroupId, data, user);
   }
 
   @Get()
   public findAll(
     @Param('chatGroupId') chatGroupId: string,
-  ): Promise<ChatGroupMessage[]> {
-    return this.chatGroupMessagesService.findAll({ chatGroupId });
+    @Query() queries: QueryChatMessagesDto,
+  ): Promise<PaginatedResult<ChatGroupMessage>> {
+    console.log(queries);
+    return this.chatGroupMessagesService.paginate(chatGroupId, queries);
   }
 
   @Get(':messageId')

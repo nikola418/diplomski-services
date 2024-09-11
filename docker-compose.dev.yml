@@ -1,3 +1,5 @@
+name: diplomski-dev
+
 x-base-microservice-dev: &base-microservice-dev
   build:
     target: dev
@@ -6,11 +8,15 @@ x-base-microservice-dev: &base-microservice-dev
     - /app/node_modules
 
 services:
+  api-gateway:
+    <<: *base-microservice-dev
   auth:
     <<: *base-microservice-dev
   users:
     <<: *base-microservice-dev
-  posts:
+  locations:
+    <<: *base-microservice-dev
+  trips:
     <<: *base-microservice-dev
   files:
     <<: *base-microservice-dev

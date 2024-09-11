@@ -1,4 +1,4 @@
-name: diplomski
+name: diplomski-prod
 
 x-base-microservice: &base-microservice
   build:
@@ -23,6 +23,14 @@ services:
     volumes:
       - ./.nginx:/etc/nginx:row
 
+  api-gateway:
+    <<: *base-microservice
+    build:
+      args:
+        APP_NAME: api-gateway
+    ports:
+      - '3000:3000'
+
   auth:
     <<: *base-microservice
     build:
@@ -34,11 +42,19 @@ services:
       args:
         APP_NAME: users
 
-  posts:
+  locations:
     <<: *base-microservice
     build:
       args:
-        APP_NAME: posts
+        APP_NAME: locations
+    depends_on:
+      - mongo
+
+  trips:
+    <<: *base-microservice
+    build:
+      args:
+        APP_NAME: trips
     depends_on:
       - mongo
 

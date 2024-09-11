@@ -1,83 +1,29 @@
-import {
-  AuthUser,
-  HttpExceptionsRpcFilter,
-  IsPublic,
-  JWTPayload,
-} from '@libs/common';
 import { UserEntity } from '@libs/data-access-users';
-import {
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Logger,
-  Post,
-  Res,
-  UseFilters,
-  UseGuards,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Controller, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto';
-import { JwtAuthGuard, LocalAuthGuard } from './guards';
 
-@ApiTags('auth')
-@Controller('auth')
+@Controller()
 export class AuthController {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
     private readonly authService: AuthService,
   ) {}
   private readonly logger = new Logger(AuthController.name);
 
-  @ApiBody({ type: SignInDto })
-  @IsPublic()
-  @Post('sign-in')
-  @UseGuards(LocalAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  public signIn(
-    @Res({ passthrough: true }) res: Response,
-    @AuthUser() user: User,
-  ): { token: string } {
-    const jwtPayload = this.jwtService.sign({
-      id: user.id,
-    } satisfies JWTPayload);
+  @MessagePattern({ cmd: 'sign-in' })
+  public async signIn(@Payload() data: SignInDto): Promise<{ token: string }> {
+    const user = await this.authService.validateSignIn(data);
+    const token = this.authService.createToken(user);
 
-    res.cookie('Authorization', jwtPayload, {
-      maxAge: this.configService.getOrThrow<number>('JWT_EXPIRES_IN') * 1000,
-      path: '/',
-      // domain: '192.168.1.108',
-      sameSite: 'lax',
-      httpOnly: true,
-      // secure: true,
-    });
-
-    return { token: jwtPayload };
+    return { token };
   }
 
-  @Get('profile')
-  @UseGuards(JwtAuthGuard)
-  public me(@AuthUser() user: User): UserEntity {
-    return user;
-  }
-
-  @Delete('sign-out')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  public signOut(@Res({ passthrough: true }) res: Response): void {
-    res.clearCookie('Authorization');
-  }
-
-  @UseFilters(HttpExceptionsRpcFilter)
-  @MessagePattern({ cmd: 'authorize' })
-  public authorize(
+  @MessagePattern({ cmd: 'profile' })
+  public profile(
     @Payload() data: { bearer: string; cookie: string },
   ): Promise<User> {
     const { id } = this.jwtService.verify<UserEntity>(

@@ -11,7 +11,7 @@ export class UserEntity implements User {
   lastName: string;
   username: string;
   phoneNumber: string;
-  profileImageKey: string;
+  avatarImageKey: string;
   email: string;
   password: string;
   @ApiProperty({ enum: $Enums.Role })

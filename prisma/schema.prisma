@@ -38,28 +38,30 @@ enum NearbyTag {
 }
 
 model User {
-  id              String  @id @default(cuid())
-  username        String  @unique
-  email           String  @unique
-  password        String
-  firstName       String
-  lastName        String
-  roles           Role[]
-  phoneNumber     String?
-  profileImageKey String?
+  id             String  @id @default(cuid())
+  username       String  @unique
+  email          String  @unique
+  password       String
+  firstName      String
+  lastName       String
+  roles          Role[]
+  phoneNumber    String?
+  avatarImageKey String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  favoritePosts     FavoritePost[]
+  favoriteLocations FavoriteLocation[]
   chatGroupMessages ChatGroupMessage[]
   chatGroupsMember  ChatGroupMember[]
   chatGroupsOwner   ChatGroup[]
+  reviews           Review[]
+  createdTrips      Trip[]
 
   @@map("users")
 }
 
-model Post {
+model Location {
   id            String        @id @default(cuid())
   title         String        @unique
   averageRating Float         @default(0)
@@ -74,28 +76,27 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  reviews        Review[]
-  favoritePosts  FavoritePost[]
-  chatGroupTrips ChatGroupTrip[]
+  favoriteLocations FavoriteLocation[]
+  trips             Trip[]
 
-  @@map("posts")
+  @@map("locations")
 }
 
-model FavoritePost {
-  postId    String
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model FavoriteLocation {
+  locationId String
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  post Post @relation(fields: [postId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  location Location @relation(fields: [locationId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
 
-  @@id([postId, userId])
-  @@map("favorite-posts")
+  @@id([locationId, userId])
+  @@map("favorite_locations")
 }
 
 model Review {
-  postId    String
+  tripId    String
   userId    String
   rating    Int
   text      String
@@ -104,17 +105,18 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  post Post @relation(fields: [postId], references: [id])
+  trip Trip @relation(fields: [tripId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
-  @@id([postId, userId])
+  @@id([tripId, userId])
   @@map("reviews")
 }
 
 model ChatGroup {
-  id            String   @id @default(cuid())
-  ownerUserId   String
-  name          String?
-  memberUserIds String[] @default([])
+  id             String  @id @default(cuid())
+  ownerUserId    String
+  name           String
+  avatarImageKey String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -122,7 +124,7 @@ model ChatGroup {
   chatGroupMessages ChatGroupMessage[]
   chatGroupMembers  ChatGroupMember[]
   chatGroupOwner    User               @relation(fields: [ownerUserId], references: [id])
-  chatGroupTrips    ChatGroupTrip[]
+  trips             Trip[]
 
   @@map("chat_groups")
 }
@@ -142,30 +144,39 @@ model ChatGroupMember {
 }
 
 model ChatGroupMessage {
-  id           String @id @default(cuid())
-  chatGroupId  String
-  senderUserId String
-  text         String
+  id                 String  @id @default(cuid())
+  chatGroupId        String
+  senderUserId       String
+  text               String
+  repliedToMessageId String?
+  tripId             String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chatGroup  ChatGroup @relation(fields: [chatGroupId], references: [id])
-  senderUser User      @relation(fields: [senderUserId], references: [id])
+  chatGroup        ChatGroup          @relation(fields: [chatGroupId], references: [id])
+  sender           User               @relation(fields: [senderUserId], references: [id])
+  trip             Trip?              @relation(fields: [tripId], references: [id])
+  repliedToMessage ChatGroupMessage?  @relation(name: "replies", fields: [repliedToMessageId], references: [id])
+  repliesToMessage ChatGroupMessage[] @relation(name: "replies")
 
   @@map("chat_group_messages")
 }
 
-model ChatGroupTrip {
+model Trip {
+  id                String     @id @default(cuid())
   chatGroupId       String
-  postId            String
-  name              String?
+  locationId        String
+  creatorUserId     String
   tripStatus        TripStatus @default(InPlanning)
+  name              String
   scheduledDateTime DateTime?
 
-  chatGroup ChatGroup @relation(fields: [chatGroupId], references: [id])
-  post      Post      @relation(fields: [postId], references: [id])
+  chatGroup         ChatGroup          @relation(fields: [chatGroupId], references: [id])
+  location          Location           @relation(fields: [locationId], references: [id])
+  creator           User               @relation(fields: [creatorUserId], references: [id])
+  reviews           Review[]
+  chatGroupMessages ChatGroupMessage[]
 
-  @@id([chatGroupId, postId])
   @@map("chat_group_trips")
 }

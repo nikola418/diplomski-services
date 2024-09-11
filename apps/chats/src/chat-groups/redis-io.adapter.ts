@@ -1,3 +1,4 @@
+import { cors } from '@libs/common';
 import { INestApplicationContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IoAdapter } from '@nestjs/platform-socket.io';
@@ -29,14 +30,7 @@ export class RedisIoAdapter extends IoAdapter {
     const server: Server = super.createIOServer(port, {
       ...options,
       path: '/chats',
-      cors: {
-        credentials: true,
-        origin: [
-          'http://localhost:8100',
-          'http://192.168.1.108:8100',
-          'http://172.18.0.1:8100',
-        ],
-      },
+      cors,
     } satisfies ServerOptions);
 
     server.adapter(this.adapterConstructor);

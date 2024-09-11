@@ -16,18 +16,40 @@ export class UsersService {
   }
 
   public async paginate(
-    filters: QueryUsersDto,
     user: User,
+    filters?: QueryUsersDto,
   ): Promise<PaginatedResult<User>> {
     return this.paginator<User, Prisma.UserFindManyArgs>(
       this.prismaService.user,
       {
         where: {
-          username: {
-            contains: filters.username,
-            not: user.username,
-            mode: 'insensitive',
-          },
+          AND: [
+            {
+              username: { not: user.username },
+            },
+            {
+              OR: [
+                {
+                  username: {
+                    contains: filters.username,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  firstName: {
+                    contains: filters.firstName,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  lastName: {
+                    contains: filters.lastName,
+                    mode: 'insensitive',
+                  },
+                },
+              ],
+            },
+          ],
         },
       },
       filters.pagination,

@@ -1,11 +1,5 @@
 import { AuthUser, PaginatedResult } from '@libs/common';
 import {
-  ChatGroupsService,
-  CreateChatGroupDto,
-  QueryChatGroupsDto,
-  UpdateChatGroupDto,
-} from '@libs/data-access-chat-groups';
-import {
   Body,
   Controller,
   Delete,
@@ -14,39 +8,58 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ChatGroup, User } from '@prisma/client';
+import {
+  ChatGroupEntity,
+  ChatGroupsService,
+  CreateChatGroupDto,
+  QueryChatGroupsDto,
+  UpdateChatGroupDto,
+} from 'libs/data-access-chat-groups/src';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { ChatGroupHook } from './chat-group.hook';
-import { ChatGroupEntity } from './entity';
+import { FilesService } from '@libs/data-access-files';
 
 @UseGuards(AccessGuard)
 @ApiTags('chat-groups')
 @Controller('chat-groups')
 export class ChatsGroupsController {
-  constructor(private readonly chatGroupsService: ChatGroupsService) {}
+  constructor(
+    private readonly chatGroupsService: ChatGroupsService,
+    private readonly filesService: FilesService,
+  ) {}
 
+  @ApiConsumes('multipart/form-data')
   @Post()
+  @UseInterceptors(FileInterceptor('avatarImage'))
   @UseAbility(Actions.create, ChatGroupEntity)
-  public create(
+  public async create(
     @Body() data: CreateChatGroupDto,
     @AuthUser() user: User,
+    @UploadedFile() image?: Express.Multer.File,
   ): Promise<ChatGroup> {
+    if (image) {
+      data.avatarImageKey = (
+        await this.filesService.uploadOne(image)
+      ).toString();
+    }
+
     return this.chatGroupsService.create({
       name: data.name,
-      chatGroupTrips: { create: { postId: data.postId } },
+      avatarImageKey: data.avatarImageKey,
       chatGroupOwner: { connect: { id: user.id } },
       chatGroupMembers: {
-        createMany: data.chatGroupMembers && {
+        createMany: {
           skipDuplicates: true,
-          data: data.chatGroupMembers,
+          data: data.createChatGroupMembers,
         },
-      },
-      memberUserIds: data.chatGroupMembers && {
-        set: data.chatGroupMembers?.map((member) => member.userId),
       },
     });
   }
@@ -68,13 +81,33 @@ export class ChatsGroupsController {
     });
   }
 
+  @ApiConsumes('multipart/form-data')
   @Patch(':groupId')
+  @UseInterceptors(FileInterceptor('avatarImage'))
   @UseAbility(Actions.update, ChatGroupEntity, ChatGroupHook)
-  public update(
+  public async update(
     @Param('groupId') id: string,
     @Body() data: UpdateChatGroupDto,
+    @UploadedFile() image?: Express.Multer.File,
   ): Promise<ChatGroupEntity> {
-    return this.chatGroupsService.update({ id }, {});
+    if (image) {
+      data.avatarImageKey = (
+        await this.filesService.uploadOne(image)
+      ).toString();
+    }
+
+    return this.chatGroupsService.update(
+      { id },
+      {
+        chatGroupMembers: {
+          createMany: {
+            skipDuplicates: true,
+            data: data.createChatGroupMembers,
+          },
+          deleteMany: { userId: { in: data.deleteChatGroupMemberIds } },
+        },
+      },
+    );
   }
 
   @Delete(':groupId')

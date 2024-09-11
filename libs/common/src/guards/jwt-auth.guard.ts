@@ -51,7 +51,7 @@ export class JwtAuthGuard implements CanActivate {
 
     return this.authClientProxy
       .send<User>(
-        { cmd: 'authorize' },
+        { cmd: 'profile' },
         new RmqRecordBuilder().setData({ bearer, cookie }).build(),
       )
       .pipe(

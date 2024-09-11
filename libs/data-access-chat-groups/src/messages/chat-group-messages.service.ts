@@ -1,24 +1,57 @@
+import { PaginatedResult, PaginateFunction, paginator } from '@libs/common';
 import { Injectable } from '@nestjs/common';
-import { ChatGroupMessage, Prisma } from '@prisma/client';
+import { ChatGroupMessage, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { CreateChatGroupMessageDto, QueryChatMessagesDto } from './dto';
 
 @Injectable()
 export class ChatGroupMessagesService {
   constructor(private readonly prismaService: PrismaService) {}
+  private readonly paginator: PaginateFunction = paginator({ perPage: 12 });
   private static readonly include: Prisma.ChatGroupMessageInclude = {
-    senderUser: true,
+    sender: true,
   };
   private static readonly orderBy: Prisma.ChatGroupMessageOrderByWithRelationInput =
-    { createdAt: 'asc' };
+    { createdAt: 'desc' };
 
-  public create(
-    data: Prisma.ChatGroupMessageCreateInput,
+  public async create(
+    chatGroupId: string,
+    dto: CreateChatGroupMessageDto,
+    user: User,
     include?: Prisma.ChatGroupMessageInclude,
   ): Promise<ChatGroupMessage> {
-    return this.prismaService.chatGroupMessage.create({
-      data,
-      include: include ?? ChatGroupMessagesService.include,
+    return this.prismaService.$transaction(async (tx) => {
+      await tx.chatGroup.update({
+        where: { id: chatGroupId },
+        data: { updatedAt: new Date() },
+      });
+      return tx.chatGroupMessage.create({
+        data: {
+          chatGroup: { connect: { id: chatGroupId } },
+          sender: { connect: { id: user.id } },
+          text: dto.text,
+        },
+        include: include ?? ChatGroupMessagesService.include,
+      });
     });
+  }
+
+  public paginate(
+    chatGroupId: string,
+    filters: QueryChatMessagesDto,
+  ): Promise<PaginatedResult<ChatGroupMessage>> {
+    return this.paginator<
+      ChatGroupMessage,
+      Prisma.ChatGroupMessageFindManyArgs
+    >(
+      this.prismaService.chatGroupMessage,
+      {
+        where: { chatGroupId },
+        include: ChatGroupMessagesService.include,
+        orderBy: ChatGroupMessagesService.orderBy,
+      },
+      filters.pagination,
+    );
   }
 
   public findAll(
