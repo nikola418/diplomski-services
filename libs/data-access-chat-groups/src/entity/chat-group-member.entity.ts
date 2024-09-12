@@ -1,4 +1,6 @@
+import { UserEntity } from '@libs/data-access-users';
 import { ChatGroupMember } from '@prisma/client';
+import { ChatGroupEntity } from './chat-group.entity';
 
 export class ChatGroupMemberEntity implements ChatGroupMember {
   constructor(partial: Partial<ChatGroupMemberEntity>) {
@@ -9,4 +11,7 @@ export class ChatGroupMemberEntity implements ChatGroupMember {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
+
+  memberUser: UserEntity;
+  chatGroup: ChatGroupEntity;
 }

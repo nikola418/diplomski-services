@@ -44,7 +44,7 @@ export class ChatsGroupsController {
     @Body() data: CreateChatGroupDto,
     @AuthUser() user: User,
     @UploadedFile() image?: Express.Multer.File,
-  ): Promise<ChatGroup> {
+  ): Promise<ChatGroupEntity> {
     if (image) {
       data.avatarImageKey = (
         await this.filesService.uploadOne(image)
@@ -58,7 +58,7 @@ export class ChatsGroupsController {
       chatGroupMembers: {
         createMany: {
           skipDuplicates: true,
-          data: data.createChatGroupMembers,
+          data: [...data.createChatGroupMembers, { userId: user.id }],
         },
       },
     });

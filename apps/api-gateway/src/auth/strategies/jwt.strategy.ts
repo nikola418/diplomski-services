@@ -9,7 +9,7 @@ import {
   Strategy,
   StrategyOptionsWithoutRequest,
 } from 'passport-jwt';
-import { firstValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -27,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  public validate({ id }: JWTPayload): Promise<User> {
-    return firstValueFrom(this.client.send('findOne', { id }));
+  public validate({ id }: JWTPayload): Observable<User> {
+    return this.client.send<User>('findOne', { id });
   }
 }
