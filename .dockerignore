@@ -1,6 +1,8 @@
-.vscode/
-node_modules/
-dist/
+.vscode
+**/node_modules
+.git
+.env
+dist
 npm-debug.log
 *.env
 .nginx
