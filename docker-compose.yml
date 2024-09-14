@@ -1,10 +1,10 @@
-name: diplomski-prod
+name: 'diplomski'
 
 x-base-microservice: &base-microservice
   build:
     context: .
     dockerfile: Dockerfile
-    target: prod
+    target: production
   ports:
     - '3000'
   restart: unless-stopped
@@ -12,7 +12,7 @@ x-base-microservice: &base-microservice
     - postgres
     - rabbitmq
   env_file:
-    - .local.env
+    - .env
 
 services:
   nginx:
@@ -28,8 +28,6 @@ services:
     build:
       args:
         APP_NAME: api-gateway
-    ports:
-      - '3000:3000'
 
   auth:
     <<: *base-microservice

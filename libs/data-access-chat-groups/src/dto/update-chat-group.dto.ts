@@ -6,5 +6,9 @@ export class UpdateChatGroupDto extends PartialType(CreateChatGroupDto) {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  deleteChatGroupMemberIds: string[] = [];
+  deleteChatGroupMemberIds?: string[];
+
+  @IsOptional()
+  @IsString()
+  ownerUserId?: string;
 }

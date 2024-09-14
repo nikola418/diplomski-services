@@ -10,7 +10,6 @@ export class ChatGroupsService {
   private readonly paginator: PaginateFunction = paginator({
     perPage: 12,
   });
-
   private static readonly include: Prisma.ChatGroupInclude = {
     chatGroupMembers: { include: { memberUser: true } },
     trips: { include: { location: true } },
@@ -71,11 +70,12 @@ export class ChatGroupsService {
     });
   }
 
-  public update(
-    where: Prisma.ChatGroupWhereUniqueInput,
-    data: Prisma.ChatGroupUpdateInput,
-  ): Promise<ChatGroup> {
-    return this.prismaService.chatGroup.update({ where, data });
+  public update({
+    where,
+    data,
+    include = ChatGroupsService.include,
+  }: Prisma.ChatGroupUpdateArgs): Promise<ChatGroup> {
+    return this.prismaService.chatGroup.update({ where, data, include });
   }
 
   public remove(where: Prisma.ChatGroupWhereUniqueInput): Promise<ChatGroup> {

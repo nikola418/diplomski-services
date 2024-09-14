@@ -58,7 +58,7 @@ export class ChatsGateway
     const user = await firstValueFrom(
       this.authProxy
         .send<User>(
-          { cmd: 'authorize' },
+          { cmd: 'profile' },
           new RmqRecordBuilder().setData({ bearer, cookie }).build(),
         )
         .pipe(

@@ -18,7 +18,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { Response } from 'express';
-import { firstValueFrom } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { SignInDto } from './dto';
 
 @ApiTags('auth')
@@ -32,24 +32,23 @@ export class AuthController {
 
   @IsPublic()
   @Post('sign-in')
-  public async signIn(
+  public signIn(
     @Body() data: SignInDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<{ token: string }> {
-    const payload = await firstValueFrom(
-      this.client.send<{ token: string }>({ cmd: 'sign-in' }, data),
+  ): Observable<{ token: string }> {
+    return this.client.send<{ token: string }>({ cmd: 'sign-in' }, data).pipe(
+      tap((payload) => {
+        res.cookie('Authorization', payload.token, {
+          maxAge:
+            this.configService.getOrThrow<number>('JWT_EXPIRES_IN') * 1000,
+          path: '/',
+          // domain: '192.168.1.108',
+          sameSite: 'lax',
+          httpOnly: true,
+          // secure: true,
+        });
+      }),
     );
-
-    res.cookie('Authorization', payload.token, {
-      maxAge: this.configService.getOrThrow<number>('JWT_EXPIRES_IN') * 1000,
-      path: '/',
-      // domain: '192.168.1.108',
-      sameSite: 'lax',
-      httpOnly: true,
-      // secure: true,
-    });
-
-    return payload;
   }
 
   @Get('profile')

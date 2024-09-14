@@ -53,6 +53,12 @@
       ],
       "@libs/data-access-trips/*": [
         "libs/data-access-trips/src/*"
+      ],
+      "@libs/data-access-auth": [
+        "libs/data-access-auth/src"
+      ],
+      "@libs/data-access-auth/*": [
+        "libs/data-access-auth/src/*"
       ]
     }
   }
