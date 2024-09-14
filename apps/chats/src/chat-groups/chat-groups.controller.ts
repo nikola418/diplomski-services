@@ -96,18 +96,24 @@ export class ChatsGroupsController {
       ).toString();
     }
 
-    return this.chatGroupsService.update(
-      { id },
-      {
+    return this.chatGroupsService.update({
+      where: { id },
+      data: {
+        name: data.name,
+        avatarImageKey: data.avatarImageKey,
+        ownerUserId: data.ownerUserId,
         chatGroupMembers: {
-          createMany: {
+          createMany: data.createChatGroupMembers && {
             skipDuplicates: true,
             data: data.createChatGroupMembers,
           },
-          deleteMany: { userId: { in: data.deleteChatGroupMemberIds } },
+          deleteMany: data.deleteChatGroupMemberIds && {
+            chatGroupId: id,
+            userId: { in: data.deleteChatGroupMemberIds },
+          },
         },
       },
-    );
+    });
   }
 
   @Delete(':groupId')

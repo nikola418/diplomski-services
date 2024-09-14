@@ -25,7 +25,7 @@ export class CreateChatGroupDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  createChatGroupMembers: CreateChatGroupMemberDto[] = [];
+  createChatGroupMembers?: CreateChatGroupMemberDto[];
 
   @IsString()
   name: string;

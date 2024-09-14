@@ -18,7 +18,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { $Enums, Trip, User } from '@prisma/client';
+import { $Enums, Trip, TripStatus, User } from '@prisma/client';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 
 @ApiTags('trips')
@@ -79,7 +79,15 @@ export class TripsController {
     },
   ])
   update(@Param('id') id: string, @Body() data: UpdateTripDto): Promise<Trip> {
-    return this.tripsService.update({ id }, data);
+    return this.tripsService.update(
+      { id },
+      {
+        ...data,
+        tripStatus: data.scheduledDateTime
+          ? TripStatus.Scheduled
+          : data.tripStatus,
+      },
+    );
   }
 
   @Delete(':id')
