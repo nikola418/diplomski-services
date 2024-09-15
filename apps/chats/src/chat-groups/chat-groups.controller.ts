@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -26,6 +27,7 @@ import {
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { ChatGroupHook } from './chat-group.hook';
 import { FilesService } from '@libs/data-access-files';
+import { Request } from 'express';
 
 @UseGuards(AccessGuard)
 @ApiTags('chat-groups')
@@ -58,7 +60,7 @@ export class ChatsGroupsController {
       chatGroupMembers: {
         createMany: {
           skipDuplicates: true,
-          data: [...data.createChatGroupMembers, { userId: user.id }],
+          data: [...(data.createChatGroupMembers ?? []), { userId: user.id }],
         },
       },
     });

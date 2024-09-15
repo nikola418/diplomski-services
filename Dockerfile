@@ -8,8 +8,7 @@ COPY pnpm-lock.yaml ./
 RUN pnpm fetch
 
 FROM base AS development
-COPY --exclude=/apps/ ./ ./
-COPY ./apps/${APP_NAME} ./apps/${APP_NAME}
+COPY  ./ ./
 RUN pnpm install -r --offline
 CMD pnpm run prisma:generate && pnpm run start:dev $APP_NAME
 

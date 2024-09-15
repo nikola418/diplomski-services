@@ -33,7 +33,6 @@ export class TripsService {
     filters: QueryTripsDto,
     user: User,
   ): Promise<PaginatedResult<Trip>> {
-    console.log(filters);
     return this.paginator<Trip, Prisma.TripFindManyArgs>(
       this.prismaService.trip,
       {
@@ -75,8 +74,16 @@ export class TripsService {
   public update(
     where: Prisma.TripWhereUniqueInput,
     data: Prisma.TripUpdateInput,
+    include: Prisma.TripInclude = TripsService.include,
   ): Promise<Trip> {
-    return this.prismaService.trip.update({ where, data });
+    return this.prismaService.trip.update({ where, data, include });
+  }
+
+  public async updateMany(
+    where: Prisma.TripWhereInput,
+    data: Prisma.TripUpdateInput,
+  ): Promise<Prisma.BatchPayload> {
+    return this.prismaService.trip.updateMany({ where, data });
   }
 
   public remove(where: Prisma.TripWhereUniqueInput): Promise<Trip> {

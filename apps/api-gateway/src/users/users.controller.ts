@@ -95,7 +95,6 @@ export class UsersController {
         await this.filesService.uploadOne(image)
       ).toString();
     }
-
     return firstValueFrom(
       this.client.send({ cmd: 'update' }, { userId, data }),
     );

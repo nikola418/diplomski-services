@@ -1,4 +1,4 @@
-name: 'diplomski'
+name: diplomski
 
 x-base-microservice: &base-microservice
   build:

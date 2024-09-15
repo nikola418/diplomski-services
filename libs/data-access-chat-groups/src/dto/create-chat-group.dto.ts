@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsMongoId,
@@ -14,17 +14,10 @@ class CreateChatGroupMemberDto {
 }
 
 export class CreateChatGroupDto {
-  @Transform(({ value }) => {
-    const parsed: CreateChatGroupMemberDto[] = JSON.parse(value);
-    return parsed.map((each) => {
-      const typed = new CreateChatGroupMemberDto();
-      typed.userId = each.userId;
-      return typed;
-    });
-  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
+  @Type(() => CreateChatGroupMemberDto)
   createChatGroupMembers?: CreateChatGroupMemberDto[];
 
   @IsString()

@@ -29,7 +29,6 @@ export class ChatGroupMessagesController {
     @Param('chatGroupId') chatGroupId: string,
     @Query() queries: QueryChatMessagesDto,
   ): Promise<PaginatedResult<ChatGroupMessage>> {
-    console.log(queries);
     return this.chatGroupMessagesService.paginate(chatGroupId, queries);
   }
 

@@ -29,7 +29,6 @@ export class AuthController {
     const { id } = this.jwtService.verify<UserEntity>(
       data.bearer?.substring(7) || data.cookie,
     );
-
     return this.authService.getUser(id);
   }
 }
