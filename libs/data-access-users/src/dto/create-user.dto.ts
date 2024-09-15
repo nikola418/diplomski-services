@@ -47,8 +47,6 @@ export class CreateUserDto {
   password: string;
 
   // !FOR SWAGGER ONLY
-  @IsOptional()
-  @IsMongoId()
   @ApiProperty({
     required: false,
     name: 'avatarImage',

@@ -8,27 +8,21 @@ import {
 } from '@libs/data-access-users';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { $Enums, User } from '@prisma/client';
-import { genSaltSync, hashSync } from 'bcrypt';
 
 @Controller()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @MessagePattern({ cmd: 'create' })
-  public async create(@Payload() data: CreateUserDto): Promise<UserEntity> {
-    return this.usersService.create({
-      ...data,
-      password: hashSync(data.password, genSaltSync()),
-      roles: { set: [$Enums.Role.User] },
-    });
+  public async create(@Payload() dto: CreateUserDto): Promise<UserEntity> {
+    return this.usersService.create(dto);
   }
 
   @MessagePattern({ cmd: 'paginate' })
   public paginate(
-    @Payload('user') user: User,
+    @Payload('user') user: UserEntity,
     @Payload('queries') queries?: QueryUsersDto,
-  ): Promise<PaginatedResult<User>> {
+  ): Promise<PaginatedResult<UserEntity>> {
     return this.usersService.paginate(user, queries);
   }
 
@@ -40,9 +34,9 @@ export class UsersController {
   @MessagePattern({ cmd: 'update' })
   public async update(
     @Payload('userId') userId: string,
-    @Payload('data') data: UpdateUserDto,
+    @Payload('dto') dto: UpdateUserDto,
   ): Promise<UserEntity> {
-    return this.usersService.update({ id: userId }, data);
+    return this.usersService.update({ id: userId }, dto);
   }
 
   @MessagePattern({ cmd: 'remove' })

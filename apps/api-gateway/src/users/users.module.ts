@@ -1,4 +1,7 @@
-import { DataAccessFilesModule } from '@libs/data-access-files';
+import {
+  DataAccessFilesModule,
+  GridFsMulterConfigService,
+} from '@libs/data-access-files';
 import { Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 import { MulterModule } from '@nestjs/platform-express';

@@ -1,13 +1,13 @@
-import { cors } from '@libs/common';
+import { cors, setupSwagger } from '@libs/common';
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors,
   });
   const configService = app.get(ConfigService);
@@ -35,21 +35,13 @@ async function bootstrap() {
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('Api example')
-    .setDescription('The Api API description')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  const appName = configService.getOrThrow<string>('APP_NAME');
+  setupSwagger(app, appName);
 
   const httpPort = configService.getOrThrow<string>('HTTP_PORT');
-
   await app.listen(httpPort, '0.0.0.0', async () => {
     const logger = new Logger();
-    logger.log(`Application started on: ${await app.getUrl()}`);
+    logger.log(`🚀 Application started on: ${await app.getUrl()}`);
   });
 }
 

@@ -19,6 +19,7 @@ import {
   Inject,
   Logger,
   Param,
+  ParseFilePipeBuilder,
   Patch,
   Post,
   Query,
@@ -51,16 +52,21 @@ export class UsersController {
   @UseAbility(Actions.create, UserEntity)
   @UseInterceptors(FileInterceptor('avatarImage'))
   public async create(
-    @Body() data: CreateUserDto,
-    @UploadedFile() image?: Express.Multer.File,
+    @Body() dto: CreateUserDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: 1000 * 1000 })
+        .addFileTypeValidator({ fileType: 'image' })
+        .build(),
+    )
+    image?: Express.Multer.File,
   ): Promise<Observable<UserEntity>> {
     if (image) {
-      data.avatarImageKey = (
+      dto.avatarImageKey = (
         await this.filesService.uploadOne(image)
       ).toString();
     }
-
-    return this.client.send<UserEntity>({ cmd: 'create' }, data);
+    return this.client.send<UserEntity>({ cmd: 'create' }, dto);
   }
 
   @ApiQuery({ name: 'username', type: String, required: false })
@@ -87,17 +93,21 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('avatarImage'))
   public async update(
     @Param('userId') userId: string,
-    @Body() data: UpdateUserDto,
-    @UploadedFile() image?: Express.Multer.File,
+    @Body() dto: UpdateUserDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: 1000 * 1000 })
+        .addFileTypeValidator({ fileType: 'image' })
+        .build(),
+    )
+    image?: Express.Multer.File,
   ): Promise<UserEntity> {
     if (image) {
-      data.avatarImageKey = (
+      dto.avatarImageKey = (
         await this.filesService.uploadOne(image)
       ).toString();
     }
-    return firstValueFrom(
-      this.client.send({ cmd: 'update' }, { userId, data }),
-    );
+    return firstValueFrom(this.client.send({ cmd: 'update' }, { userId, dto }));
   }
 
   @UseAbility(Actions.delete, UserEntity)
