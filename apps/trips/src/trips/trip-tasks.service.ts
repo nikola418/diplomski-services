@@ -9,7 +9,7 @@ export class TripTasksService {
 
   private readonly logger = new Logger(TripTasksService.name);
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   public async markFinishedTrips() {
     this.logger.log(`Mark trips as finished cron job called`);
     const { count } = await this.tripsService.updateMany(
