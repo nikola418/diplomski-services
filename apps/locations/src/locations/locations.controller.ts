@@ -64,6 +64,7 @@ export class LocationsController {
     @Query(ValidationPipe)
     filters: QueryLocationsDto,
   ): Promise<PaginatedResult<LocationEntity>> {
+    console.log(filters.range);
     const res = await this.locationsService.paginate(filters, user);
     res.data = plainToInstance(LocationEntity, res.data);
     return res;

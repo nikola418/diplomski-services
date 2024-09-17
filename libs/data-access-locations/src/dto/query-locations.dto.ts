@@ -4,27 +4,33 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
-  IsNumber,
+  IsLongitude,
   IsObject,
   IsOptional,
   IsString,
-  Max,
-  Min,
   ValidateNested,
 } from 'class-validator';
 
+class BoundsDto {
+  @IsLongitude()
+  gte: number;
+
+  @IsLongitude()
+  lte: number;
+}
+
 class RangeDto {
   @IsOptional()
-  @Max(90)
-  @Min(-90)
-  @IsNumber()
-  upper?: number;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => BoundsDto)
+  upper?: BoundsDto;
 
   @IsOptional()
-  @Max(90)
-  @Min(-90)
-  @IsNumber()
-  lower?: number;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => BoundsDto)
+  lower?: BoundsDto;
 }
 
 class CoordinatesDto {
