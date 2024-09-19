@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsEmail,
-  IsMongoId,
   IsOptional,
   IsPhoneNumber,
   IsString,

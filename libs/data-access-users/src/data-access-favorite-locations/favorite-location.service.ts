@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
-export class FavoriteLocationsService {
+export class FavoriteLocationService {
   constructor(private readonly prismaService: PrismaService) {}
 
   private static readonly include: Prisma.FavoriteLocationInclude = {
@@ -17,29 +17,29 @@ export class FavoriteLocationsService {
   public create(data: Prisma.FavoriteLocationCreateInput) {
     return this.prismaService.favoriteLocation.create({
       data,
-      include: FavoriteLocationsService.include,
+      include: FavoriteLocationService.include,
     });
   }
 
   findAll(where?: Prisma.FavoriteLocationWhereInput) {
     return this.prismaService.favoriteLocation.findMany({
       where,
-      include: FavoriteLocationsService.include,
-      orderBy: FavoriteLocationsService.orderBy,
+      include: FavoriteLocationService.include,
+      orderBy: FavoriteLocationService.orderBy,
     });
   }
 
   findOne(where: Prisma.FavoriteLocationWhereUniqueInput) {
     return this.prismaService.favoriteLocation.findUniqueOrThrow({
       where,
-      include: FavoriteLocationsService.include,
+      include: FavoriteLocationService.include,
     });
   }
 
   remove(where: Prisma.FavoriteLocationWhereUniqueInput) {
     return this.prismaService.favoriteLocation.delete({
       where,
-      include: FavoriteLocationsService.include,
+      include: FavoriteLocationService.include,
     });
   }
 }

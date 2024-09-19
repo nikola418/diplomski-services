@@ -6,7 +6,7 @@ import { CreateUserDto, QueryUsersDto, UpdateUserDto } from './dto';
 import { hashSync, genSaltSync } from 'bcrypt';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
   private readonly paginator = paginator({ perPage: 12 });
 
@@ -79,7 +79,10 @@ export class UsersService {
   ): Promise<User> {
     return this.prismaService.user.update({
       where,
-      data: { ...dto, password: hashSync(dto.password, genSaltSync()) },
+      data: {
+        ...dto,
+        password: dto.password && hashSync(dto.password, genSaltSync()),
+      },
     });
   }
 

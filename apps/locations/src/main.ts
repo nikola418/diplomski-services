@@ -1,8 +1,7 @@
-import { cors } from '@libs/common';
+import { cors, setupSwagger } from '@libs/common';
 import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { AppModule } from './app.module';
@@ -34,14 +33,7 @@ async function bootstrap() {
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('Locations example')
-    .setDescription('The Locations API description')
-    .setVersion('1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
-
+  setupSwagger(app, 'locations');
   const httpPort = configService.getOrThrow<string>('HTTP_PORT');
 
   await app.listen(httpPort, '0.0.0.0', async () => {

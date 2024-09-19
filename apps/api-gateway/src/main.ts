@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -12,9 +13,39 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
+  const appName = configService.getOrThrow<string>('APP_NAME');
+  setupSwagger(app, appName, {
+    explorer: true,
+    swaggerUiEnabled: true,
+    swaggerOptions: {
+      urls: [
+        {
+          name: 'auth',
+          url: 'http://192.168.1.108:8080/docs/auth/yaml/',
+        },
+        {
+          name: 'users',
+          url: 'http://192.168.1.108:8080/docs/users/yaml/',
+        },
+        {
+          name: 'locations',
+          url: 'http://192.168.1.108:8080/docs/locations/yaml/',
+        },
+        {
+          name: 'trips',
+          url: 'http://192.168.1.108:8080/docs/trips/yaml/',
+        },
+        {
+          name: 'files',
+          url: 'http://192.168.1.108:8080/docs/files/yaml/',
+        },
+      ],
+    },
+  });
   app.enableVersioning();
   app.enableShutdownHooks();
 
+  app.use(helmet());
   app.use(cookieParser());
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
@@ -34,9 +65,6 @@ async function bootstrap() {
       },
     }),
   );
-
-  const appName = configService.getOrThrow<string>('APP_NAME');
-  setupSwagger(app, appName);
 
   const httpPort = configService.getOrThrow<string>('HTTP_PORT');
   await app.listen(httpPort, '0.0.0.0', async () => {

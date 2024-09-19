@@ -1,17 +1,12 @@
-import { AUTH_SERVICE } from '@libs/common';
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientRMQ } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { User } from '@prisma/client';
 import { IStrategyOptions, Strategy } from 'passport-local';
-import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    @Inject(AUTH_SERVICE)
-    private readonly client: ClientRMQ,
-  ) {
+  constructor(private readonly authService: AuthService) {
     super(<IStrategyOptions>{
       usernameField: 'username',
       passwordField: 'password',
@@ -19,8 +14,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   public async validate(username: string, password: string): Promise<User> {
-    return firstValueFrom(
-      this.client.send<User>('validate', { username, password }),
-    );
+    return this.authService.validateSignIn({ username, password });
   }
 }

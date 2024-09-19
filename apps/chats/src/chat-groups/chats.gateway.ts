@@ -100,6 +100,7 @@ export class ChatsGateway
 
       await this.cacheManager.del(user?.id);
     } catch (error) {
+      this.logger.error(error);
       client.disconnect();
     }
   }

@@ -1,4 +1,5 @@
 import { AuthUser, PaginatedResult } from '@libs/common';
+import { FilesService } from '@libs/data-access-files';
 import {
   Body,
   Controller,
@@ -8,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -26,8 +26,6 @@ import {
 } from 'libs/data-access-chat-groups/src';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { ChatGroupHook } from './chat-group.hook';
-import { FilesService } from '@libs/data-access-files';
-import { Request } from 'express';
 
 @UseGuards(AccessGuard)
 @ApiTags('chat-groups')

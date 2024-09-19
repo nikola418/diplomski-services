@@ -1,35 +1,74 @@
-import { HttpToRpcExceptionFilter, PrismaExceptionFilter } from '@libs/common';
+import { cors, setupSwagger } from '@libs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import * as cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { RmqOptions, Transport } from '@nestjs/microservices';
+import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 
 async function bootstrap() {
-  const ctx = await NestFactory.createApplicationContext(AppModule, {});
-  const configService = ctx.get(ConfigService);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors,
+  });
+  const configService = app.get(ConfigService);
+  const httpAdapter = app.getHttpAdapter();
 
-  const rmqUrl = configService.getOrThrow<string>('RMQ_URL');
-  ctx.close();
-
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.RMQ,
-      options: {
-        noAck: true,
-        urls: [rmqUrl],
-        queue: 'auth',
-      },
+  app.connectMicroservice<RmqOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.getOrThrow<string>('RMQ_URL')],
+      queue: 'auth',
+      noAck: false,
     },
-  );
+  });
+  app.setGlobalPrefix('api');
 
+  const appName = configService.getOrThrow<string>('APP_NAME');
+  setupSwagger(app, appName);
+  app.enableVersioning();
   app.enableShutdownHooks();
+
+  app.use(helmet());
+  app.use(cookieParser());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      exceptionFactory: (errors) => {
+        const message = new Object();
+        errors.forEach((err) => {
+          message[err.property] = Object.values(err.constraints);
+        });
+        return new BadRequestException({
+          message,
+          error: 'Bad Request',
+          statusCode: 400,
+        });
+      },
+    }),
+  );
   app.useGlobalFilters(
-    new PrismaExceptionFilter(),
-    new HttpToRpcExceptionFilter(),
+    new PrismaClientExceptionFilter(httpAdapter, {
+      P2000: HttpStatus.BAD_REQUEST,
+      P2002: HttpStatus.CONFLICT,
+      P2025: HttpStatus.NOT_FOUND,
+    }),
   );
 
-  await app.listen();
+  const httpPort = configService.getOrThrow<string>('HTTP_PORT');
+  await app.startAllMicroservices();
+  await app.listen(httpPort, '0.0.0.0', async () => {
+    const logger = new Logger();
+    logger.log(`🚀 Application started on: ${await app.getUrl()}`);
+  });
 }
 
 bootstrap();

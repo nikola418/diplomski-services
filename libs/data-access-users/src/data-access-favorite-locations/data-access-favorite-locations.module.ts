@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { FavoriteLocationsService } from './favorite-locations.service';
+import { FavoriteLocationService } from './favorite-location.service';
 
 @Module({
-  providers: [FavoriteLocationsService],
-  exports: [FavoriteLocationsService],
+  providers: [FavoriteLocationService],
+  exports: [FavoriteLocationService],
 })
 export class DataAccessFavoriteLocationsModule {}

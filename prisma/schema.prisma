@@ -180,3 +180,12 @@ model Trip {
 
   @@map("chat_group_trips")
 }
+
+model TripVote {
+  tripId  String
+  userId  String
+  isGoing Boolean @default(false)
+
+  @@id([tripId, userId])
+  @@map("trip_votes")
+}
