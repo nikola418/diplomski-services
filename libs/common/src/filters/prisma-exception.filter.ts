@@ -1,22 +1,18 @@
 import { ArgumentsHost, Catch, Logger } from '@nestjs/common';
-import { BaseRpcExceptionFilter, RpcException } from '@nestjs/microservices';
+import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
-import { Observable } from 'rxjs';
 import { Constraint, ExceptionResponse } from '../types/exception.response';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
-export class PrismaExceptionFilter extends BaseRpcExceptionFilter {
-  constructor() {
-    super();
-  }
-
+export class PrismaExceptionFilter extends BaseExceptionFilter {
   private readonly logger = new Logger(PrismaExceptionFilter.name);
 
   override catch(
     exception: Prisma.PrismaClientKnownRequestError,
     host: ArgumentsHost,
-  ): Observable<any> {
+  ): void {
     this.logger.debug(exception);
+
     let err: ExceptionResponse;
     console.log(exception);
     if (exception.code === 'P2000') {
@@ -36,6 +32,6 @@ export class PrismaExceptionFilter extends BaseRpcExceptionFilter {
       err = { message: exception.message, statusCode: 400 };
     }
 
-    return super.catch(new RpcException(err), host);
+    super.catch(err, host);
   }
 }

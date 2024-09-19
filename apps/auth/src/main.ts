@@ -1,25 +1,18 @@
-import { cors, setupSwagger } from '@libs/common';
-import {
-  BadRequestException,
-  HttpStatus,
-  Logger,
-  ValidationPipe,
-} from '@nestjs/common';
+import { cors, PrismaExceptionFilter, setupSwagger } from '@libs/common';
+import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { RmqOptions, Transport } from '@nestjs/microservices';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { RmqOptions, Transport } from '@nestjs/microservices';
-import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors,
   });
   const configService = app.get(ConfigService);
-  const httpAdapter = app.getHttpAdapter();
 
   app.connectMicroservice<RmqOptions>({
     transport: Transport.RMQ,
@@ -55,13 +48,7 @@ async function bootstrap() {
       },
     }),
   );
-  app.useGlobalFilters(
-    new PrismaClientExceptionFilter(httpAdapter, {
-      P2000: HttpStatus.BAD_REQUEST,
-      P2002: HttpStatus.CONFLICT,
-      P2025: HttpStatus.NOT_FOUND,
-    }),
-  );
+  app.useGlobalFilters(new PrismaExceptionFilter());
 
   const httpPort = configService.getOrThrow<string>('HTTP_PORT');
   await app.startAllMicroservices();
