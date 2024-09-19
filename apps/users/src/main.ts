@@ -6,7 +6,7 @@ import {
 } from '@libs/common';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -34,7 +34,8 @@ async function bootstrap() {
       exceptionFactory: validationExceptionFactory,
     }),
   );
-  const { httpAdapter } = app.get(HttpAdapterHost);
+
+  const httpAdapter = app.getHttpAdapter();
   app.useGlobalFilters(new PrismaExceptionFilter(httpAdapter));
 
   const httpPort = configService.getOrThrow<string>('HTTP_PORT');

@@ -10,7 +10,6 @@ import {
   Logger,
   Post,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,7 +17,6 @@ import { User } from '@prisma/client';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto';
-import { LocalAuthGuard } from './guards';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -30,13 +28,12 @@ export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
   @IsPublic()
-  @UseGuards(LocalAuthGuard)
   @Post('sign-in')
-  public signIn(
-    @AuthUser() { id }: User,
-    @Body() data: SignInDto,
+  public async signIn(
+    @Body() dto: SignInDto,
     @Res({ passthrough: true }) res: Response,
-  ): { token: string } {
+  ): Promise<{ token: string }> {
+    const { id } = await this.authService.validateSignIn(dto);
     const token = this.authService.createToken({ id });
     res.cookie('Authorization', token, {
       maxAge: this.configService.getOrThrow<number>('JWT_EXPIRES_IN') * 1000,

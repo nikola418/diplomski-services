@@ -48,7 +48,9 @@ async function bootstrap() {
       },
     }),
   );
-  app.useGlobalFilters(new PrismaExceptionFilter());
+
+  const httpAdapter = app.getHttpAdapter();
+  app.useGlobalFilters(new PrismaExceptionFilter(httpAdapter));
 
   const httpPort = configService.getOrThrow<string>('HTTP_PORT');
   await app.startAllMicroservices();
