@@ -22,7 +22,7 @@ async function bootstrap() {
   app.enableVersioning();
   app.enableShutdownHooks();
 
-  app.use(helmet());
+  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
