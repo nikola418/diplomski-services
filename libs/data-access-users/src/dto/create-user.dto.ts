@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsEmail,
-  IsMongoId,
   IsOptional,
   IsPhoneNumber,
   IsString,
@@ -47,8 +46,6 @@ export class CreateUserDto {
   password: string;
 
   // !FOR SWAGGER ONLY
-  @IsOptional()
-  @IsMongoId()
   @ApiProperty({
     required: false,
     name: 'avatarImage',

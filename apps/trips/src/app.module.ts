@@ -8,6 +8,7 @@ import { $Enums } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
 import { PrismaModule } from 'nestjs-prisma';
 import { TripsModule } from './trips/trips.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TripsModule } from './trips/trips.module';
         inject: [ConfigService],
       },
     ]),
+    ScheduleModule.forRoot(),
     TripsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],

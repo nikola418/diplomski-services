@@ -1,10 +1,9 @@
-name: 'diplomski'
+name: diplomski
 
 x-base-microservice: &base-microservice
   build:
     context: .
     dockerfile: Dockerfile
-    target: production
   ports:
     - '3000'
   restart: unless-stopped
@@ -17,6 +16,13 @@ x-base-microservice: &base-microservice
 services:
   nginx:
     image: nginx:latest
+    depends_on:
+      - auth
+      - users
+      - locations
+      - chats
+      - trips
+      - files
     ports:
       - '8080:80'
     restart: unless-stopped

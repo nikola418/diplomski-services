@@ -1,5 +1,5 @@
 import { JWTPayload } from '@libs/common';
-import { UsersService } from '@libs/data-access-users';
+import { UserService } from '@libs/data-access-users';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
@@ -10,12 +10,12 @@ import { SignInDto } from './dto';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
 
   public async validateSignIn(signInDto: SignInDto): Promise<User | null> {
-    const user = await this.usersService.findOne({
+    const user = await this.userService.findOne({
       username: signInDto.username,
     });
 
@@ -25,7 +25,7 @@ export class AuthService {
   }
 
   public getUser(id: string): Promise<User> {
-    return this.usersService.findOne({ id });
+    return this.userService.findOne({ id });
   }
 
   public createToken(payload: JWTPayload): string {

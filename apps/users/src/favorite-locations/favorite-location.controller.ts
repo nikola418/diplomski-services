@@ -1,7 +1,7 @@
-import { USERS_SERVICE } from '@libs/common';
 import {
   CreateFavoriteLocationDto,
   FavoriteLocationEntity,
+  FavoriteLocationService,
   UserEntity,
 } from '@libs/data-access-users';
 import {
@@ -9,22 +9,21 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags } from '@nestjs/swagger';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
-import { firstValueFrom, Observable } from 'rxjs';
 import { AuthUserHook } from './user.hook';
 
 @ApiTags('favorite locations')
 @UseGuards(AccessGuard)
 @Controller('favorite-locations')
-export class FavoriteLocationsController {
-  constructor(@Inject(USERS_SERVICE) private readonly client: ClientProxy) {}
+export class FavoriteLocationController {
+  constructor(
+    private readonly favoriteLocationService: FavoriteLocationService,
+  ) {}
 
   @Put()
   @UseAbility(Actions.update, UserEntity, AuthUserHook)
@@ -32,14 +31,11 @@ export class FavoriteLocationsController {
   public create(
     @Body() data: CreateFavoriteLocationDto,
     @Param('userId') userId: string,
-  ): Observable<FavoriteLocationEntity> {
-    return this.client.send(
-      { scope: 'favorite-locations', cmd: 'create' },
-      {
-        data,
-        userId,
-      },
-    );
+  ): Promise<FavoriteLocationEntity> {
+    return this.favoriteLocationService.create({
+      location: { connect: { id: data.locationId } },
+      user: { connect: { id: userId } },
+    });
   }
 
   @Get()
@@ -47,12 +43,7 @@ export class FavoriteLocationsController {
   public findAll(
     @Param('userId') userId: string,
   ): Promise<FavoriteLocationEntity[]> {
-    return firstValueFrom(
-      this.client.send(
-        { scope: 'favorite-locations', cmd: 'findAll' },
-        { userId },
-      ),
-    );
+    return this.favoriteLocationService.findAll({ userId });
   }
 
   @Get(':locationId')
@@ -61,15 +52,9 @@ export class FavoriteLocationsController {
     @Param('userId') userId: string,
     @Param('locationId') locationId: string,
   ): Promise<FavoriteLocationEntity> {
-    return firstValueFrom(
-      this.client.send(
-        { scope: 'favorite-locations', cmd: 'findOne' },
-        {
-          userId,
-          locationId,
-        },
-      ),
-    );
+    return this.favoriteLocationService.findOne({
+      locationId_userId: { userId, locationId },
+    });
   }
 
   @Delete(':locationId')
@@ -78,14 +63,8 @@ export class FavoriteLocationsController {
     @Param('userId') userId: string,
     @Param('locationId') locationId: string,
   ): Promise<FavoriteLocationEntity> {
-    return firstValueFrom(
-      this.client.send(
-        { scope: 'favorite-locations', cmd: 'remove' },
-        {
-          locationId,
-          userId,
-        },
-      ),
-    );
+    return this.favoriteLocationService.remove({
+      locationId_userId: { locationId, userId },
+    });
   }
 }

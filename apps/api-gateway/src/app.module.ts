@@ -7,8 +7,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PassportModule } from '@nestjs/passport';
 import { $Enums } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -45,8 +43,6 @@ import { UsersModule } from './users/users.module';
       ],
       isGlobal: true,
     }),
-    AuthModule,
-    UsersModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })

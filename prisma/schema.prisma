@@ -136,8 +136,8 @@ model ChatGroupMember {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chatGroup  ChatGroup @relation(fields: [chatGroupId], references: [id])
-  memberUser User      @relation(fields: [userId], references: [id])
+  chatGroup  ChatGroup @relation(fields: [chatGroupId], references: [id], onDelete: Cascade)
+  memberUser User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([chatGroupId, userId])
   @@map("chat_group_members")
@@ -154,7 +154,7 @@ model ChatGroupMessage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chatGroup        ChatGroup          @relation(fields: [chatGroupId], references: [id])
+  chatGroup        ChatGroup          @relation(fields: [chatGroupId], references: [id], onDelete: Cascade)
   sender           User               @relation(fields: [senderUserId], references: [id])
   trip             Trip?              @relation(fields: [tripId], references: [id])
   repliedToMessage ChatGroupMessage?  @relation(name: "replies", fields: [repliedToMessageId], references: [id])
@@ -172,11 +172,20 @@ model Trip {
   name              String
   scheduledDateTime DateTime?
 
-  chatGroup         ChatGroup          @relation(fields: [chatGroupId], references: [id])
+  chatGroup         ChatGroup          @relation(fields: [chatGroupId], references: [id], onDelete: Cascade)
   location          Location           @relation(fields: [locationId], references: [id])
   creator           User               @relation(fields: [creatorUserId], references: [id])
   reviews           Review[]
   chatGroupMessages ChatGroupMessage[]
 
   @@map("chat_group_trips")
+}
+
+model TripVote {
+  tripId  String
+  userId  String
+  isGoing Boolean @default(false)
+
+  @@id([tripId, userId])
+  @@map("trip_votes")
 }

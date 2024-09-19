@@ -23,6 +23,10 @@ export class LocationsService {
     filters: QueryLocationsDto,
     user: User,
   ): Promise<PaginatedResult<Location>> {
+    console.log({
+      locationLat: filters.range?.lat.lower,
+      locationLong: filters.range?.lng.lower,
+    });
     return this.paginator<Location, Prisma.LocationFindManyArgs>(
       this.prismaService.location,
       {
@@ -32,14 +36,18 @@ export class LocationsService {
           },
           nearbyTags: filters.nearbyTags && { hasEvery: filters.nearbyTags },
           title: { contains: filters.title, mode: 'insensitive' },
-          locationLat: {
-            gte: filters.range?.lat.lower,
-            lte: filters.range?.lat.upper,
-          },
-          locationLong: {
-            gte: filters.range?.lng.lower,
-            lte: filters.range?.lng.upper,
-          },
+          AND: [
+            {
+              locationLat: filters.range?.lat.upper,
+              locationLong: filters.range?.lng.upper,
+            },
+            {
+              NOT: {
+                locationLat: filters.range?.lat.lower,
+                locationLong: filters.range?.lng.lower,
+              },
+            },
+          ],
         },
         include: {
           favoriteLocations: { where: { userId: user.id } },

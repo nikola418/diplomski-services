@@ -1,35 +1,60 @@
+import { AuthUser, IsPublic } from '@libs/common';
 import { UserEntity } from '@libs/data-access-users';
-import { Controller, Logger } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  Post,
+  Res,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto';
 
-@Controller()
+@ApiTags('auth')
+@Controller('auth')
 export class AuthController {
   constructor(
-    private readonly jwtService: JwtService,
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {}
   private readonly logger = new Logger(AuthController.name);
 
-  @MessagePattern({ cmd: 'sign-in' })
-  public async signIn(@Payload() data: SignInDto): Promise<{ token: string }> {
-    const user = await this.authService.validateSignIn(data);
-    const token = this.authService.createToken(user);
+  @IsPublic()
+  @Post('sign-in')
+  public async signIn(
+    @Body() dto: SignInDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ token: string }> {
+    const { id } = await this.authService.validateSignIn(dto);
+    const token = this.authService.createToken({ id });
+    res.cookie('Authorization', token, {
+      maxAge: this.configService.getOrThrow<number>('JWT_EXPIRES_IN') * 1000,
+      path: '/',
+      // domain: '192.168.1.108',
+      sameSite: 'lax',
+      httpOnly: true,
+      // secure: true,
+    });
 
     return { token };
   }
 
-  @MessagePattern({ cmd: 'profile' })
-  public profile(
-    @Payload() data: { bearer: string; cookie: string },
-  ): Promise<User> {
-    const { id } = this.jwtService.verify<UserEntity>(
-      data.bearer?.substring(7) || data.cookie,
-    );
+  @Get('profile')
+  public me(@AuthUser() user: User): UserEntity {
+    return user;
+  }
 
-    return this.authService.getUser(id);
+  @Delete('sign-out')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public signOut(@Res({ passthrough: true }) res: Response): void {
+    res.clearCookie('Authorization');
   }
 }

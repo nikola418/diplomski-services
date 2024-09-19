@@ -1,4 +1,5 @@
 import { AuthUser, PaginatedResult } from '@libs/common';
+import { FilesService } from '@libs/data-access-files';
 import {
   Body,
   Controller,
@@ -25,7 +26,6 @@ import {
 } from 'libs/data-access-chat-groups/src';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { ChatGroupHook } from './chat-group.hook';
-import { FilesService } from '@libs/data-access-files';
 
 @UseGuards(AccessGuard)
 @ApiTags('chat-groups')
@@ -58,7 +58,7 @@ export class ChatsGroupsController {
       chatGroupMembers: {
         createMany: {
           skipDuplicates: true,
-          data: [...data.createChatGroupMembers, { userId: user.id }],
+          data: [...(data.createChatGroupMembers ?? []), { userId: user.id }],
         },
       },
     });

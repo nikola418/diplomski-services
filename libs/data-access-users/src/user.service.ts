@@ -1,23 +1,28 @@
 import { PaginatedResult, paginator } from '@libs/common';
 import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { $Enums, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
-import { QueryUsersDto } from './dto';
+import { CreateUserDto, QueryUsersDto, UpdateUserDto } from './dto';
+import { hashSync, genSaltSync } from 'bcrypt';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
   private readonly paginator = paginator({ perPage: 12 });
 
-  public create(data: Prisma.UserCreateInput): Promise<User> {
+  public create(dto: CreateUserDto): Promise<User> {
     return this.prismaService.user.create({
-      data,
+      data: {
+        ...dto,
+        password: hashSync(dto.password, genSaltSync()),
+        roles: { set: [$Enums.Role.User] },
+      },
     });
   }
 
   public async paginate(
     user: User,
-    filters?: QueryUsersDto,
+    queries?: QueryUsersDto,
   ): Promise<PaginatedResult<User>> {
     return this.paginator<User, Prisma.UserFindManyArgs>(
       this.prismaService.user,
@@ -31,19 +36,19 @@ export class UsersService {
               OR: [
                 {
                   username: {
-                    contains: filters.username,
+                    contains: queries.username,
                     mode: 'insensitive',
                   },
                 },
                 {
                   firstName: {
-                    contains: filters.firstName,
+                    contains: queries.firstName,
                     mode: 'insensitive',
                   },
                 },
                 {
                   lastName: {
-                    contains: filters.lastName,
+                    contains: queries.lastName,
                     mode: 'insensitive',
                   },
                 },
@@ -52,7 +57,7 @@ export class UsersService {
           ],
         },
       },
-      filters.pagination,
+      queries.pagination,
     );
   }
 
@@ -70,9 +75,15 @@ export class UsersService {
 
   public update(
     where: Prisma.UserWhereUniqueInput,
-    data: Prisma.UserUpdateInput,
+    dto: UpdateUserDto,
   ): Promise<User> {
-    return this.prismaService.user.update({ where, data });
+    return this.prismaService.user.update({
+      where,
+      data: {
+        ...dto,
+        password: dto.password && hashSync(dto.password, genSaltSync()),
+      },
+    });
   }
 
   public remove(where: Prisma.UserWhereUniqueInput): Promise<User> {
