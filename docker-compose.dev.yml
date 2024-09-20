@@ -1,3 +1,7 @@
+include:
+  - path:
+      - docker-compose.base.yml
+
 name: diplomski-dev
 
 x-base-microservice-dev: &base-microservice-dev
@@ -9,16 +13,37 @@ x-base-microservice-dev: &base-microservice-dev
 
 services:
   api-gateway:
+    extends:
+      file: docker-compose.yml
+      service: api-gateway
     <<: *base-microservice-dev
   auth:
+    extends:
+      file: docker-compose.yml
+      service: auth
     <<: *base-microservice-dev
   users:
+    extends:
+      file: docker-compose.yml
+      service: users
     <<: *base-microservice-dev
   locations:
+    extends:
+      file: docker-compose.yml
+      service: locations
     <<: *base-microservice-dev
   trips:
+    extends:
+      file: docker-compose.yml
+      service: trips
     <<: *base-microservice-dev
   files:
+    extends:
+      file: docker-compose.yml
+      service: files
     <<: *base-microservice-dev
   chats:
+    extends:
+      file: docker-compose.yml
+      service: chats
     <<: *base-microservice-dev
