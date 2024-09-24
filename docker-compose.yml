@@ -18,22 +18,6 @@ x-base-microservice: &base-microservice
     - .env
 
 services:
-  nginx:
-    image: nginx:latest
-    depends_on:
-      - api-gateway
-      - auth
-      - users
-      - locations
-      - chats
-      - trips
-      - files
-    ports:
-      - '8080:80'
-    restart: unless-stopped
-    volumes:
-      - ./.nginx:/etc/nginx:row
-
   api-gateway:
     <<: *base-microservice
     build:

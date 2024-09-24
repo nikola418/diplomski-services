@@ -1,4 +1,4 @@
-import { TripEntity } from '@libs/data-access-trips';
+import { TripEntity } from '@libs/data-access-trips/trips';
 import { UserEntity } from '@libs/data-access-users';
 import { ApiProperty } from '@nestjs/swagger';
 import { ChatGroup } from '@prisma/client';

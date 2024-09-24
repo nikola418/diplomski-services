@@ -5,7 +5,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { QueryTripsDto } from './dto';
 
 @Injectable()
-export class TripsService {
+export class TripService {
   constructor(private readonly prismaService: PrismaService) {}
   private readonly paginator: PaginateFunction = paginator({
     perPage: 12,
@@ -13,6 +13,7 @@ export class TripsService {
 
   private static readonly include: Prisma.TripInclude = {
     location: true,
+    tripAttendances: { include: { user: true } },
   };
   private static readonly orderBy: Prisma.TripOrderByWithRelationInput = {};
 
@@ -51,7 +52,7 @@ export class TripsService {
           chatGroupId: filters.chatGroupId,
           locationId: filters.locationId,
         },
-        include: TripsService.include,
+        include: TripService.include,
       },
       filters.pagination,
     );
@@ -59,14 +60,15 @@ export class TripsService {
 
   public findAll(
     where?: Prisma.TripWhereInput,
-    include = TripsService.include,
+    orderBy?: Prisma.TripOrderByWithRelationInput,
+    include: Prisma.TripInclude = TripService.include,
   ): Promise<Trip[]> {
-    return this.prismaService.trip.findMany({ where, include });
+    return this.prismaService.trip.findMany({ where, include, orderBy });
   }
 
   public findOne(
     where: Prisma.TripWhereUniqueInput,
-    include = TripsService.include,
+    include = TripService.include,
   ): Promise<Trip> {
     return this.prismaService.trip.findUniqueOrThrow({ where, include });
   }
@@ -74,7 +76,7 @@ export class TripsService {
   public update(
     where: Prisma.TripWhereUniqueInput,
     data: Prisma.TripUpdateInput,
-    include: Prisma.TripInclude = TripsService.include,
+    include: Prisma.TripInclude = TripService.include,
   ): Promise<Trip> {
     return this.prismaService.trip.update({ where, data, include });
   }

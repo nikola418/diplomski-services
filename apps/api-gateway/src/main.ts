@@ -39,6 +39,10 @@ async function bootstrap() {
           name: 'files',
           url: 'http://192.168.1.108:8080/docs/files/yaml/',
         },
+        {
+          name: 'chats',
+          url: 'http://192.168.1.108:8080/docs/chats/yaml/',
+        },
       ],
     },
   });

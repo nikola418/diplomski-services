@@ -60,11 +60,11 @@ async function seed() {
   await prismaClient.user.upsert({
     where: {
       email: 'superuser@diplomski.com',
-      username: 'admin',
+      username: 'adminski',
     },
     create: {
       email: 'superuser@diplomski.com',
-      username: 'admin',
+      username: 'adminski',
       password: hashSync('Password123.', genSaltSync()),
       firstName: 'Admin',
       lastName: 'Admin',

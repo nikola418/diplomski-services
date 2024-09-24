@@ -4,7 +4,7 @@ WORKDIR /app
 RUN corepack enable pnpm && corepack install -g pnpm@latest-9
 COPY pnpm-lock.yaml ./
 RUN pnpm fetch
-COPY  ./ ./
+ADD  . ./
 RUN pnpm install -r --offline
 
 RUN pnpm run prisma:generate

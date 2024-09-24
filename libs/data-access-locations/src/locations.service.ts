@@ -23,10 +23,6 @@ export class LocationsService {
     filters: QueryLocationsDto,
     user: User,
   ): Promise<PaginatedResult<Location>> {
-    console.log({
-      locationLat: filters.range?.lat.lower,
-      locationLong: filters.range?.lng.lower,
-    });
     return this.paginator<Location, Prisma.LocationFindManyArgs>(
       this.prismaService.location,
       {

@@ -1,4 +1,20 @@
 services:
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - api-gateway
+      - auth
+      - users
+      - locations
+      - chats
+      - trips
+      - files
+    ports:
+      - '8080:80'
+    restart: unless-stopped
+    volumes:
+      - ./.nginx:/etc/nginx:row
+
   rabbitmq:
     image: rabbitmq
     restart: unless-stopped
