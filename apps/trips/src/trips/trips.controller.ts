@@ -15,14 +15,12 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { $Enums, Trip, TripStatus, User } from '@prisma/client';
-import { AccessGuard, Actions, UseAbility } from 'nest-casl';
+import { Actions, UseAbility } from 'nest-casl';
 
 @ApiTags('trips')
-@UseGuards(AccessGuard)
 @Controller('trips')
 export class TripsController {
   constructor(private readonly tripService: TripService) {}
@@ -72,9 +70,9 @@ export class TripsController {
   }
 
   @Patch(':id')
-  @UseAbility<Trip, any>(Actions.read, TripEntity, [
+  @UseAbility<Trip, any>(Actions.update, TripEntity, [
     TripService,
-    (tripService: TripService, { params }) => {
+    async (tripService: TripService, { params }) => {
       return tripService.findOne({ id: params.id });
     },
   ])
@@ -91,7 +89,7 @@ export class TripsController {
   }
 
   @Delete(':id')
-  @UseAbility<Trip, any>(Actions.read, TripEntity, [
+  @UseAbility<Trip, any>(Actions.delete, TripEntity, [
     TripService,
     (tripService: TripService, { params }) => {
       return tripService.findOne({ id: params.id });

@@ -1,9 +1,9 @@
 import { TripEntity } from '@libs/data-access-trips';
 import { UserEntity } from '@libs/data-access-users';
-import { $Enums, Trip } from '@prisma/client';
+import { $Enums } from '@prisma/client';
 import { Actions, InferSubjects, Permissions } from 'nest-casl';
 
-type Subjects = InferSubjects<Trip>;
+type Subjects = InferSubjects<TripEntity>;
 
 export const permissions: Permissions<
   $Enums.Role,
