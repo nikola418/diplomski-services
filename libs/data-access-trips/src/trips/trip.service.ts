@@ -14,6 +14,7 @@ export class TripService {
   private static readonly include: Prisma.TripInclude = {
     location: true,
     tripAttendances: { include: { user: true } },
+    chatGroup: true,
   };
   private static readonly orderBy: Prisma.TripOrderByWithRelationInput = {};
 
