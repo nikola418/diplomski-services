@@ -2,6 +2,7 @@ import { ArgumentsHost, Catch, Logger } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { Constraint, ExceptionResponse } from '../types/exception.response';
+import { nth } from 'lodash';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaExceptionFilter extends BaseExceptionFilter {
@@ -21,7 +22,9 @@ export class PrismaExceptionFilter extends BaseExceptionFilter {
       const regexp = RegExp(
         /Unique constraint failed on the fields?: \(\s*`?(\w+)`?\s*\)/i,
       );
-      const fieldName = regexp.exec(exception.message)[1];
+      const matches = regexp.exec(exception.message);
+      console.log(matches);
+      const fieldName = nth(matches, 1);
       err = {
         message: { [fieldName]: ['Zauzeto'] },
         statusCode: 409,

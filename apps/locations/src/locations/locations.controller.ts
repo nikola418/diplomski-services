@@ -1,4 +1,5 @@
 import { AuthUser, PaginatedResult } from '@libs/common';
+import { FilesService } from '@libs/data-access-files';
 import {
   LocationEntity,
   LocationsService,
@@ -18,7 +19,6 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
-  ValidationPipe,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -26,7 +26,6 @@ import { User } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { CreateLocationDto, UpdateLocationDto } from './dto';
-import { FilesService } from '@libs/data-access-files';
 
 @ApiTags('locations')
 @UseGuards(AccessGuard)
@@ -44,16 +43,16 @@ export class LocationsController {
   @UseAbility(Actions.create, LocationEntity)
   @UseInterceptors(FilesInterceptor('images'))
   public async create(
-    @Body() data: CreateLocationDto,
+    @Body() dto: CreateLocationDto,
     @UploadedFiles() images?: Express.Multer.File[],
   ): Promise<LocationEntity> {
     if (images) {
-      data.imageKeys = (await this.filesService.uploadMany(images)).map((id) =>
+      dto.imageKeys = (await this.filesService.uploadMany(images)).map((id) =>
         id.toString(),
       );
     }
 
-    return this.locationsService.create(data);
+    return this.locationsService.create(dto);
   }
 
   @Get()
@@ -61,10 +60,9 @@ export class LocationsController {
   @UseInterceptors(ClassSerializerInterceptor)
   public async findAll(
     @AuthUser() user: User,
-    @Query(ValidationPipe)
+    @Query()
     filters: QueryLocationsDto,
   ): Promise<PaginatedResult<LocationEntity>> {
-    console.log(filters.range);
     const res = await this.locationsService.paginate(filters, user);
     res.data = plainToInstance(LocationEntity, res.data);
     return res;

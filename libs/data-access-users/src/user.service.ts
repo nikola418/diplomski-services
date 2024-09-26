@@ -30,7 +30,8 @@ export class UserService {
         where: {
           AND: [
             {
-              username: { not: user.username },
+              id: { not: user.id },
+              NOT: { roles: { has: 'Admin' } },
             },
             {
               OR: [

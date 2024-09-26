@@ -22,12 +22,12 @@ export class CreateLocationDto {
   @Type(() => Number)
   @IsLatitude()
   @IsNumber()
-  locationLat: number;
+  lat: number;
 
   @Type(() => Number)
   @IsLongitude()
   @IsNumber()
-  locationLong: number;
+  lng: number;
 
   @IsOptional()
   @IsArray()

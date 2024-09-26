@@ -70,8 +70,8 @@ model Location {
   activityTags  ActivityTag[]
   nearbyTags    NearbyTag[]
   imageKeys     String[]      @default([])
-  locationLat   Float
-  locationLong  Float
+  lat           Float
+  lng           Float
   description   String?
 
   createdAt DateTime @default(now())
@@ -79,8 +79,23 @@ model Location {
 
   favoriteLocations FavoriteLocation[]
   trips             Trip[]
+  nearbys           Nearby[]
 
   @@map("locations")
+}
+
+model Nearby {
+  id         String    @id @default(cuid())
+  locationId String
+  nearbyTag  NearbyTag
+  distance   Float?
+  lat        Float?
+  lng        Float?
+
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@unique([locationId, nearbyTag])
+  @@map("nearbys")
 }
 
 model FavoriteLocation {

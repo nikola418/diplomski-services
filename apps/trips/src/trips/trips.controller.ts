@@ -28,6 +28,7 @@ export class TripsController {
   @Post()
   @UseAbility(Actions.create, TripEntity)
   create(@AuthUser() user: User, @Body() data: CreateTripDto): Promise<Trip[]> {
+    console.log(data);
     return this.tripService.createMany(
       data.connectChatGroups.map((chatGroup) => ({
         chatGroupId: chatGroup.chatGroupId,

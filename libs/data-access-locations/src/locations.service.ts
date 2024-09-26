@@ -3,44 +3,77 @@ import { Injectable } from '@nestjs/common';
 import { Location, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { QueryLocationsDto } from './dto';
+import { CreateLocationDto } from 'apps/locations/src/locations/dto';
 
 @Injectable()
 export class LocationsService {
   constructor(private readonly prismaService: PrismaService) {}
+  public static readonly include: Prisma.LocationInclude = {
+    nearbys: true,
+  };
   public static readonly orderBy: Prisma.LocationOrderByWithRelationInput = {
     createdAt: 'desc',
   };
-  public static readonly include: Prisma.LocationInclude = {};
   private readonly paginator: PaginateFunction = paginator({
     perPage: 12,
   });
 
-  public create(data: Prisma.LocationCreateInput): Promise<Location> {
-    return this.prismaService.location.create({ data });
+  public create(dto: CreateLocationDto): Promise<Location> {
+    return this.prismaService.location.create({
+      data: {
+        ...dto,
+        nearbys: {
+          createMany: {
+            skipDuplicates: true,
+            data: dto.nearbyTags.map((tag) => ({ nearbyTag: tag })),
+          },
+        },
+      },
+    });
   }
 
   public paginate(
     filters: QueryLocationsDto,
     user: User,
   ): Promise<PaginatedResult<Location>> {
+    console.log(filters);
     return this.paginator<Location, Prisma.LocationFindManyArgs>(
       this.prismaService.location,
       {
         where: {
+          title: { contains: filters.title, mode: 'insensitive' },
           activityTags: filters.activityTags && {
             hasEvery: filters.activityTags,
           },
-          nearbyTags: filters.nearbyTags && { hasEvery: filters.nearbyTags },
-          title: { contains: filters.title, mode: 'insensitive' },
+          nearbyTags: filters.nearbyTags && {
+            hasEvery: filters.nearbyTags,
+          },
+
           AND: [
             {
-              locationLat: filters.range?.lat.upper,
-              locationLong: filters.range?.lng.upper,
+              favoriteLocations:
+                filters.isFavoredByUser === true
+                  ? {
+                      some: { userId: user.id },
+                    }
+                  : undefined,
+            },
+            {
+              favoriteLocations:
+                filters.isFavoredByUser === false
+                  ? {
+                      none: { userId: user.id },
+                    }
+                  : undefined,
+            },
+            {
+              lat: filters.range?.lat.upper,
+              lng: filters.range?.lng.upper,
             },
             {
               NOT: {
-                locationLat: filters.range?.lat.lower,
-                locationLong: filters.range?.lng.lower,
+                lat: filters.range?.lat.lower,
+                lng: filters.range?.lng.lower,
               },
             },
           ],
