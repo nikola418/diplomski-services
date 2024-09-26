@@ -13,36 +13,43 @@ x-base-microservice-dev: &base-microservice-dev
 
 services:
   api-gateway:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/api-gateway/development
     extends:
       file: docker-compose.yml
       service: api-gateway
     <<: *base-microservice-dev
   auth:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/auth/development
     extends:
       file: docker-compose.yml
       service: auth
     <<: *base-microservice-dev
   users:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/users/development
     extends:
       file: docker-compose.yml
       service: users
     <<: *base-microservice-dev
   locations:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/locations/development
     extends:
       file: docker-compose.yml
       service: locations
     <<: *base-microservice-dev
   trips:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/trips/development
     extends:
       file: docker-compose.yml
       service: trips
     <<: *base-microservice-dev
   files:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/files/development
     extends:
       file: docker-compose.yml
       service: files
     <<: *base-microservice-dev
   chats:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/chats/developments
     extends:
       file: docker-compose.yml
       service: chats

@@ -18,10 +18,10 @@ import { DataAccessFilesModule } from '@libs/data-access-files';
       {
         name: AUTH_SERVICE,
         useFactory: (configService: ConfigService) => ({
-          transport: Transport.RMQ,
+          transport: Transport.TCP,
           options: {
-            urls: [configService.getOrThrow<string>('RMQ_URL')],
-            queue: 'auth',
+            host: configService.getOrThrow<string>('AUTH_HOST'),
+            port: configService.getOrThrow<number>('AUTH_PORT'),
           },
         }),
         inject: [ConfigService],

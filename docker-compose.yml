@@ -13,30 +13,33 @@ x-base-microservice: &base-microservice
   restart: unless-stopped
   depends_on:
     - postgres
-    - rabbitmq
   env_file:
     - .env
 
 services:
   api-gateway:
     <<: *base-microservice
+    image: europe-central2-docker.pkg.dev/diplomski-431623/api-gateway/production
     build:
       args:
         APP_NAME: api-gateway
 
   auth:
     <<: *base-microservice
+    image: europe-central2-docker.pkg.dev/diplomski-431623/auth/production
     build:
       args:
         APP_NAME: auth
   users:
     <<: *base-microservice
+    image: europe-central2-docker.pkg.dev/diplomski-431623/users/production
     build:
       args:
         APP_NAME: users
 
   locations:
     <<: *base-microservice
+    image: europe-central2-docker.pkg.dev/diplomski-431623/locations/production
     build:
       args:
         APP_NAME: locations
@@ -45,6 +48,7 @@ services:
 
   trips:
     <<: *base-microservice
+    image: europe-central2-docker.pkg.dev/diplomski-431623/trips/production
     build:
       args:
         APP_NAME: trips
@@ -53,12 +57,14 @@ services:
 
   files:
     <<: *base-microservice
+    image: europe-central2-docker.pkg.dev/diplomski-431623/files/production
     build:
       args:
         APP_NAME: files
 
   chats:
     <<: *base-microservice
+    image: europe-central2-docker.pkg.dev/diplomski-431623/chats/production
     build:
       args:
         APP_NAME: chats

@@ -1,24 +1,37 @@
-#syntax=docker.io/docker/dockerfile:1.7-labs
 FROM node:20-alpine AS base
-WORKDIR /app
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable pnpm && corepack install -g pnpm@latest-9
-COPY pnpm-lock.yaml ./
-RUN pnpm fetch
-ADD  . ./
-RUN pnpm install -r --offline
 
-RUN pnpm run prisma:generate
-ARG APP_NAME
-ENV APP_NAME=${APP_NAME}
+WORKDIR /usr/src/app
+
+COPY pnpm-*.yaml package.json ./
+COPY prisma prisma
+RUN pnpm fetch
 
 FROM base AS development
+COPY libs libs
+COPY  tsconfig*.json nest-cli.json ./
+ARG APP_NAME
+ENV APP_NAME=${APP_NAME}
+COPY  apps/${APP_NAME} apps/${APP_NAME}
+RUN pnpm install -r --offline
+RUN pnpm run prisma:generate
+
+
+RUN pnpm run build ${APP_NAME}
 CMD pnpm run prisma:generate && pnpm run start:dev $APP_NAME
 
 
 FROM base AS production
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
-RUN pnpm run build ${APP_NAME}
-RUN pnpm prune --prod #besk
+
+RUN pnpm install --prod
+RUN pnpx prisma generate
+
+COPY --from=development /usr/src/app/dist ./dist
+ARG APP_NAME
+ENV APP_NAME=${APP_NAME}
 ENV MAIN_FILE ./dist/apps/${APP_NAME}/main
-CMD node $MAIN_FILE
+CMD node ${MAIN_FILE}

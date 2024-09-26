@@ -2,8 +2,7 @@ import { PaginatedResult, PaginateFunction, paginator } from '@libs/common';
 import { Injectable } from '@nestjs/common';
 import { Location, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
-import { QueryLocationsDto } from './dto';
-import { CreateLocationDto } from 'apps/locations/src/locations/dto';
+import { CreateLocationDto, QueryLocationsDto } from './dto';
 
 @Injectable()
 export class LocationsService {

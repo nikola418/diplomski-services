@@ -12,8 +12,11 @@ async function bootstrap() {
     cors,
   });
   const configService = app.get(ConfigService);
-
+  const httpProtocol = configService.getOrThrow('HTTP_PROTOCOL');
+  const hostname = configService.getOrThrow('HOSTNAME');
   const appName = configService.getOrThrow<string>('APP_NAME');
+  const httpPort = configService.getOrThrow<string>('HTTP_PORT');
+
   setupSwagger(app, appName, {
     explorer: true,
     swaggerUiEnabled: true,
@@ -21,27 +24,27 @@ async function bootstrap() {
       urls: [
         {
           name: 'auth',
-          url: 'http://192.168.1.108:8080/docs/auth/yaml/',
+          url: `${httpProtocol}://${hostname}:8080/docs/auth/yaml/`,
         },
         {
           name: 'users',
-          url: 'http://192.168.1.108:8080/docs/users/yaml/',
+          url: `${httpProtocol}://${hostname}:8080/docs/users/yaml/`,
         },
         {
           name: 'locations',
-          url: 'http://192.168.1.108:8080/docs/locations/yaml/',
+          url: `${httpProtocol}://${hostname}:8080/docs/locations/yaml/`,
         },
         {
           name: 'trips',
-          url: 'http://192.168.1.108:8080/docs/trips/yaml/',
+          url: `${httpProtocol}://${hostname}:8080/docs/trips/yaml/`,
         },
         {
           name: 'files',
-          url: 'http://192.168.1.108:8080/docs/files/yaml/',
+          url: `${httpProtocol}://${hostname}:8080/docs/files/yaml/`,
         },
         {
           name: 'chats',
-          url: 'http://192.168.1.108:8080/docs/chats/yaml/',
+          url: `${httpProtocol}://${hostname}:8080/docs/chats/yaml/`,
         },
       ],
     },
@@ -70,7 +73,6 @@ async function bootstrap() {
     }),
   );
 
-  const httpPort = configService.getOrThrow<string>('HTTP_PORT');
   await app.listen(httpPort, '0.0.0.0', async () => {
     const logger = new Logger();
     logger.log(`🚀 Application started on: ${await app.getUrl()}`);

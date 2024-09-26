@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: auth
+  name: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - image: europe-central2-docker.pkg.dev/diplomski-431623/auth/production
+          name: auth
+          env:
+            - name: HTTP_PORT
+              value: '3000'
+            - name: TCP_PORT
+              value: '3001'
+            - name: JWT_SECRET
+              value: asdfq7c089c12r30634r2064xt670346870b3c420679460
+            - name: JWT_EXPIRES_IN
+              value: '3600'
+          ports:
+            - containerPort: 3000
+            - containerPort: 3001

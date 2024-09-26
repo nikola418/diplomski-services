@@ -15,12 +15,6 @@ services:
     volumes:
       - ./.nginx:/etc/nginx:row
 
-  rabbitmq:
-    image: rabbitmq
-    restart: unless-stopped
-    ports:
-      - '5672'
-
   redis:
     image: redis:latest
     restart: unless-stopped

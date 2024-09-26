@@ -1,9 +1,11 @@
 import { AuthUser, PaginatedResult } from '@libs/common';
 import { FilesService } from '@libs/data-access-files';
 import {
+  CreateLocationDto,
   LocationEntity,
   LocationsService,
   QueryLocationsDto,
+  UpdateLocationDto,
 } from '@libs/data-access-locations';
 import {
   Body,
@@ -25,7 +27,6 @@ import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
-import { CreateLocationDto, UpdateLocationDto } from './dto';
 
 @ApiTags('locations')
 @UseGuards(AccessGuard)
