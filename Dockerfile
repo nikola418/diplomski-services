@@ -5,22 +5,16 @@ RUN corepack enable pnpm && corepack install -g pnpm@latest-9
 
 WORKDIR /usr/src/app
 
-# COPY pnpm-*.yaml package.json ./
-COPY pnpm-workspace.yaml ./
-COPY pnpm-lock.yaml ./
-COPY package.json ./
-COPY prisma ./prisma
+COPY pnpm-*.yaml package.json prisma ./
 RUN pnpm fetch
 
 FROM base AS development
-COPY libs ./libs
-COPY  tsconfig*.json nest-cli.json ./
+COPY  libs tsconfig*.json nest-cli.json ./
 ARG APP_NAME
 ENV APP_NAME=${APP_NAME}
 COPY  apps/${APP_NAME} ./apps/${APP_NAME}
-RUN pnpm install -r --prefer-offline
+RUN pnpm install --offline
 RUN pnpm run prisma:generate
-
 
 RUN pnpm run build ${APP_NAME}
 CMD pnpm run prisma:generate && pnpm run start:dev $APP_NAME
