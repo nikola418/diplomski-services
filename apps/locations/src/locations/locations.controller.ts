@@ -18,6 +18,7 @@ import {
   Patch,
   Post,
   Query,
+  SerializeOptions,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -25,7 +26,6 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { plainToInstance } from 'class-transformer';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 
 @ApiTags('locations')
@@ -58,15 +58,16 @@ export class LocationsController {
 
   @Get()
   @UseAbility(Actions.read, LocationEntity)
+  @SerializeOptions({
+    enableCircularCheck: true,
+  })
   @UseInterceptors(ClassSerializerInterceptor)
   public async findAll(
     @AuthUser() user: User,
     @Query()
-    filters: QueryLocationsDto,
+    queries: QueryLocationsDto,
   ): Promise<PaginatedResult<LocationEntity>> {
-    const res = await this.locationsService.paginate(filters, user);
-    res.data = plainToInstance(LocationEntity, res.data);
-    return res;
+    return this.locationsService.paginate(queries, user);
   }
 
   @Get(':id')

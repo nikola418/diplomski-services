@@ -47,7 +47,6 @@ export class LocationsService {
           nearbyTags: filters.nearbyTags && {
             hasEvery: filters.nearbyTags,
           },
-
           AND: [
             {
               favoriteLocations:

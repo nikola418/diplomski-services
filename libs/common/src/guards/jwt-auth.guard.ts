@@ -7,13 +7,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { User } from '@prisma/client';
 import { Request } from 'express';
+import { IncomingMessage } from 'http';
 import { Observable, catchError, map, tap, throwError } from 'rxjs';
 import { AUTH_SERVICE } from '../constants';
 import { IS_PUBLIC } from '../decorators';
-import { IncomingMessage } from 'http';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -50,10 +50,7 @@ export class JwtAuthGuard implements CanActivate {
     if (!bearer && !cookie) throw new UnauthorizedException();
 
     return this.authClientProxy
-      .send<User>(
-        { cmd: 'profile' },
-        new RmqRecordBuilder().setData({ bearer, cookie }).build(),
-      )
+      .send<User>({ cmd: 'profile' }, { bearer, cookie })
       .pipe(
         tap((user: User) => {
           request.user = user;
