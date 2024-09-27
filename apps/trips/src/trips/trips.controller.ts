@@ -1,4 +1,5 @@
-import { AuthUser, PaginatedResult } from '@libs/common';
+import { AuthUser } from '@libs/common';
+import { PaginatedResult } from '@libs/core';
 import {
   CreateTripDto,
   QueryTripsDto,

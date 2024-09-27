@@ -1,4 +1,3 @@
-import { JWTPayload } from '@libs/common';
 import { UserService } from '@libs/data-access-users';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -6,6 +5,7 @@ import { User } from '@prisma/client';
 import { compareSync } from 'bcrypt';
 import { pick } from 'lodash';
 import { SignInDto } from './dto';
+import { JWTPayload } from '@libs/core';
 
 @Injectable()
 export class AuthService {

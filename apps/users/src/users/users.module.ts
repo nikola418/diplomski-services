@@ -16,4 +16,4 @@ import { DataAccessUsersModule } from '@libs/data-access-users';
   ],
   controllers: [UsersController],
 })
-export class UserModule {}
+export class UsersModule {}

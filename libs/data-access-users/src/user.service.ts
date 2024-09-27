@@ -1,14 +1,15 @@
-import { PaginatedResult, paginator } from '@libs/common';
+import { PaginatedResult } from '@libs/core';
+import { paginatorFactory } from '@libs/core/factories';
 import { Injectable } from '@nestjs/common';
 import { $Enums, Prisma, User } from '@prisma/client';
+import { genSaltSync, hashSync } from 'bcrypt';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateUserDto, QueryUsersDto, UpdateUserDto } from './dto';
-import { hashSync, genSaltSync } from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
-  private readonly paginator = paginator({ perPage: 12 });
+  private readonly paginator = paginatorFactory({ perPage: 12 });
 
   public create(dto: CreateUserDto): Promise<User> {
     return this.prismaService.user.create({

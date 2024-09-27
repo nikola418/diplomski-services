@@ -1,4 +1,5 @@
-import { cors, setupSwagger, validationExceptionFactory } from '@libs/common';
+import { cors, setupSwagger } from '@libs/core';
+import { validationExceptionFactory } from '@libs/core/factories';
 import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';

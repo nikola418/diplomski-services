@@ -1,9 +1,9 @@
-export interface ExceptionResponse<T = any> {
+export type ExceptionResponse<T = any> = {
   statusCode: number;
   message: T;
   error?: string;
-}
+};
 
-export interface Constraint {
+export type Constraint = {
   [key: string]: string[];
-}
+};

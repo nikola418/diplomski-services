@@ -1,4 +1,4 @@
-import { cors } from '@libs/common';
+import { cors } from '@libs/core';
 import { INestApplicationContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IoAdapter } from '@nestjs/platform-socket.io';

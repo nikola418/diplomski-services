@@ -1,4 +1,4 @@
-import { PaginationDto } from '@libs/common/dto/pagination.dto';
+import { PaginateOptionsDto } from '@libs/common';
 import { $Enums } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
@@ -25,6 +25,6 @@ export class QueryTripsDto {
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => PaginationDto)
-  pagination?: PaginationDto;
+  @Type(() => PaginateOptionsDto)
+  pagination?: PaginateOptionsDto;
 }

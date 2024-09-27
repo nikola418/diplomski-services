@@ -1,13 +1,14 @@
-import { PaginatedResult, PaginateFunction, paginator } from '@libs/common';
+import { PaginatedResult, PaginateFunction } from '@libs/core';
 import { Injectable } from '@nestjs/common';
 import { Prisma, Trip, User } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { QueryTripsDto } from './dto';
+import { paginatorFactory } from '@libs/core/factories';
 
 @Injectable()
 export class TripService {
   constructor(private readonly prismaService: PrismaService) {}
-  private readonly paginator: PaginateFunction = paginator({
+  private readonly paginator: PaginateFunction = paginatorFactory({
     perPage: 12,
   });
 

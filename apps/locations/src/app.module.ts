@@ -1,5 +1,4 @@
-import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
-import { extendPrismaClient } from 'libs/data-access-locations/src';
+import { JwtAuthGuard } from '@libs/common';
 import { UserEntity } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -9,6 +8,8 @@ import { $Enums, PrismaClient } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
 import { CustomPrismaModule } from 'nestjs-prisma';
 import { LocationsModule } from './locations/locations.module';
+import { AUTH_SERVICE } from '@libs/core';
+import { extendPrismaClient } from '@libs/data-access-locations';
 
 @Module({
   imports: [

@@ -1,13 +1,16 @@
-import { PaginatedResult, PaginateFunction, paginator } from '@libs/common';
 import { Injectable } from '@nestjs/common';
 import { ChatGroupMessage, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateChatGroupMessageDto, QueryChatMessagesDto } from './dto';
+import { paginatorFactory } from '@libs/core/factories';
+import { PaginateFunction, PaginatedResult } from '@libs/core';
 
 @Injectable()
 export class ChatGroupMessagesService {
   constructor(private readonly prismaService: PrismaService) {}
-  private readonly paginator: PaginateFunction = paginator({ perPage: 12 });
+  private readonly paginator: PaginateFunction = paginatorFactory({
+    perPage: 12,
+  });
   private static readonly include: Prisma.ChatGroupMessageInclude = {
     sender: true,
   };

@@ -1,10 +1,10 @@
 import { DataAccessFilesModule } from '@libs/data-access-files';
-import { Module } from '@nestjs/common';
-import { MulterModule } from '@nestjs/platform-express';
 import {
   DataAccessLocationsModule,
   ExtendedPrismaClient,
-} from 'libs/data-access-locations/src';
+} from '@libs/data-access-locations';
+import { Module } from '@nestjs/common';
+import { MulterModule } from '@nestjs/platform-express';
 import { CaslModule } from 'nest-casl';
 import { CustomPrismaService, PrismaService } from 'nestjs-prisma';
 import { LocationsController } from './locations.controller';

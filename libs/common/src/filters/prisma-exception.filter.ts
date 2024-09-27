@@ -1,7 +1,7 @@
+import { Constraint, ExceptionResponse } from '@libs/core';
 import { ArgumentsHost, Catch, Logger } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
-import { Constraint, ExceptionResponse } from '../types/exception.response';
 import { nth } from 'lodash';
 
 @Catch(Prisma.PrismaClientKnownRequestError)

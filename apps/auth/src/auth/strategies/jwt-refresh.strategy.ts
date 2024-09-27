@@ -1,4 +1,4 @@
-import { AUTH_SERVICE, JWTPayload } from '@libs/common';
+import { AUTH_SERVICE, JWTPayload } from '@libs/core';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientRMQ } from '@nestjs/microservices';

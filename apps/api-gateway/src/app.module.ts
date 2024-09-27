@@ -1,4 +1,5 @@
-import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
+import { JwtAuthGuard } from '@libs/common';
+import { AUTH_SERVICE } from '@libs/core';
 import { UserEntity } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';

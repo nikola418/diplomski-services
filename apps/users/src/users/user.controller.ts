@@ -1,4 +1,5 @@
-import { AuthUser, IsPublic, PaginatedResult } from '@libs/common';
+import { AuthUser, IsPublic } from '@libs/common';
+import { PaginatedResult } from '@libs/core';
 import { FilesService } from '@libs/data-access-files';
 import {
   CreateUserDto,

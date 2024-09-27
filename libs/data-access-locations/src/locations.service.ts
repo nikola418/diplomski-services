@@ -1,8 +1,9 @@
-import { PaginatedResult, PaginateFunction, paginator } from '@libs/common';
 import { Injectable } from '@nestjs/common';
 import { Location, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateLocationDto, QueryLocationsDto } from './dto';
+import { paginatorFactory } from '@libs/core/factories';
+import { PaginateFunction, PaginatedResult } from '@libs/core';
 
 @Injectable()
 export class LocationsService {
@@ -13,7 +14,7 @@ export class LocationsService {
   public static readonly orderBy: Prisma.LocationOrderByWithRelationInput = {
     createdAt: 'desc',
   };
-  private readonly paginator: PaginateFunction = paginator({
+  private readonly paginator: PaginateFunction = paginatorFactory({
     perPage: 12,
   });
 
