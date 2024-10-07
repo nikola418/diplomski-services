@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: auth
+    app: { {} }
   name: auth
 spec:
   replicas: 1
@@ -15,8 +15,9 @@ spec:
         app: auth
     spec:
       containers:
-        - image: europe-central2-docker.pkg.dev/diplomski-431623/auth/production
-          name: auth
+        - name: auth
+          image: europe-central2-docker.pkg.dev/diplomski-431623/auth/production
+          imagePullPolicy: Never
           env:
             - name: HTTP_PORT
               value: '3000'

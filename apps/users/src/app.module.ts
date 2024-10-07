@@ -1,4 +1,5 @@
-import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
+import { JwtAuthGuard } from '@libs/common';
+import { AUTH_SERVICE } from '@libs/core';
 import { UserEntity } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -8,7 +9,7 @@ import { $Enums } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
 import { PrismaModule } from 'nestjs-prisma';
 import { FavoriteLocationModule } from './favorite-locations';
-import { UserModule } from './users';
+import { UsersModule } from './users';
 
 @Module({
   imports: [
@@ -37,7 +38,7 @@ import { UserModule } from './users';
     RouterModule.register([
       { path: '/users/:userId', module: FavoriteLocationModule },
     ]),
-    UserModule,
+    UsersModule,
     FavoriteLocationModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],

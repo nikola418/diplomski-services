@@ -1,4 +1,5 @@
-import { AUTH_SERVICE, AuthUser, JwtAuthGuard } from '@libs/common';
+import { AuthUser, JwtAuthGuard } from '@libs/common';
+import { AUTH_SERVICE } from '@libs/core';
 import {
   ChatGroupMessagesService,
   CreateChatGroupMessageDto,

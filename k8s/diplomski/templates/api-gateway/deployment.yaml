@@ -15,10 +15,18 @@ spec:
         app: api-gateway
     spec:
       containers:
-        - image: europe-central2-docker.pkg.dev/diplomski-431623/api-gateway/production
-          name: api-gateway
-          env:
+        - name: api-gateway
+          image: europe-central2-docker.pkg.dev/diplomski-431623/api-gateway/production
+          imagePullPolicy: Never
+          env:       
+            - name: HTTP_PROTOCOL
+              value: 'http'
             - name: HTTP_PORT
-              value: '3000'
+              value: "3000"
+            - name: AUTH_HOST
+              value: "auth"
+            - name: AUTH_PORT
+              value: "3000"
           ports:
             - containerPort: 3000
+

@@ -5,6 +5,8 @@ metadata:
     app: auth
   name: auth
 spec:
+  selector:
+    app: auth
   ports:
     - name: '3000'
       port: 3000
@@ -14,6 +16,4 @@ spec:
       port: 3001
       protocol: TCP
       targetPort: 3001
-  selector:
-    app: auth
   type: NodePort
