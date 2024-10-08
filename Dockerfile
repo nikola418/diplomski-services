@@ -2,33 +2,32 @@ FROM node:20-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable pnpm
-
+ARG APP_NAME
+ENV APP_NAME=${APP_NAME}
 WORKDIR /usr/src/app
 
-COPY pnpm-*.yaml package.json ./
-COPY prisma prisma
+FROM base AS deps 
+COPY pnpm-lock.yaml ./
 RUN pnpm fetch
-
-FROM base AS development 
-COPY tsconfig*.json nest-cli.json ./
-COPY libs libs
-
-ARG APP_NAME
-ENV APP_NAME=${APP_NAME}
-COPY  apps/${APP_NAME} ./apps/${APP_NAME}
-RUN pnpm install --filter ${APP_NAME} --offline
+COPY  . .
+RUN pnpm install --filter ${APP_NAME} --offline 
 RUN pnpm run prisma:generate
 
+FROM base AS development
+COPY --from=deps /usr/src/app ./
+CMD pnpm run start:dev ${APP_NAME}
+
+FROM deps AS build
 RUN pnpm run build ${APP_NAME}
-CMD pnpm run prisma:generate && pnpm run start:dev $APP_NAME
+RUN yes | pnpm prune --prod
 
-
-FROM development AS production
+FROM node:20-alpine AS production
 ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-RUN pnpm prune --prod
-RUN pnpm store prune
 ARG APP_NAME
+ENV NODE_ENV=${NODE_ENV}
 ENV APP_NAME=${APP_NAME}
+WORKDIR /usr/src/app
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist ./dist
 ENV MAIN_FILE ./dist/apps/${APP_NAME}/main
 CMD node ${MAIN_FILE}
