@@ -2,25 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: api-gateway
-  name: api-gateway
+    app: chats
+  name: chats
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-gateway
+      app: chats
   template:
     metadata:
       labels:
-        app: api-gateway
+        app: chats
     spec:
       containers:
-        - name: api-gateway
-          image: europe-central2-docker.pkg.dev/diplomski-431623/api-gateway/production
+        - name: chats
+          image: europe-central2-docker.pkg.dev/diplomski-431623/chats/production
           imagePullPolicy: Never
-          envFrom:       
+          envFrom:
             - configMapRef:
-                name: api-gateway
+                name: chats
           ports:
             - containerPort: 3000
-

@@ -2,25 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: api-gateway
-  name: api-gateway
+    app: files
+  name: files
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-gateway
+      app: files
   template:
     metadata:
       labels:
-        app: api-gateway
+        app: files
     spec:
       containers:
-        - name: api-gateway
-          image: europe-central2-docker.pkg.dev/diplomski-431623/api-gateway/production
+        - name: files
+          image: europe-central2-docker.pkg.dev/diplomski-431623/files/production
           imagePullPolicy: Never
-          envFrom:       
+          envFrom:
             - configMapRef:
-                name: api-gateway
+                name: files
           ports:
             - containerPort: 3000
-

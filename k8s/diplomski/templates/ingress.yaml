@@ -1,0 +1,60 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: diplomski-ingress
+  namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: diplomski.test
+      http:
+        paths:
+          - path: /api/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth
+                port:
+                  number: 3000
+          - path: /api/users
+            pathType: Prefix
+            backend:
+              service:
+                name: users
+                port:
+                  number: 3000
+          - path: /api/locations
+            pathType: Prefix
+            backend:
+              service:
+                name: locations
+                port:
+                  number: 3000
+          - path: /api/trips
+            pathType: Prefix
+            backend:
+              service:
+                name: trips
+                port:
+                  number: 3000
+          - path: /api/chat-groups
+            pathType: Prefix
+            backend:
+              service:
+                name: chats
+                port:
+                  number: 3000
+          - path: /chats
+            pathType: Prefix
+            backend:
+              service:
+                name: chats
+                port:
+                  number: 3000
+          - path: /api/files
+            pathType: Prefix
+            backend:
+              service:
+                name: files
+                port:
+                  number: 3000

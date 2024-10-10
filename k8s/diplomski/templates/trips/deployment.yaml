@@ -2,25 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: api-gateway
-  name: api-gateway
+    app: trips
+  name: trips
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-gateway
+      app: trips
   template:
     metadata:
       labels:
-        app: api-gateway
+        app: trips
     spec:
       containers:
-        - name: api-gateway
-          image: europe-central2-docker.pkg.dev/diplomski-431623/api-gateway/production
+        - name: trips
+          image: europe-central2-docker.pkg.dev/diplomski-431623/trips/production
           imagePullPolicy: Never
-          envFrom:       
+          envFrom:
             - configMapRef:
-                name: api-gateway
+                name: trips
           ports:
             - containerPort: 3000
-

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: { {} }
+    app: auth
   name: auth
 spec:
   replicas: 1
@@ -18,15 +18,9 @@ spec:
         - name: auth
           image: europe-central2-docker.pkg.dev/diplomski-431623/auth/production
           imagePullPolicy: Never
-          env:
-            - name: HTTP_PORT
-              value: '3000'
-            - name: TCP_PORT
-              value: '3001'
-            - name: JWT_SECRET
-              value: asdfq7c089c12r30634r2064xt670346870b3c420679460
-            - name: JWT_EXPIRES_IN
-              value: '3600'
+          envFrom:
+            - configMapRef:
+                name: auth
           ports:
             - containerPort: 3000
             - containerPort: 3001

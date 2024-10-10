@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: users
+  name: users
+data:
+  HTTP_PORT: "3000"
+  MONGO_URL: "mongodb://mongo:27017/diplomski"
+  AUTH_HOST: "auth"
+  AUTH_PORT: "3001"
+  POSTGRES_URL: "postgres://prisma:example@postgres:5432/diplomski?schema=public"

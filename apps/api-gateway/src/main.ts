@@ -25,27 +25,27 @@ async function bootstrap() {
       urls: [
         {
           name: 'auth',
-          url: `${httpProtocol}://${hostname}:8080/docs/auth/yaml/`,
+          url: `${httpProtocol}://${hostname}/docs/auth/yaml/`,
         },
         {
           name: 'users',
-          url: `${httpProtocol}://${hostname}:8080/docs/users/yaml/`,
+          url: `${httpProtocol}://${hostname}/docs/users/yaml/`,
         },
         {
           name: 'locations',
-          url: `${httpProtocol}://${hostname}:8080/docs/locations/yaml/`,
+          url: `${httpProtocol}://${hostname}/docs/locations/yaml/`,
         },
         {
           name: 'trips',
-          url: `${httpProtocol}://${hostname}:8080/docs/trips/yaml/`,
+          url: `${httpProtocol}://${hostname}/docs/trips/yaml/`,
         },
         {
           name: 'files',
-          url: `${httpProtocol}://${hostname}:8080/docs/files/yaml/`,
+          url: `${httpProtocol}://${hostname}/docs/files/yaml/`,
         },
         {
           name: 'chats',
-          url: `${httpProtocol}://${hostname}:8080/docs/chats/yaml/`,
+          url: `${httpProtocol}://${hostname}/docs/chats/yaml/`,
         },
       ],
     },
