@@ -13,7 +13,11 @@ import { UsersModule } from './users';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ cache: true, isGlobal: true }),
+    ConfigModule.forRoot({
+      expandVariables: true,
+      cache: true,
+      isGlobal: true,
+    }),
     CaslModule.forRoot<$Enums.Role>({
       superuserRole: $Enums.Role.Admin,
       getUserFromRequest: (req) => new UserEntity(req.user),

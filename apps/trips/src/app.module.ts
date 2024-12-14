@@ -14,7 +14,11 @@ import { TripsModule } from './trips/trips.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ cache: true, isGlobal: true }),
+    ConfigModule.forRoot({
+      expandVariables: true,
+      cache: true,
+      isGlobal: true,
+    }),
     PrismaModule.forRoot({
       isGlobal: true,
     }),

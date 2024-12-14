@@ -5,6 +5,10 @@ include:
       - docker-compose.base.yml
 
 x-base-microservice-dev: &base-microservice-dev
+  # watch: //TODO
+  #   - action: sync
+  #     path: ./
+  #     target: /usr/src/app
   build:
     target: development
   volumes:

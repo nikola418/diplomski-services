@@ -13,7 +13,11 @@ import { extendPrismaClient } from '@libs/data-access-locations';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ cache: true, isGlobal: true }),
+    ConfigModule.forRoot({
+      expandVariables: true,
+      cache: true,
+      isGlobal: true,
+    }),
     CustomPrismaModule.forRoot({
       isGlobal: true,
       name: 'CustomPrisma',

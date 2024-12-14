@@ -8,6 +8,7 @@ import { JwtAuthGuard } from './auth/guards';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      expandVariables: true,
       cache: true,
       isGlobal: true,
     }),

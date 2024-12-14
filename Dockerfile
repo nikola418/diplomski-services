@@ -1,4 +1,7 @@
-FROM node:20-alpine AS base
+ARG NODE_VERSION="20"
+ARG ALPINE_VERSION="3.19"
+
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable pnpm
@@ -10,7 +13,7 @@ FROM base AS deps
 COPY pnpm-lock.yaml ./
 RUN pnpm fetch
 COPY  . .
-RUN pnpm install --filter ${APP_NAME} --offline 
+RUN pnpm install --filter ${APP_NAME} --offline --frozen-lockfile
 RUN pnpm run prisma:generate
 
 FROM base AS development
@@ -19,9 +22,9 @@ CMD pnpm run start:dev ${APP_NAME}
 
 FROM deps AS build
 RUN pnpm run build ${APP_NAME}
-RUN yes | pnpm prune --prod
+# RUN yes | pnpm prune --prod
 
-FROM node:20-alpine AS production
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION}  AS production
 ARG NODE_ENV=production
 ARG APP_NAME
 ENV NODE_ENV=${NODE_ENV}
