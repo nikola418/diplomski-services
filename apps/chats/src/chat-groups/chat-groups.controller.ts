@@ -1,4 +1,4 @@
-import { AuthUser, PaginatedResult } from '@libs/common';
+import { AuthUser } from '@libs/common';
 import { FilesService } from '@libs/data-access-files';
 import {
   Body,
@@ -17,13 +17,15 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ChatGroup, User } from '@prisma/client';
+
+import { PaginatedResult } from '@libs/core';
 import {
   ChatGroupEntity,
   ChatGroupsService,
   CreateChatGroupDto,
   QueryChatGroupsDto,
   UpdateChatGroupDto,
-} from 'libs/data-access-chat-groups/src';
+} from '@libs/data-access-chat-groups';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { ChatGroupHook } from './chat-group.hook';
 

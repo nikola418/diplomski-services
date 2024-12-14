@@ -1,9 +1,3 @@
-import {
-  cors,
-  PrismaExceptionFilter,
-  setupSwagger,
-  validationExceptionFactory,
-} from '@libs/common';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -11,6 +5,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { PrismaExceptionFilter } from '@libs/common';
+import { cors, setupSwagger } from '@libs/core';
+import { validationExceptionFactory } from '@libs/core/factories';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {

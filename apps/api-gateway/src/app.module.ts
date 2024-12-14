@@ -1,17 +1,21 @@
-import { AUTH_SERVICE, JwtAuthGuard, USERS_SERVICE } from '@libs/common';
+import { JwtAuthGuard } from '@libs/common';
+import { AUTH_SERVICE } from '@libs/core';
 import { UserEntity } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { PassportModule } from '@nestjs/passport';
 import { $Enums } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ cache: true, isGlobal: true }),
-    PassportModule,
+    ConfigModule.forRoot({
+      expandVariables: true,
+      cache: true,
+      isGlobal: true,
+    }),
     CaslModule.forRoot<$Enums.Role>({
       superuserRole: $Enums.Role.Admin,
       getUserFromRequest: (req) => new UserEntity(req.user),
@@ -21,21 +25,10 @@ import { CaslModule } from 'nest-casl';
         {
           name: AUTH_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.TCP,
             options: {
-              urls: [configService.getOrThrow<string>('RMQ_URL')],
-              queue: 'auth',
-            },
-          }),
-          inject: [ConfigService],
-        },
-        {
-          name: USERS_SERVICE,
-          useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
-            options: {
-              urls: [configService.getOrThrow<string>('RMQ_URL')],
-              queue: 'users',
+              host: configService.getOrThrow<string>('AUTH_HOST'),
+              port: configService.getOrThrow<number>('AUTH_PORT'),
             },
           }),
           inject: [ConfigService],
@@ -43,6 +36,7 @@ import { CaslModule } from 'nest-casl';
       ],
       isGlobal: true,
     }),
+    HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })

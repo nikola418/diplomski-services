@@ -10,7 +10,11 @@ import { ChatGroupsModule } from './chat-groups/chat-groups.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, cache: true }),
+    ConfigModule.forRoot({
+      expandVariables: true,
+      cache: true,
+      isGlobal: true,
+    }),
     PrismaModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync({
       isGlobal: true,

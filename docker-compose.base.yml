@@ -1,0 +1,61 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - '8080:80'
+    restart: unless-stopped
+    volumes:
+      - ./.nginx:/etc/nginx:row
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - '6379'
+
+  postgres:
+    image: postgres:14
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: diplomski
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    # environment:
+    # MONGO_INITDB_ROOT_USERNAME: diplomski
+    # MONGO_INITDB_ROOT_PASSWORD: example
+    # MONGO_INITDB_DATABASE: diplomski
+    ports:
+      - '27017'
+    volumes:
+      - mongo:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: unless-stopped
+    ports:
+      - '28081:8081'
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      # ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+      # ME_CONFIG_MONGODB_AUTH_USERNAME: diplomski
+      # ME_CONFIG_MONGODB_AUTH_PASSWORD: example
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: changeme
+      ME_CONFIG_OPTIONS_EDITORTHEME: shadowfox
+    depends_on:
+      - mongo
+
+volumes:
+  postgres:
+    name: postgres-db
+  mongo:
+    name: mongo-db

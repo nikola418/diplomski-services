@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   engineType      = "binary"
-  previewFeatures = ["fullTextSearch", "fullTextIndex", "relationJoins", "nativeDistinct"]
+  previewFeatures = ["fullTextSearch", "relationJoins", "nativeDistinct"]
   binaryTargets   = ["native"]
 }
 
@@ -57,6 +57,7 @@ model User {
   chatGroupsOwner   ChatGroup[]
   reviews           Review[]
   createdTrips      Trip[]
+  tripAttendances   TripAttendance[]
 
   @@map("users")
 }
@@ -69,8 +70,8 @@ model Location {
   activityTags  ActivityTag[]
   nearbyTags    NearbyTag[]
   imageKeys     String[]      @default([])
-  locationLat   Float
-  locationLong  Float
+  lat           Float
+  lng           Float
   description   String?
 
   createdAt DateTime @default(now())
@@ -78,8 +79,23 @@ model Location {
 
   favoriteLocations FavoriteLocation[]
   trips             Trip[]
+  nearbys           Nearby[]
 
   @@map("locations")
+}
+
+model Nearby {
+  id         String    @id @default(cuid())
+  locationId String
+  nearbyTag  NearbyTag
+  distance   Float?
+  lat        Float?
+  lng        Float?
+
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@unique([locationId, nearbyTag])
+  @@map("nearbys")
 }
 
 model FavoriteLocation {
@@ -172,20 +188,29 @@ model Trip {
   name              String
   scheduledDateTime DateTime?
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   chatGroup         ChatGroup          @relation(fields: [chatGroupId], references: [id], onDelete: Cascade)
   location          Location           @relation(fields: [locationId], references: [id])
   creator           User               @relation(fields: [creatorUserId], references: [id])
   reviews           Review[]
   chatGroupMessages ChatGroupMessage[]
+  tripAttendances   TripAttendance[]
 
   @@map("chat_group_trips")
 }
 
-model TripVote {
-  tripId  String
-  userId  String
-  isGoing Boolean @default(false)
+model TripAttendance {
+  tripId String
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
 
   @@id([tripId, userId])
-  @@map("trip_votes")
+  @@map("trip_attendances")
 }

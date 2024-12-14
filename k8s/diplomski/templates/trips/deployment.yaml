@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: trips
+  name: trips
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+      containers:
+        - name: trips
+          image: europe-central2-docker.pkg.dev/diplomski-431623/trips/production
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: trips
+          ports:
+            - containerPort: 3000

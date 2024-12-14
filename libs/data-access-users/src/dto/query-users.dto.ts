@@ -1,4 +1,4 @@
-import { PaginationDto } from '@libs/common/dto/pagination.dto';
+import { PaginateOptionsDto } from '@libs/common';
 import { Type } from 'class-transformer';
 import {
   IsObject,
@@ -23,6 +23,6 @@ export class QueryUsersDto {
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => PaginationDto)
-  pagination?: PaginationDto;
+  @Type(() => PaginateOptionsDto)
+  pagination?: PaginateOptionsDto;
 }

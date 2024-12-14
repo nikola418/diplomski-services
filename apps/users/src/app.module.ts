@@ -1,4 +1,5 @@
-import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
+import { JwtAuthGuard } from '@libs/common';
+import { AUTH_SERVICE } from '@libs/core';
 import { UserEntity } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -8,11 +9,15 @@ import { $Enums } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
 import { PrismaModule } from 'nestjs-prisma';
 import { FavoriteLocationModule } from './favorite-locations';
-import { UserModule } from './users';
+import { UsersModule } from './users';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ cache: true, isGlobal: true }),
+    ConfigModule.forRoot({
+      expandVariables: true,
+      cache: true,
+      isGlobal: true,
+    }),
     CaslModule.forRoot<$Enums.Role>({
       superuserRole: $Enums.Role.Admin,
       getUserFromRequest: (req) => new UserEntity(req.user),
@@ -23,10 +28,10 @@ import { UserModule } from './users';
         {
           name: AUTH_SERVICE,
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.RMQ,
+            transport: Transport.TCP,
             options: {
-              urls: [configService.getOrThrow<string>('RMQ_URL')],
-              queue: 'auth',
+              host: configService.getOrThrow<string>('AUTH_HOST'),
+              port: configService.getOrThrow<number>('AUTH_PORT'),
             },
           }),
           inject: [ConfigService],
@@ -37,7 +42,7 @@ import { UserModule } from './users';
     RouterModule.register([
       { path: '/users/:userId', module: FavoriteLocationModule },
     ]),
-    UserModule,
+    UsersModule,
     FavoriteLocationModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],

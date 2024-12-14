@@ -1,8 +1,10 @@
 .vscode
-**/node_modules
+.nginx
 .git
+.gitignore
 .env
+*.env
+*.md
+node_modules
 dist
 npm-debug.log
-*.env
-.nginx

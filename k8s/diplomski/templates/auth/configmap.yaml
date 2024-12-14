@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: auth
+  name: auth
+data:
+  HTTP_PORT: "3000"
+  TCP_PORT: "3001"
+  JWT_SECRET: "asdfq7c089c12r30634r2064xt670346870b3c420679460"
+  JWT_EXPIRES_IN: "3600"
+  POSTGRES_URL: "postgres://prisma:example@postgres:5432/diplomski?schema=public"

@@ -1,9 +1,10 @@
-import { AuthUser, PaginatedResult } from '@libs/common';
+import { AuthUser } from '@libs/common';
+import { PaginatedResult } from '@libs/core';
 import {
   CreateTripDto,
   QueryTripsDto,
   TripEntity,
-  TripsService,
+  TripService,
   UpdateTripDto,
 } from '@libs/data-access-trips';
 import {
@@ -15,22 +16,21 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { $Enums, Trip, TripStatus, User } from '@prisma/client';
-import { AccessGuard, Actions, UseAbility } from 'nest-casl';
+import { Actions, UseAbility } from 'nest-casl';
 
 @ApiTags('trips')
-@UseGuards(AccessGuard)
 @Controller('trips')
 export class TripsController {
-  constructor(private readonly tripsService: TripsService) {}
+  constructor(private readonly tripService: TripService) {}
 
   @Post()
   @UseAbility(Actions.create, TripEntity)
   create(@AuthUser() user: User, @Body() data: CreateTripDto): Promise<Trip[]> {
-    return this.tripsService.createMany(
+    console.log(data);
+    return this.tripService.createMany(
       data.connectChatGroups.map((chatGroup) => ({
         chatGroupId: chatGroup.chatGroupId,
         locationId: data.locationId,
@@ -50,14 +50,14 @@ export class TripsController {
     @Query() queries: QueryTripsDto,
     @AuthUser() user: User,
   ): Promise<PaginatedResult<Trip>> {
-    return this.tripsService.paginate(queries, user);
+    return this.tripService.paginate(queries, user);
   }
 
   @Get(':id')
   @UseAbility<Trip, any>(Actions.read, TripEntity, [
-    TripsService,
-    (tripsService: TripsService, { params, user }) => {
-      return tripsService.findOne(
+    TripService,
+    (tripService: TripService, { params, user }) => {
+      return tripService.findOne(
         { id: params.id },
         {
           chatGroup: {
@@ -68,18 +68,18 @@ export class TripsController {
     },
   ])
   findOne(@Param('id') id: string): Promise<Trip> {
-    return this.tripsService.findOne({ id });
+    return this.tripService.findOne({ id });
   }
 
   @Patch(':id')
-  @UseAbility<Trip, any>(Actions.read, TripEntity, [
-    TripsService,
-    (tripsService: TripsService, { params }) => {
-      return tripsService.findOne({ id: params.id });
+  @UseAbility<Trip, any>(Actions.update, TripEntity, [
+    TripService,
+    async (tripService: TripService, { params }) => {
+      return tripService.findOne({ id: params.id });
     },
   ])
   update(@Param('id') id: string, @Body() data: UpdateTripDto): Promise<Trip> {
-    return this.tripsService.update(
+    return this.tripService.update(
       { id },
       {
         ...data,
@@ -91,13 +91,13 @@ export class TripsController {
   }
 
   @Delete(':id')
-  @UseAbility<Trip, any>(Actions.read, TripEntity, [
-    TripsService,
-    (tripsService: TripsService, { params }) => {
-      return tripsService.findOne({ id: params.id });
+  @UseAbility<Trip, any>(Actions.delete, TripEntity, [
+    TripService,
+    (tripService: TripService, { params }) => {
+      return tripService.findOne({ id: params.id });
     },
   ])
   remove(@Param('id') id: string): Promise<Trip> {
-    return this.tripsService.remove({ id });
+    return this.tripService.remove({ id });
   }
 }

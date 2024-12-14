@@ -1,0 +1,45 @@
+name: diplomski-dev
+
+include:
+  - path:
+      - docker-compose.base.yml
+
+x-base-microservice-dev: &base-microservice-dev
+  # watch: //TODO
+  #   - action: sync
+  #     path: ./
+  #     target: /usr/src/app
+  build:
+    target: development
+  volumes:
+    - .:/usr/src/app
+    - /usr/src/app/node_modules
+
+services:
+  api-gateway:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/api-gateway/development
+    <<: *base-microservice-dev
+
+  auth:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/auth/development
+    <<: *base-microservice-dev
+
+  users:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/users/development
+    <<: *base-microservice-dev
+
+  locations:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/locations/development
+    <<: *base-microservice-dev
+
+  trips:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/trips/development
+    <<: *base-microservice-dev
+
+  files:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/files/development
+    <<: *base-microservice-dev
+
+  chats:
+    image: europe-central2-docker.pkg.dev/diplomski-431623/chats/developments
+    <<: *base-microservice-dev

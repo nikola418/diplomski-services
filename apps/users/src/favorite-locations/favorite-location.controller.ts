@@ -1,18 +1,9 @@
 import {
-  CreateFavoriteLocationDto,
   FavoriteLocationEntity,
   FavoriteLocationService,
   UserEntity,
 } from '@libs/data-access-users';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Delete, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AccessGuard, Actions, UseAbility } from 'nest-casl';
 import { AuthUserHook } from './user.hook';
@@ -25,17 +16,14 @@ export class FavoriteLocationController {
     private readonly favoriteLocationService: FavoriteLocationService,
   ) {}
 
-  @Put()
+  @Put(':locationId')
   @UseAbility(Actions.update, UserEntity, AuthUserHook)
   @UseAbility(Actions.create, FavoriteLocationEntity)
   public create(
-    @Body() data: CreateFavoriteLocationDto,
     @Param('userId') userId: string,
+    @Param('locationId') locationId: string,
   ): Promise<FavoriteLocationEntity> {
-    return this.favoriteLocationService.create({
-      location: { connect: { id: data.locationId } },
-      user: { connect: { id: userId } },
-    });
+    return this.favoriteLocationService.upsert(userId, locationId);
   }
 
   @Get()

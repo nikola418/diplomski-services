@@ -1,0 +1,7 @@
+appName: diplomski
+namespace: default
+configmap:
+image:
+  repo: europe-central2-docker.pkg.dev/diplomski-431623
+  name: auth
+  tag: latest

@@ -1,8 +1,9 @@
-import { PaginationDto } from '@libs/common/dto/pagination.dto';
+import { PaginateOptionsDto } from '@libs/common';
 import { $Enums } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsLongitude,
   IsObject,
@@ -66,9 +67,14 @@ export class QueryLocationsDto {
   @Type(() => CoordinatesDto)
   range?: CoordinatesDto;
 
+  @Transform(({ obj }) => obj.isFavoredByUser === 'true')
+  @IsOptional()
+  @IsBoolean()
+  isFavoredByUser?: boolean;
+
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => PaginationDto)
-  pagination?: PaginationDto;
+  @Type(() => PaginateOptionsDto)
+  pagination?: PaginateOptionsDto;
 }

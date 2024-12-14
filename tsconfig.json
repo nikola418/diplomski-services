@@ -59,6 +59,12 @@
       ],
       "@libs/data-access-auth/*": [
         "libs/data-access-auth/src/*"
+      ],
+      "@libs/core": [
+        "libs/core/src"
+      ],
+      "@libs/core/*": [
+        "libs/core/src/*"
       ]
     }
   }

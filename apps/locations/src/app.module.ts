@@ -1,5 +1,4 @@
-import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
-import { extendPrismaClient } from 'libs/data-access-locations/src';
+import { JwtAuthGuard } from '@libs/common';
 import { UserEntity } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -9,10 +8,16 @@ import { $Enums, PrismaClient } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
 import { CustomPrismaModule } from 'nestjs-prisma';
 import { LocationsModule } from './locations/locations.module';
+import { AUTH_SERVICE } from '@libs/core';
+import { extendPrismaClient } from '@libs/data-access-locations';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ cache: true, isGlobal: true }),
+    ConfigModule.forRoot({
+      expandVariables: true,
+      cache: true,
+      isGlobal: true,
+    }),
     CustomPrismaModule.forRoot({
       isGlobal: true,
       name: 'CustomPrisma',
@@ -26,10 +31,10 @@ import { LocationsModule } from './locations/locations.module';
       {
         name: AUTH_SERVICE,
         useFactory: (configService: ConfigService) => ({
-          transport: Transport.RMQ,
+          transport: Transport.TCP,
           options: {
-            urls: [configService.getOrThrow<string>('RMQ_URL')],
-            queue: 'auth',
+            host: configService.getOrThrow<string>('AUTH_HOST'),
+            port: +configService.getOrThrow<number>('AUTH_PORT'),
           },
         }),
         inject: [ConfigService],

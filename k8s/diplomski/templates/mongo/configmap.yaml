@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: mongo-express
+  name: mongo-express
+data:
+  MONGO-EXPRESS_USER: prisma
+  MONGO-EXPRESS_PASSWORD: example
+  MONGO-EXPRESS_DB: diplomski

@@ -1,18 +1,24 @@
-import { AUTH_SERVICE, JwtAuthGuard } from '@libs/common';
+import { JwtAuthGuard } from '@libs/common';
+import { AUTH_SERVICE } from '@libs/core';
 import { UserEntity } from '@libs/data-access-users';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, RouterModule } from '@nestjs/core';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ScheduleModule } from '@nestjs/schedule';
 import { $Enums } from '@prisma/client';
 import { CaslModule } from 'nest-casl';
 import { PrismaModule } from 'nestjs-prisma';
+import { AttendancesModule } from './attendances/attendances.module';
 import { TripsModule } from './trips/trips.module';
-import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ cache: true, isGlobal: true }),
+    ConfigModule.forRoot({
+      expandVariables: true,
+      cache: true,
+      isGlobal: true,
+    }),
     PrismaModule.forRoot({
       isGlobal: true,
     }),
@@ -24,17 +30,21 @@ import { ScheduleModule } from '@nestjs/schedule';
       {
         name: AUTH_SERVICE,
         useFactory: (configService: ConfigService) => ({
-          transport: Transport.RMQ,
+          transport: Transport.TCP,
           options: {
-            urls: [configService.getOrThrow<string>('RMQ_URL')],
-            queue: 'auth',
+            host: configService.getOrThrow<string>('AUTH_HOST'),
+            port: configService.getOrThrow<number>('AUTH_PORT'),
           },
         }),
         inject: [ConfigService],
       },
     ]),
     ScheduleModule.forRoot(),
+    RouterModule.register([
+      { path: 'trips/:tripId', module: AttendancesModule },
+    ]),
     TripsModule,
+    AttendancesModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })

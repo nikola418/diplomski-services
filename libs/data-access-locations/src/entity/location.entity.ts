@@ -2,6 +2,7 @@ import { FavoriteLocationEntity } from '@libs/data-access-users';
 import { ApiProperty } from '@nestjs/swagger';
 import { $Enums, Location } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
+import { NearbyEntity } from './nearby.entity';
 
 export class LocationEntity implements Location {
   constructor(partial: Partial<LocationEntity>) {
@@ -18,8 +19,8 @@ export class LocationEntity implements Location {
   @ApiProperty({ enum: $Enums.NearbyTag, isArray: true })
   nearbyTags: $Enums.NearbyTag[];
   imageKeys: string[];
-  locationLat: number;
-  locationLong: number;
+  lat: number;
+  lng: number;
   createdAt: Date;
   updatedAt: Date;
 
@@ -28,4 +29,6 @@ export class LocationEntity implements Location {
 
   @Exclude()
   favoriteLocations?: FavoriteLocationEntity[];
+
+  nearbys?: NearbyEntity[];
 }

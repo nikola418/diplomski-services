@@ -13,7 +13,6 @@
         }
       }
     ],
-    "tsConfigPath": "apps/api-gateway/tsconfig.app.json",
     "webpack": true
   },
   "defaultLibraryPrefix": "@libs",
@@ -154,7 +153,5 @@
         "tsConfigPath": "libs/data-access-auth/tsconfig.lib.json"
       }
     }
-  },
-  "root": "apps/api-gateway",
-  "sourceRoot": "apps/api-gateway/src"
+  }
 }

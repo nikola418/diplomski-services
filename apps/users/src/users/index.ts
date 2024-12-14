@@ -1,2 +1,2 @@
-export * from './user.module';
+export * from './users.module';
 export * from './user.hook';

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: postgres
+  name: postgres
+data:
+  POSTGRES_USER: prisma
+  POSTGRES_PASSWORD: example
+  POSTGRES_DB: diplomski

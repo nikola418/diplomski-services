@@ -1,4 +1,5 @@
-import { AUTH_SERVICE, AuthUser, JwtAuthGuard } from '@libs/common';
+import { AuthUser, JwtAuthGuard } from '@libs/common';
+import { AUTH_SERVICE } from '@libs/core';
 import {
   ChatGroupMessagesService,
   CreateChatGroupMessageDto,
@@ -13,7 +14,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ClientRMQ, RmqRecordBuilder } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import {
   ConnectedSocket,
   MessageBody,
@@ -41,7 +42,7 @@ export class ChatsGateway
 {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    @Inject(AUTH_SERVICE) private readonly authProxy: ClientRMQ,
+    @Inject(AUTH_SERVICE) private readonly authProxy: ClientProxy,
     private readonly chatGroupMessagesService: ChatGroupMessagesService,
   ) {}
   private readonly logger = new Logger(ChatsGateway.name);
@@ -56,20 +57,13 @@ export class ChatsGateway
     if (!bearer && !cookie) throw new WsException(new UnauthorizedException());
 
     const user = await firstValueFrom(
-      this.authProxy
-        .send<User>(
-          { cmd: 'profile' },
-          new RmqRecordBuilder().setData({ bearer, cookie }).build(),
-        )
-        .pipe(
-          catchError((err) => {
-            this.logger.error(err);
+      this.authProxy.send<User>({ cmd: 'profile' }, { bearer, cookie }).pipe(
+        catchError((err) => {
+          this.logger.error(err);
 
-            return throwError(
-              () => new WsException(new UnauthorizedException()),
-            );
-          }),
-        ),
+          return throwError(() => new WsException(new UnauthorizedException()));
+        }),
+      ),
     );
 
     return user;

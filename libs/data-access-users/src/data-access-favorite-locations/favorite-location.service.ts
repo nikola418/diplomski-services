@@ -14,9 +14,14 @@ export class FavoriteLocationService {
       createdAt: 'desc',
     };
 
-  public create(data: Prisma.FavoriteLocationCreateInput) {
-    return this.prismaService.favoriteLocation.create({
-      data,
+  public upsert(userId: string, locationId: string) {
+    return this.prismaService.favoriteLocation.upsert({
+      where: { locationId_userId: { userId, locationId } },
+      create: {
+        locationId,
+        userId,
+      },
+      update: {},
       include: FavoriteLocationService.include,
     });
   }

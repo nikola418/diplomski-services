@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: users
+  name: users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+        - name: users
+          image: europe-central2-docker.pkg.dev/diplomski-431623/users/production
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: users
+          ports:
+            - containerPort: 3000

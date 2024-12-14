@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: locations
+  name: locations
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locations
+  template:
+    metadata:
+      labels:
+        app: locations
+    spec:
+      containers:
+        - name: locations
+          image: europe-central2-docker.pkg.dev/diplomski-431623/locations/production
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: locations
+          ports:
+            - containerPort: 3000

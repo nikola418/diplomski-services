@@ -1,12 +1,14 @@
-import { cors, PrismaExceptionFilter, setupSwagger } from '@libs/common';
+import { PrismaExceptionFilter } from '@libs/common';
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { RmqOptions, Transport } from '@nestjs/microservices';
+import { Transport } from '@nestjs/microservices';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { cors } from '@libs/core';
+import { setupSwagger } from '@libs/core';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -14,12 +16,11 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
-  app.connectMicroservice<RmqOptions>({
-    transport: Transport.RMQ,
+  app.connectMicroservice({
+    transport: Transport.TCP,
     options: {
-      urls: [configService.getOrThrow<string>('RMQ_URL')],
-      queue: 'auth',
-      noAck: false,
+      host: '0.0.0.0',
+      port: configService.get('TCP_PORT'),
     },
   });
   app.setGlobalPrefix('api');
