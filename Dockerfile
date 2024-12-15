@@ -22,7 +22,7 @@ CMD pnpm run start:dev ${APP_NAME}
 
 FROM deps AS build
 RUN pnpm run build ${APP_NAME}
-# RUN yes | pnpm prune --prod
+RUN yes | pnpm prune --prod
 
 FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION}  AS production
 ARG NODE_ENV=production
